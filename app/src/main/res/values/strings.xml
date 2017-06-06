@@ -1,0 +1,105 @@
+<resources>
+    <string name="app_name">Myapp</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="search">Search</string>
+    <string name="add_cust">Add Customer</string>
+    <string name="up_cust">Update Customer</string>
+    <string name="new_mon_rent">New Month Rent</string>
+    <string name="get_report">get Reports</string>
+    <string name="send_alert">Send Alert</string>
+    <string name="exp_cust">Expiring Customer</string>
+    <string name="backup">Backup</string>
+    <string name="rest_back">Restore Backup</string>
+    <string name="change_rent">Change rent</string>
+    <string name="man_exp">Manage Expense</string>
+
+
+    <string name="search_cust_no">Search By Customer No.</string>
+    <string name="search_cust_name">Search By Customer Name</string>
+    <string name="search_stbacc">Search By STB Account No.</string>
+    <string name="search_addr">Search By Address</string>
+
+
+    <string name="cust_no">Customer Number</string>
+    <string name="nam">Name</string>
+    <string name="add">Address</string>
+    <string name="city">City</string>
+    <string name="amt">Amount</string>
+    <string name="phone">Phone</string>
+    <string name="rent_amt">Rent Amount</string>
+
+    <string name="stb_acc_no">STB Account No</string>
+    <string name="stb_nuid">STB Nuid</string>
+    <string name="cafno">CAF No</string>
+    <string name="stb_ac2">STB Account No(2)</string>
+    <string name="stb_nuid2">STB Nuid(2)</string>
+    <string name="cafno2">CAF No(2)</string>
+    <string name="sel_con_type">SELECT CONNECTION TYPE</string>
+    <string name="manual">MANUAL</string>
+    <string name="continus">CONTINUOS</string>
+    <string name="plan">PLAN</string>
+    <string name="add_cust_2">ADD CUSTOMER</string>
+
+
+    <string name="update_cust">UPDATE CUSTOMER</string>
+    <string name="load_data">LOAD DATA</string>
+    <string name="new_month_rent">New Month Rent</string>
+    <string name="add_newmonth_rent">ADD NEW MONTH RENT</string>
+    <string name="report">Report</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="type">TYPE</string>
+    <string name="paid">PAID</string>
+    <string name="due">DUE</string>
+    <string name="con_type">CONNECTION TYPE</string>
+    <string name="send_alerts">SEND ALERTS</string>
+    <string name="sms_type">SMS TYPE</string>
+    <string name="custom">CUSTOM</string>
+    <string name="send_alert2">SEND ALERT</string>
+    <string name="manage_exp">MANAGE EXPENSE</string>
+    <string name="addexpinc_type">ADD EXPENSE/INCOME TYPE</string>
+    <string name="expense">EXPENSE</string>
+    <string name="income">INCOME</string>
+
+    <string name="desc">Description</string>
+    <string name="date">Date</string>
+
+    <string name="add2">ADD</string>
+    <string name="GET_EXPINC_REPO">GET EXPENSE/INCOME REPORTS</string>
+<string name="sec_alert">Security Alert</string>
+    <string name="entercode">Enter passcode to change status of connection !!</string>
+
+
+    <string name="licencekey">Enter Licence Key</string>
+    <string name="op_name">Enter Operator Name</string>
+    <string name="op_contactno">Enter Operator Contact Number</string>
+    <string name="cab_name">Enter Cable Network Name</string>
+    <string name="op_add">Enter Operator Address</string>
+    <string name="web_link">Enter Website Link</string>
+    <string name="web_loginid">Enter Website Login id</string>
+    <string name="web_loginpass">Enter Website Login Password</string>
+    <string name="master_pass">Enter Master Password</string>
+    <string name="install_page">Installation Page</string>
+    <string name="submit">Submit</string>
+    <string name="clear">Clear</string>
+
+<string name="adlice">Add Licence</string>
+    <string name="callshan">Call Shan Patel</string>
+    <string name="callsuresh">Call Sureshbhai</string>
+    <string name="contactus">Contact Us</string>
+    <string name="gen_setting">General Setting</string>
+    <string name="set">SET</string>
+
+    <string name="set_wlink">Set Website Link</string>
+    <string name="set_mast_pass">Set Master Password</string>
+    
+    <array name="paydetails">
+        <item>Payment Confirm</item>
+        <item>Due Alert</item>
+        <item>Plan Alert</item>
+    </array>
+</resources>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_licencekey"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/licencekey" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_op_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/op_name" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_op_contactno"
+                android:layout_width="match_parent" android:inputType="phone"
+                android:layout_height="wrap_content"
+                android:hint="@string/op_contactno" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_cab_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/cab_name" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:lines="2"
+                android:id="@+id/edt_op_add"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/op_add" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_web_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/web_link" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_web_loginid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/web_loginid" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_web_loginpass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/web_loginpass" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_master_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/master_pass" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:padding="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnsubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/submit"
+                android:textAllCaps="true" />
+
+            <Button android:layout_marginLeft="10dp"
+                android:id="@+id/btnclear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/clear"
+                android:textAllCaps="true" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

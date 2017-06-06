@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/search"
+            android:title="@string/search" />
+    </group>
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/add_cust"
+            android:title="@string/add_cust" />
+    </group>
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/up_cust"
+            android:title="@string/up_cust" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/new_mon_rent"
+            android:title="@string/new_mon_rent" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/get_report"
+            android:title="@string/get_report" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/send_alert"
+            android:title="@string/send_alert" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/exp_cust"
+            android:title="@string/exp_cust" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/backup"
+            android:title="@string/backup" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/rest_back"
+            android:title="@string/rest_back" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/change_rent"
+            android:title="@string/change_rent" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/man_exp"
+            android:title="@string/man_exp" />
+    </group>
+
+
+</menu>

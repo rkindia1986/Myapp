@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/addexpinc_type" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rdo_expense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/expense" />
+
+                <RadioButton
+                    android:id="@+id/rdo_income"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/income" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent" android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edt_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="@string/desc" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText android:inputType="number" android:singleLine="true"
+                android:id="@+id/edt_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/amt" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent" android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+
+            <EditText style="@style/txtdate" android:focusable="false" android:focusableInTouchMode="true"
+                android:id="@+id/txt_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/date" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_add" android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add2" />
+
+        <TextView android:layout_marginTop="10dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/GET_EXPINC_REPO" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent" android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+
+            <EditText style="@style/txtdate"
+                android:id="@+id/txt_startdate" android:focusable="false" android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/start_date" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent" android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+
+            <EditText style="@style/txtdate"
+                android:id="@+id/txt_enddate" android:focusable="false" android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/end_date" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/type" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rdo_typeexpense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/expense" />
+
+                <RadioButton
+                    android:id="@+id/rdo_typeincome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/income" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <Button android:layout_marginTop="1dp"
+            android:id="@+id/btn_getreport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/get_report"
+            android:textAllCaps="true" />
+
+    </LinearLayout>
+</ScrollView>
