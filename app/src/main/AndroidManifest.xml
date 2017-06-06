@@ -50,6 +50,11 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".PaymentList"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>
