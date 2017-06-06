@@ -113,7 +113,7 @@ public class ViewDtails extends AppCompatActivity {
     LinearLayout lyt_rentplanchange;
     Customer customer;
     String UpdatedStatus = "";
-    PaymentRecordsList paymentRecordsList;
+    public static PaymentRecordsList paymentRecordsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +171,12 @@ public class ViewDtails extends AppCompatActivity {
                     startActivity(sendIntent);
 
                 }
+            }
+        });
+        btn_payrecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GetPaymentRecord();
             }
         });
 
@@ -379,11 +385,11 @@ public class ViewDtails extends AppCompatActivity {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
 
-                Call<String> call = api.payment_record("payment_record", customer.getId());
+                Call<String> call = api.payment_record("payment_record", "6"); //customer.getId());
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        Log.e(TAG, "call GetPaymentRecord: " + call.toString());
+                        Log.e(TAG, "call GetPaymentRecord: " + customer.getId());
 
                         Log.e(TAG, "onResponse GetPaymentRecord: " + response.body());
                         hideProgressDialog();
@@ -424,6 +430,12 @@ public class ViewDtails extends AppCompatActivity {
                             Status = true;
                             Gson gson = new GsonBuilder().create();
                             paymentRecordsList = gson.fromJson(body, PaymentRecordsList.class);
+                            if (paymentRecordsList != null && paymentRecordsList.getLstPaymentrecords().size() > 0) {
+                                startActivity(new Intent(ViewDtails.this, PaymentList.class));
+                            }else {
+                                message = "No Records";
+                                Status =false;
+                            }
                         } else {
                             Status = false;
                             message = j.optString("message");
@@ -443,6 +455,11 @@ public class ViewDtails extends AppCompatActivity {
             Status = false;
             message = "Error Occurred";
 
+        }
+        if (Status) {
+
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, message);
         }
 
 
