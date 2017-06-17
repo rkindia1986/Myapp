@@ -2,7 +2,7 @@ package com.sjm.myapp.pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Helly-PC on 06/02/2017.
@@ -12,7 +12,7 @@ public class ExpenseReport {
     int status=0;
     String message="";
     @SerializedName("result")
-    List<Expense> lstExpense;
+    ArrayList<Expense> lstExpense;
 
     public int getStatus() {
         return status;
@@ -30,11 +30,11 @@ public class ExpenseReport {
         this.message = message;
     }
 
-    public List<Expense> getLstExpense() {
+    public ArrayList<Expense> getLstExpense() {
         return lstExpense;
     }
 
-    public void setLstExpense(List<Expense> lstExpense) {
+    public void setLstExpense(ArrayList<Expense> lstExpense) {
         this.lstExpense = lstExpense;
     }
 }

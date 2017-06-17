@@ -1,62 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/search"
+            android:icon="@drawable/search_icon"
             android:title="@string/search" />
     </group>
-    <group
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/add_cust"
+            android:icon="@drawable/add_cust"
             android:title="@string/add_cust" />
     </group>
-    <group
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/up_cust"
+            android:icon="@drawable/editcustomer"
             android:title="@string/up_cust" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/new_mon_rent"
+            android:icon="@drawable/new_monthrent"
             android:title="@string/new_mon_rent" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/get_report"
+            android:icon="@drawable/get_report"
             android:title="@string/get_report" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/send_alert"
+            android:icon="@drawable/send_aleart"
             android:title="@string/send_alert" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/exp_cust"
+            android:icon="@drawable/expiringcustomers"
             android:title="@string/exp_cust" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/backup"
+            android:icon="@drawable/backup"
             android:title="@string/backup" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/rest_back"
+            android:icon="@drawable/restor_backup"
             android:title="@string/rest_back" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/change_rent"
+            android:icon="@drawable/change_rent"
             android:title="@string/change_rent" />
     </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/man_exp"
+            android:icon="@drawable/manage_expance"
             android:title="@string/man_exp" />
     </group>
 

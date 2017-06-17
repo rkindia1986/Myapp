@@ -4,13 +4,13 @@
     android:layout_height="match_parent">
 
     <Button
-        android:text="@string/callshan"
-        android:layout_width="match_parent" android:layout_margin="10dp"
-        android:layout_height="wrap_content" android:padding="5dp"
+        android:text="@string/callshan" android:background="@drawable/btn_selector"
+        android:layout_width="match_parent" android:layout_margin="5dp"
+        android:layout_height="wrap_content"
         android:id="@+id/call_shan" />
 
-    <Button android:layout_margin="10dp"
-        android:text="@string/callsuresh" android:padding="5dp"
+    <Button android:layout_margin="5dp" android:background="@drawable/btn_selector"
+        android:text="@string/callsuresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/call_suresh" />

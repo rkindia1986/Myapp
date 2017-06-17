@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,9 +61,86 @@ public class NewMonth_rent extends Fragment {
         spinner.setAdapter(adapter);
 
         getCityList();
+
+        btn_addrent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkValidation()) {
+                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                        try {
+                            showProgressDialog();
+                            ApiService api = RetroClient.getApiService();
+                            Log.e("spinner.).toString()", spinner.getSelectedItem().toString());
+                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(), "1");
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                    hideProgressDialog();
+                                    parseResponse(response.body());
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    hideProgressDialog();
+                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                    Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                    }
+                }
+            }
+        });
+
         return view;
     }
 
+    private void parseResponse(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                        Status = true;
+                        message = j.optString("message");
+
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+            Utils.ShowMessageDialog(getContext(), message);
+            //  Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            edt_new_month_rent.setText("");
+        } else {
+            Utils.ShowMessageDialog(getContext(), message);
+        }
+    }
 
     public void getCityList() {
 
@@ -106,9 +184,8 @@ public class NewMonth_rent extends Fragment {
             if (j != null) {
                 if (body.contains("status")) {
                     if (j.getString("status").equalsIgnoreCase("0")) {
-                        JSONArray jsonArray =  j.getJSONArray("result");
-                        for(int i=0;i<jsonArray.length();i++)
-                        {
+                        JSONArray jsonArray = j.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
                         }
                         adapter.notifyDataSetChanged();
@@ -129,6 +206,7 @@ public class NewMonth_rent extends Fragment {
             Utils.ShowMessageDialog(getContext(), "Error Occurred");
         }
     }
+
     public void showProgressDialog() {
         pd = new ProgressDialog(getContext());
         pd.setMessage("Please wait");
@@ -151,6 +229,14 @@ public class NewMonth_rent extends Fragment {
         } finally {
             pd = null;
         }
+    }
+
+    public boolean checkValidation() {
+        if (TextUtils.isEmpty(edt_new_month_rent.getText().toString().trim())) {
+            edt_new_month_rent.setError("Please enter rent");
+            return false;
+        }
+        return true;
     }
 
 

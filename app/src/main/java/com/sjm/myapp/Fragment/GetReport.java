@@ -72,8 +72,7 @@ public class GetReport extends Fragment   {
         View view = inflater.inflate(R.layout.reports, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
 

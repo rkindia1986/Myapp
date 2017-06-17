@@ -39,7 +39,7 @@
     </LinearLayout>
 
     <Button android:layout_marginTop="10dp"
-        android:id="@+id/btn_addrent"
+        android:id="@+id/btn_addrent" android:background="@drawable/btn_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/add_newmonth_rent" />

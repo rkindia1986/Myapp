@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -24,8 +25,10 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.PaymentRecordsList;
+import com.sjm.myapp.pojo.RentRecordsList;
 
 import org.json.JSONObject;
 
@@ -114,6 +117,10 @@ public class ViewDtails extends AppCompatActivity {
     Customer customer;
     String UpdatedStatus = "";
     public static PaymentRecordsList paymentRecordsList;
+    public static RentRecordsList rentRecordsList;
+
+    @BindView(R.id.datePicker)
+    DatePicker datePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +166,96 @@ public class ViewDtails extends AppCompatActivity {
                 }
             }
         });
+        btn_updaterent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkValidation2()) {
+                    if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+                        try {
 
+                            String m = "";
+                            if ((datePicker.getMonth() + 1) < 10) {
+                                m = "0" + (datePicker.getMonth() + 1);
+                            } else {
+                                m = (datePicker.getMonth() + 1) + "";
+                            }
+                            String d = "";
+                            if (datePicker.getDayOfMonth() < 10) {
+                                d = "0" + datePicker.getDayOfMonth();
+                            } else {
+                                d = datePicker.getDayOfMonth() + "";
+                            }
+                            String date = datePicker.getYear() + "-" + m + "-" + d;
+
+                            // String date=datePicker.getYear() +"-" + datePicker.getMonth() + "-" +datePicker.getDayOfMonth();
+                            showProgressDialog();
+                            Log.e("date", date);
+                            ApiService api = RetroClient.getApiService();
+
+                            Call<String> call = api.Edit_customer("edit_customer", customer.getName(), customer.getCustomer_no(), customer.getAddress(), customer.getCity(), customer.getAmount(), customer.getPhone(), edt_newrent.getText().toString(), customer.getStb_account_no_1(), customer.getNu_id_no_1(), customer.getCaf_no_1(), customer.getStb_account_no_2(), customer.getNu_id_no_2(), customer.getCaf_no_2(), customer.getConnection_type(), customer.getCustomer_connection_status(), customer.getRent_start_date(), edt_month.getText().toString(), "1");
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                    hideProgressDialog();
+                                    parseUPDATEResponse(response.body());
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    hideProgressDialog();
+                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                    Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+                    }
+
+                }
+            }
+        });
+        btn_addpayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkValidation()) {
+                    if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+                        try {
+                            showProgressDialog();
+                            ApiService api = RetroClient.getApiService();
+
+                            Call<String> call = api.add_customer_payment_amount("add_customer_payment_amount", customer.getId(), "1", edt_addpayment.getText().toString());
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                    hideProgressDialog();
+                                    parseADDPAYMENTResponse(response.body());
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    hideProgressDialog();
+                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                    Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+                    }
+                }
+            }
+        });
         btn_SMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,55 +275,31 @@ public class ViewDtails extends AppCompatActivity {
                 GetPaymentRecord();
             }
         });
-
-        customer = categoryListModel.getLstCustomer().get(selectedId);
-        if (customer != null) {
-            txt_add.setText(customer.getAddress());
-            txt_amount.setText(customer.getAmount());
-            txt_cafno.setText(customer.getCaf_no_1());
-            txt_city.setText(customer.getCity());
-            txt_cno.setText(customer.getCustomer_no());
-            txt_connstatus.setText(customer.getCustomer_connection_status());
-            txt_enddate.setText("");
-            txt_name.setText(customer.getName());
-            txt_nuid.setText(customer.getNu_id_no_1());
-            txt_phone.setText(customer.getPhone());
-            txt_amount.setText(customer.getAmount());
-            txt_rent.setText(customer.getRent_amount());
-            txt_startdate.setText(customer.getRent_start_date());
-            txt_stbac.setText(customer.getStb_account_no_1());
-
-            if (!TextUtils.isEmpty(customer.getNo_of_month())) {
-
-                Calendar calendar = Calendar.getInstance();
-
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                try {
-                    Date myDate = simpleDateFormat.parse(customer.getRent_start_date());
-                    if (myDate != null) {
-                        calendar.setTime(myDate);
-                        calendar.add(Calendar.MONTH, Integer.parseInt(customer.getNo_of_month()));
-                        Date date = calendar.getTime();
-                        txt_enddate.setText(simpleDateFormat.format(date));
-
-                    }
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        } else {
-
-        }
-
-        btn_change.setOnClickListener(new View.OnClickListener() {
+        btn_rentrecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShowMessageDialog();
+                GetRentRecord();
             }
         });
+        customer = categoryListModel.getLstCustomer().get(selectedId);
+        setdata();
+        btn_deleteclient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShowMessageDialog(2);
+            }
+
+        });
+        btn_change.setOnClickListener(new View.OnClickListener()
+
+                                      {
+                                          @Override
+                                          public void onClick(View view) {
+                                              ShowMessageDialog(1);
+                                          }
+                                      }
+
+        );
 
 
         Spinner spinnerCountShoes = (Spinner) findViewById(R.id.spinner);
@@ -243,7 +315,7 @@ public class ViewDtails extends AppCompatActivity {
     }
 
 
-    public void ShowMessageDialog() {
+    public void ShowMessageDialog(final int kk) {
         final EditText input = new EditText(ViewDtails.this);
         input.setHint("Enter Passcode");
         input.setSingleLine();
@@ -283,7 +355,11 @@ public class ViewDtails extends AppCompatActivity {
 
                         } else if (input.getText().toString().trim().equalsIgnoreCase("1111")) {
                             dialog.dismiss();
-                            UpdateConnection();
+                            if (kk == 1) {
+                                UpdateConnection();
+                            } else {
+                                DeletCustomer();
+                            }
                         } else {
                             input.setError("Invalid Passcode");
 
@@ -378,6 +454,139 @@ public class ViewDtails extends AppCompatActivity {
         }
     }
 
+    private void parseADDPAYMENTResponse(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+
+                        if (j.getString("message").equalsIgnoreCase("success")) {
+                            Status = true;
+                            message = j.optString("message");
+                            Gson gson = new GsonBuilder().create();
+                            customer = gson.fromJson(j.optJSONObject("result").toString(), Customer.class);
+                            if (customer != null)
+                                txt_amount.setText(customer.getAmount());
+                        } else {
+                            Status = false;
+                            message = j.optString("message");
+                        }
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+            Toast.makeText(ViewDtails.this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, message);
+        }
+    }
+
+    private void parseUPDATEResponse(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+
+
+                        Status = true;
+                        message = j.optString("message");
+                        Gson gson = new GsonBuilder().create();
+                        customer = gson.fromJson(j.optJSONObject("result").toString(), Customer.class);
+
+                        setdata();
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+            Toast.makeText(ViewDtails.this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, message);
+        }
+    }
+
+    private void parseDELETEResponse(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+
+
+                        Status = true;
+                        message = j.optString("message");
+                        Log.e(".getLstCustomer()", Search_Fragment.categoryListModel.getLstCustomer().size() + "");
+                        Search_Fragment.categoryListModel.getLstCustomer().remove(selectedId);
+                        Log.e("AFTER.getLstCustomer()", Search_Fragment.categoryListModel.getLstCustomer().size() + "");
+
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+            Toast.makeText(ViewDtails.this, message, Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, message);
+        }
+    }
 
     public void GetPaymentRecord() {
         if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
@@ -432,9 +641,9 @@ public class ViewDtails extends AppCompatActivity {
                             paymentRecordsList = gson.fromJson(body, PaymentRecordsList.class);
                             if (paymentRecordsList != null && paymentRecordsList.getLstPaymentrecords().size() > 0) {
                                 startActivity(new Intent(ViewDtails.this, PaymentList.class));
-                            }else {
+                            } else {
                                 message = "No Records";
-                                Status =false;
+                                Status = false;
                             }
                         } else {
                             Status = false;
@@ -464,7 +673,92 @@ public class ViewDtails extends AppCompatActivity {
 
 
     }
+    public void GetRentRecord() {
+        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+            try {
+                showProgressDialog();
+                ApiService api = RetroClient.getApiService();
 
+                Call<String> call = api.rent_record_by_customer_id("rent_record_by_customer_id", customer.getId(),"1"); //customer.getId());
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.e(TAG, "call GetRentRecord: " + customer.getId());
+
+                        Log.e(TAG, "onResponse GetRentRecord: " + response.body());
+                        hideProgressDialog();
+                        parseRentResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Log.e(TAG, "onFailure GetRentRecord: " + t.getMessage());
+                        Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+        }
+
+    }
+
+    private void parseRentResponse(String body) {
+
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+
+                        if (j.getString("message").equalsIgnoreCase("success")) {
+                            Status = true;
+                            Gson gson = new GsonBuilder().create();
+                            rentRecordsList = gson.fromJson(body, RentRecordsList.class);
+                            if (rentRecordsList != null && rentRecordsList.getLstrentrecord().size() > 0) {
+                                startActivity(new Intent(ViewDtails.this, RentList.class));
+                            } else {
+                                message = "No Records";
+                                Status = false;
+                            }
+                        } else {
+                            Status = false;
+                            message = j.optString("message");
+                        }
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, message);
+        }
+
+
+    }
     public void showProgressDialog() {
         pd = new ProgressDialog(ViewDtails.this);
         pd.setMessage("Please wait");
@@ -488,4 +782,102 @@ public class ViewDtails extends AppCompatActivity {
             pd = null;
         }
     }
+
+    public boolean checkValidation() {
+        if (TextUtils.isEmpty(edt_addpayment.getText().toString().trim())) {
+            edt_addpayment.setError("Please enter data");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkValidation2() {
+        if (TextUtils.isEmpty(edt_month.getText().toString().trim())) {
+            edt_month.setError("Please enter month");
+            return false;
+        }
+        if (TextUtils.isEmpty(edt_newrent.getText().toString().trim())) {
+            edt_newrent.setError("Please enter rent");
+            return false;
+        }
+        return true;
+    }
+
+    public void setdata() {
+        if (customer != null) {
+            txt_add.setText(customer.getAddress());
+            txt_amount.setText(customer.getAmount());
+            txt_cafno.setText(customer.getCaf_no_1());
+            txt_city.setText(customer.getCity());
+            txt_cno.setText(customer.getCustomer_no());
+            txt_connstatus.setText(customer.getCustomer_connection_status());
+            txt_enddate.setText("");
+            txt_name.setText(customer.getName());
+            txt_nuid.setText(customer.getNu_id_no_1());
+            txt_phone.setText(customer.getPhone());
+            txt_amount.setText(customer.getAmount());
+            txt_rent.setText(customer.getRent_amount());
+            txt_startdate.setText(customer.getRent_start_date());
+            txt_stbac.setText(customer.getStb_account_no_1());
+
+            if (!TextUtils.isEmpty(customer.getNo_of_month())) {
+
+                Calendar calendar = Calendar.getInstance();
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                try {
+                    Date myDate = simpleDateFormat.parse(customer.getRent_start_date());
+                    if (myDate != null) {
+                        calendar.setTime(myDate);
+                        calendar.add(Calendar.MONTH, Integer.parseInt(customer.getNo_of_month()));
+                        Date date = calendar.getTime();
+                        txt_enddate.setText(simpleDateFormat.format(date));
+
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        } else {
+
+        }
+        lyt_rentplanchange.setVisibility(View.GONE);
+    }
+
+    public void DeletCustomer() {
+        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+            try {
+                showProgressDialog();
+                ApiService api = RetroClient.getApiService();
+
+                Call<String> call = api.DeleteCustomer("delete_customer", customer.getId());
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                        hideProgressDialog();
+                        parseDELETEResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                        Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+        }
+    }
+
+
 }

@@ -36,6 +36,9 @@ public interface ApiService {
     Call<String> add_customer_payment_amount(@Query("method") String method,@Query("customer_id") String customer_id,@Query("user_id") String user_id,@Query("payment_amount") String payment_amount );
     //http://eserviceinfo.in/webzine/index.php?method=add_customer_payment_amount&customer_id=6&user_id=1&payment_amount=150
 
+    @GET("index.php")//rent_record_by_customer_id
+    Call<String> rent_record_by_customer_id(@Query("method") String method,@Query("customer_id") String customer_id,@Query("user_id") String user_id);
+
 
 
     @GET("index.php")//payment_record
@@ -51,7 +54,7 @@ public interface ApiService {
     //http://eserviceinfo.in/webzine/index.php?method=get_customer_detail&customer_id=5
 
     @GET("index.php")//add_expense_income
-    Call<String> add_expense_income(@Query("method") String method,@Query("expense_type") String expense_type ,@Query("description") String description,@Query("amount") String amount,@Query("expense_date") String expense_date );
+    Call<String> add_expense_income(@Query("method") String method,@Query("expense_type") String expense_type ,@Query("description") String description,@Query("amount") String amount,@Query("expense_date") String expense_date,@Query("user_id") String user_id );
     //http://eserviceinfo.in/webzine/index.php?method=add_expense_income&expense_type=expense&description=nilesh%20descirpiton&amount=400&user_id=1&expense_date=2017-02-01
 
 

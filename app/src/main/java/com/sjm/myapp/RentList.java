@@ -15,6 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sjm.myapp.Fragment.Search_Fragment;
+import com.sjm.myapp.pojo.RentRecord;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,14 +27,15 @@ import butterknife.Unbinder;
  * Created by Helly-PC on 06/01/2017.
  */
 
-public class SearchList extends AppCompatActivity {
-    private static final String TAG = "Backup";
+public class RentList extends AppCompatActivity {
+    private static final String TAG = "RentList";
     ProgressDialog pd;
     private Unbinder unbinder;
 
     @BindView(R.id.listview)
     ListView listview;
-    SearchListAdapter searchListAdapter;
+    PaymentListAdapter searchListAdapter;
+    ArrayList<RentRecord> rentRecords;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,29 +48,21 @@ public class SearchList extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        setTitle("SEARCH LIST");
-
-        searchListAdapter = new SearchListAdapter();
-        searchListAdapter.notifyDataSetChanged();
+        setTitle("RENT RECORDS");
+        rentRecords = ViewDtails.rentRecordsList.getLstrentrecord();
+        searchListAdapter = new PaymentListAdapter();
         listview.setAdapter(searchListAdapter);
-
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(SearchList.this, ViewDtails.class);
+                Intent intent = new Intent(RentList.this, ViewDtails.class);
                 intent.putExtra("selected", i);
                 startActivity(intent);
             }
         });
     }
 
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        searchListAdapter.notifyDataSetChanged();
-    }
-
-    class SearchListAdapter extends BaseAdapter {
+    class PaymentListAdapter extends BaseAdapter {
 
 
         @Override
@@ -91,7 +87,7 @@ public class SearchList extends AppCompatActivity {
             if (convertView == null) {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.searchlistraw, null);
+                convertView = li.inflate(R.layout.listraw, null);
                 v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
@@ -103,9 +99,9 @@ public class SearchList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtTitle.setText(Search_Fragment.categoryListModel.getLstCustomer().get(position).getName());
-            v.txtAddress.setText("City: " +  Search_Fragment.categoryListModel.getLstCustomer().get(position).getCity());
-            v.txtCity.setText("Amount: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAmount());
+            v.txtTitle.setText(rentRecords.get(position).getCustomer_id());
+            v.txtAddress.setText(rentRecords.get(position).getCreated_at());
+            v.txtCity.setText(rentRecords.get(position).getPayment_amount());
 
             return convertView;
         }

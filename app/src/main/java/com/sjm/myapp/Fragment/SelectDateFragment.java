@@ -15,10 +15,11 @@ import java.util.Calendar;
 
 public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
     TextView txt;
-     SelectDateFragment(TextView txt)
-    {
+
+    SelectDateFragment(TextView txt) {
         this.txt = txt;
     }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar calendar = Calendar.getInstance();
@@ -29,10 +30,23 @@ public class SelectDateFragment extends DialogFragment implements DatePickerDial
     }
 
     public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-        populateSetDate(yy, mm+1, dd);
+        populateSetDate(yy, mm + 1, dd);
     }
+
     public void populateSetDate(int year, int month, int day) {
-         this.txt.setText(day +"/" + month+"/"+year);
+        String m = "";
+        if (month < 10) {
+            m = "0" + month;
+        } else {
+            m = month + "";
+        }
+        String d = "";
+        if (day < 10) {
+            d = "0" + day;
+        } else {
+            d = day + "";
+        }
+        this.txt.setText(year + "-" + m + "-" + d);
     }
 
 }

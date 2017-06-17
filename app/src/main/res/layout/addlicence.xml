@@ -124,7 +124,7 @@
             android:layout_height="wrap_content" android:padding="10dp"
             android:orientation="horizontal">
 
-            <Button
+            <Button android:background="@drawable/btn_selector"
                 android:id="@+id/btnsubmit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                 android:textAllCaps="true" />
 
             <Button android:layout_marginLeft="10dp"
-                android:id="@+id/btnclear"
+                android:id="@+id/btnclear" android:background="@drawable/btn_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

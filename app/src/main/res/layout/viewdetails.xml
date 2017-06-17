@@ -6,12 +6,12 @@
     android:orientation="vertical">
 
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <LinearLayout android:paddingBottom="40dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -28,6 +28,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="CNO : " />
 
                 <TextView
@@ -47,6 +48,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="STB Acc : " />
 
                 <TextView
@@ -66,6 +68,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="NUID : " />
 
                 <TextView
@@ -85,6 +88,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="CAF No : " />
 
                 <TextView
@@ -104,6 +108,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="Name : " />
 
                 <TextView
@@ -123,6 +128,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="Address : " />
 
                 <TextView
@@ -140,7 +146,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -148,6 +154,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="City : " />
 
                     <TextView
@@ -159,7 +166,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -167,6 +174,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="Phone : " />
 
                     <TextView
@@ -185,7 +193,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -193,6 +201,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="Start date : " />
 
                     <TextView
@@ -204,7 +213,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -212,6 +221,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="End Date : " />
 
                     <TextView
@@ -231,7 +241,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -239,6 +249,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="Amount : " />
 
                     <TextView
@@ -250,7 +261,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -258,6 +269,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="5"
                         android:text="Rent : " />
 
                     <TextView
@@ -279,6 +291,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="5"
                     android:text="Connection : " />
 
                 <TextView
@@ -289,7 +302,7 @@
                     android:text="TextView" />
 
 
-                <Button
+                <Button android:background="@drawable/btn_selector"
                     android:id="@+id/btn_change"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -308,20 +321,22 @@
                     android:layout_height="wrap_content"
                     android:text="Enter payment : " />
 
-                <EditText android:singleLine="true" android:inputType="number"
+                <EditText
                     android:id="@+id/edt_addpayment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
+                    android:inputType="number"
+                    android:singleLine="true"
                     android:text="" />
 
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_addpayment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="5dp" android:layout_marginRight="5dp"
                     android:text="ADD" />
             </LinearLayout>
 
@@ -332,20 +347,20 @@
                 android:orientation="horizontal">
 
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_rentrecord"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="RENT RECORD" />
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_payrecord"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1" android:layout_marginRight="5dp"
                     android:text="PAYMENT RECORD" />
             </LinearLayout>
 
@@ -356,20 +371,20 @@
                 android:orientation="horizontal">
 
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_deleteclient"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="DELETE CLIENT" />
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_call"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1" android:layout_marginRight="5dp"
                     android:text="CALL" />
             </LinearLayout>
 
@@ -380,7 +395,7 @@
                 android:orientation="horizontal">
 
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_SMS"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -406,7 +421,7 @@
                 android:orientation="horizontal">
 
 
-                <Button
+                <Button  android:background="@drawable/btn_selector"
                     android:id="@+id/btn_changeplan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -416,12 +431,13 @@
 
             </LinearLayout>
 
-            <LinearLayout android:visibility="gone"
+            <LinearLayout
                 android:id="@+id/lyt_rentplanchange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -433,6 +449,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="7"
                         android:text="Start Date: " />
 
                     <DatePicker
@@ -453,14 +470,17 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="7"
                         android:text="Enter Months : " />
 
-                    <EditText android:singleLine="true" android:inputType="number"
+                    <EditText
                         android:id="@+id/edt_month"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_weight="1"
+                        android:inputType="number"
+                        android:singleLine="true"
                         android:text="" />
 
 
@@ -476,14 +496,17 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ems="7"
                         android:text="New Rent: " />
 
-                    <EditText android:singleLine="true" android:inputType="number"
+                    <EditText
                         android:id="@+id/edt_newrent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_weight="1"
+                        android:inputType="number"
+                        android:singleLine="true"
                         android:text="" />
 
 
@@ -496,7 +519,7 @@
                     android:orientation="horizontal">
 
 
-                    <Button
+                    <Button  android:background="@drawable/btn_selector"
                         android:id="@+id/btn_updaterent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

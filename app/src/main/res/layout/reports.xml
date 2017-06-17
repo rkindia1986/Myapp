@@ -43,7 +43,7 @@
             android:text="City" />
 
         <Spinner  android:padding="10dp"
-            android:id="@+id/spinner"
+            android:id="@+id/spinner" android:spinnerMode="dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" />
@@ -69,7 +69,7 @@
             android:layout_marginLeft="5dp"
             android:orientation="vertical">
 
-            <RadioButton
+            <RadioButton android:checked="true"
                 android:id="@+id/rdo_paid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
             android:layout_marginLeft="5dp"
             android:orientation="horizontal">
 
-            <RadioButton
+            <RadioButton android:checked="true"
                 android:id="@+id/rdo_all"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
     </LinearLayout>
 
     <Button android:layout_marginTop="10dp"
-        android:id="@+id/btn_getreport"
+        android:id="@+id/btn_getreport" android:background="@drawable/btn_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/get_report" />

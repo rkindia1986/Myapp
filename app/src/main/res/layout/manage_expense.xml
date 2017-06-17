@@ -21,13 +21,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/addexpinc_type" />
 
-            <RadioGroup
+            <RadioGroup android:id="@+id/rdogroup_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:orientation="vertical">
 
-                <RadioButton
+                <RadioButton android:checked="true"
                     android:id="@+id/rdo_expense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
             android:layout_width="match_parent" android:layout_marginTop="5dp"
             android:layout_height="wrap_content">
 
-            <EditText
+            <EditText android:singleLine="true"
                 android:id="@+id/edt_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
+        <Button android:background="@drawable/btn_selector"
             android:id="@+id/btn_add" android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -130,13 +130,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/type" />
 
-            <RadioGroup
+            <RadioGroup android:id="@+id/rdogroup_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:orientation="vertical">
 
-                <RadioButton
+                <RadioButton android:checked="true"
                     android:id="@+id/rdo_typeexpense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
         </LinearLayout>
 
         <Button android:layout_marginTop="1dp"
-            android:id="@+id/btn_getreport"
+            android:id="@+id/btn_getreport" android:background="@drawable/btn_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/get_report"
