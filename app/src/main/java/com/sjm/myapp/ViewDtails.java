@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -303,11 +304,20 @@ public class ViewDtails extends AppCompatActivity {
 
         );
 
-
         Spinner spinnerCountShoes = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<String> spinnerCountShoesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.paydetails));
         spinnerCountShoes.setAdapter(spinnerCountShoesArrayAdapter);
+        spinnerCountShoes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                SetMessage(i);
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -935,8 +945,7 @@ public class ViewDtails extends AppCompatActivity {
 
                         Gson gson = new GsonBuilder().create();
                         planAlert = gson.fromJson(j.optJSONObject("result").toString(), PlanAlert.class);
-                        edtsms.setText("");
-
+                        SetMessage(spinner.getSelectedItemPosition());
                     } else {
                         Status = false;
                         message = "Error Occurred";
@@ -954,6 +963,19 @@ public class ViewDtails extends AppCompatActivity {
 
         }
 
+    }
+
+    public void SetMessage(int kk) {
+        if (planAlert != null && planAlert.getCustomer() != null && planAlert.getInstallation_history() != null) {
+
+            if (kk == 0) {
+                edtsms.setText("Selected ==0" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
+            } else if (kk == 1) {
+                edtsms.setText("Selected ==1" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
+            } else if (kk == 2) {
+                edtsms.setText("Selected ==2" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
+            }
+        }
     }
 
 }

@@ -92,7 +92,7 @@ public class RentList extends AppCompatActivity {
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
 
-                // v.checkbox.setChecked(false);
+                // v.chec+kbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
                 convertView.setTag(v);
             } else {
