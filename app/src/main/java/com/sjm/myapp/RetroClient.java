@@ -9,7 +9,7 @@ import retrofit2.Retrofit;
  */
 
 public class RetroClient {
-    private static final String ROOT_URL = "http://eserviceinfo.in/webzine/";
+    private static final String ROOT_URL = "http://surfinternet.in/webservice/";
     private static Retrofit getRetrofitInstance(){
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();

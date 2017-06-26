@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -92,10 +93,11 @@ public class SearchList extends AppCompatActivity {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.searchlistraw, null);
-                v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtname = (TextView) convertView.findViewById(R.id.txt1);
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
-                v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
-
+                v.txtAmount = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtCNo = (TextView) convertView.findViewById(R.id.txt3);
+                v.lytparnt = (LinearLayout) convertView.findViewById(R.id.lytparent);
                 // v.checkbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
                 convertView.setTag(v);
@@ -103,18 +105,26 @@ public class SearchList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtTitle.setText(Search_Fragment.categoryListModel.getLstCustomer().get(position).getName());
-            v.txtAddress.setText("City: " +  Search_Fragment.categoryListModel.getLstCustomer().get(position).getCity());
-            v.txtCity.setText("Amount: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAmount());
+            v.txtname.setText(Search_Fragment.categoryListModel.getLstCustomer().get(position).getName());
+            v.txtAddress.setText("Address: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAddress() + ", " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getCity());
+            v.txtAmount.setText("Amount: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAmount());
+            v.txtCNo.setText("C No: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_no());
 
+            if (Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status().equalsIgnoreCase("off")) {
+                v.lytparnt.setBackgroundColor(getColor(R.color.red));
+            } else {
+                v.lytparnt.setBackgroundColor(getColor(R.color.green));
+            }
             return convertView;
         }
     }
 
     private class ViewHolder {
-        TextView txtTitle;
+        TextView txtname;
         TextView txtAddress;
-        TextView txtCity;
+        TextView txtAmount;
+        TextView txtCNo;
+        LinearLayout lytparnt;
 
         //  Button btnDone;
 

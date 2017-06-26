@@ -87,7 +87,7 @@ public class RentList extends AppCompatActivity {
             if (convertView == null) {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.listraw, null);
+                convertView = li.inflate(R.layout.rentraw, null);
                 v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtCity = (TextView) convertView.findViewById(R.id.txt3);

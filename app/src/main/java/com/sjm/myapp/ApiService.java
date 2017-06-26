@@ -79,6 +79,8 @@ public interface ApiService {
     @GET("index.php")//get_installation_history
     Call<String> get_installation_history(@Query("method") String method,@Query("licence_key") String licence_key);
 
+    @GET("index.php")//send_sms_by_customer
+    Call<String> send_sms_by_customer(@Query("method") String method,@Query("licence_key") String licence_key,@Query("customer_id") String customer_id,@Query("sms_status") String sms_status);
 
 
 

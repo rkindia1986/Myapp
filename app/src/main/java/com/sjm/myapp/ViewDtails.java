@@ -28,6 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.PaymentRecordsList;
+import com.sjm.myapp.pojo.PlanAlert;
 import com.sjm.myapp.pojo.RentRecordsList;
 
 import org.json.JSONObject;
@@ -56,7 +57,7 @@ public class ViewDtails extends AppCompatActivity {
     ProgressDialog pd;
     private Unbinder unbinder;
     int selectedId = 0;
-
+    PlanAlert planAlert;
     @BindView(R.id.txt_cno)
     TextView txt_cno;
     @BindView(R.id.txt_stbac)
@@ -83,7 +84,8 @@ public class ViewDtails extends AppCompatActivity {
     TextView txt_rent;
     @BindView(R.id.txt_connstatus)
     TextView txt_connstatus;
-
+    @BindView(R.id.edtsms)
+    EditText edtsms;
 
     @BindView(R.id.btn_change)
     Button btn_change;
@@ -192,7 +194,7 @@ public class ViewDtails extends AppCompatActivity {
                             Log.e("date", date);
                             ApiService api = RetroClient.getApiService();
 
-                            Call<String> call = api.Edit_customer("edit_customer", customer.getName(), customer.getCustomer_no(), customer.getAddress(), customer.getCity(), customer.getAmount(), customer.getPhone(), edt_newrent.getText().toString(), customer.getStb_account_no_1(), customer.getNu_id_no_1(), customer.getCaf_no_1(), customer.getStb_account_no_2(), customer.getNu_id_no_2(), customer.getCaf_no_2(), customer.getConnection_type(), customer.getCustomer_connection_status(), customer.getRent_start_date(), edt_month.getText().toString(), "1");
+                            Call<String> call = api.Edit_customer("edit_customer", customer.getName(), customer.getCustomer_no(), customer.getAddress(), customer.getCity(), customer.getAmount(), customer.getPhone(), edt_newrent.getText().toString(), customer.getStb_account_no_1(), customer.getNu_id_no_1(), customer.getCaf_no_1(), customer.getStb_account_no_2(), customer.getNu_id_no_2(), customer.getCaf_no_2(), customer.getConnection_type(), customer.getCustomer_connection_status(), customer.getRent_start_date(), edt_month.getText().toString(), "4");
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
@@ -229,7 +231,7 @@ public class ViewDtails extends AppCompatActivity {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
 
-                            Call<String> call = api.add_customer_payment_amount("add_customer_payment_amount", customer.getId(), "1", edt_addpayment.getText().toString());
+                            Call<String> call = api.add_customer_payment_amount("add_customer_payment_amount", customer.getId(), "4", edt_addpayment.getText().toString());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
@@ -382,7 +384,7 @@ public class ViewDtails extends AppCompatActivity {
                 } else {
                     UpdatedStatus = "on";
                 }
-                Call<String> call = api.update_customer_connection_status("update_customer_connection_status", customer.getId(), "1", UpdatedStatus);
+                Call<String> call = api.update_customer_connection_status("update_customer_connection_status", customer.getId(), "4", UpdatedStatus);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
@@ -673,13 +675,14 @@ public class ViewDtails extends AppCompatActivity {
 
 
     }
+
     public void GetRentRecord() {
         if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
 
-                Call<String> call = api.rent_record_by_customer_id("rent_record_by_customer_id", customer.getId(),"1"); //customer.getId());
+                Call<String> call = api.rent_record_by_customer_id("rent_record_by_customer_id", customer.getId(), "4"); //customer.getId());
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -759,6 +762,7 @@ public class ViewDtails extends AppCompatActivity {
 
 
     }
+
     public void showProgressDialog() {
         pd = new ProgressDialog(ViewDtails.this);
         pd.setMessage("Please wait");
@@ -841,6 +845,7 @@ public class ViewDtails extends AppCompatActivity {
 
             }
 
+            getPlanAlert();
         } else {
 
         }
@@ -879,5 +884,76 @@ public class ViewDtails extends AppCompatActivity {
         }
     }
 
+    public void getPlanAlert() {
+        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+            try {
+
+
+                // String date=datePicker.getYear() +"-" + datePicker.getMonth() + "-" +datePicker.getDayOfMonth();
+                showProgressDialog();
+                ApiService api = RetroClient.getApiService();
+
+                Call<String> call = api.send_sms_by_customer("send_sms_by_customer", "device_id23HiWKh0qQ", customer.getId(), "plan_alert");
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                        hideProgressDialog();
+                        parseResponsePlan(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                        Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+        }
+    }
+
+    private void parseResponsePlan(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                        Status = true;
+
+                        Gson gson = new GsonBuilder().create();
+                        planAlert = gson.fromJson(j.optJSONObject("result").toString(), PlanAlert.class);
+                        edtsms.setText("");
+
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+
+    }
 
 }
