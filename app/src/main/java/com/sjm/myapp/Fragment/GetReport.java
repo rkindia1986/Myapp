@@ -21,10 +21,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
 import com.sjm.myapp.ExpenseReportList;
+import com.sjm.myapp.GetReportList;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
+import com.sjm.myapp.RentList;
 import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.Utils;
+import com.sjm.myapp.ViewDtails;
 import com.sjm.myapp.pojo.RentRecordList;
 
 import org.json.JSONArray;
@@ -78,8 +81,8 @@ public class GetReport extends Fragment   {
 
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
-    @Nullable
-    RentRecordList rentRecordList;
+
+    public static RentRecordList rentRecordList;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.reports, container, false);
@@ -107,7 +110,12 @@ public class GetReport extends Fragment   {
             }
         });
 
-
+        btn_getreport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getReport();
+            }
+        });
         return view;
     }
 
@@ -273,7 +281,7 @@ public class GetReport extends Fragment   {
                         Gson gson = new GsonBuilder().create();
 
                         rentRecordList = gson.fromJson(body, RentRecordList.class);
-
+                        startActivity(new Intent(getContext(), GetReportList.class));
                     } else {
                         Status = false;
                         message = "Error Occurred";
@@ -292,7 +300,7 @@ public class GetReport extends Fragment   {
         }
         if (Status) {
             if (rentRecordList != null && rentRecordList.getRentRecords() != null && rentRecordList.getRentRecords().size() > 0) {
-                Intent intent = new Intent(getContext(), ExpenseReportList.class);
+                Intent intent = new Intent(getContext(), GetReportList.class);
                 startActivity(intent);
             } else {
                 Utils.ShowMessageDialog(getContext(), "No records found");

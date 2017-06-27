@@ -14,8 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sjm.myapp.Fragment.GetReport;
 import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.RentRecord;
+import com.sjm.myapp.pojo.RentRecordList;
 
 import java.util.ArrayList;
 
@@ -34,7 +36,14 @@ public class GetReportList extends AppCompatActivity {
 
     @BindView(R.id.listview)
     ListView listview;
+    @BindView(R.id.txt_rentstart)
+    TextView txt_rentstart;
+    @BindView(R.id.txt_rentend)
+    TextView txt_rentend;
+    @BindView(R.id.txt_renttotal)
+    TextView txt_renttotal;
     PaymentListAdapter searchListAdapter;
+
     ArrayList<RentRecord> rentRecords;
 
     @Override
@@ -42,7 +51,7 @@ public class GetReportList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.searchlist);
+        setContentView(R.layout.getreport_list);
         unbinder = ButterKnife.bind(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,15 +59,17 @@ public class GetReportList extends AppCompatActivity {
 
         setTitle("REPORT LIST");
 
-        rentRecords = ViewDtails.rentRecordsList.getLstrentrecord();
+        rentRecords = GetReport.rentRecordList.getRentRecords();
+        txt_rentend.setText(GetReport.rentRecordList.getRentSummary().getRent_end_date());
+        txt_rentstart.setText(GetReport.rentRecordList.getRentSummary().getRent_from_date());
+        txt_renttotal.setText(GetReport.rentRecordList.getRentSummary().getTotal_based_on_total());
+
         searchListAdapter = new PaymentListAdapter();
         listview.setAdapter(searchListAdapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(GetReportList.this, ViewDtails.class);
-                intent.putExtra("selected", i);
-                startActivity(intent);
+
             }
         });
     }
@@ -68,12 +79,12 @@ public class GetReportList extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return Search_Fragment.categoryListModel.getLstCustomer().size();
+            return rentRecords.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return Search_Fragment.categoryListModel.getLstCustomer().get(position);
+            return rentRecords.get(position);
         }
 
         @Override
