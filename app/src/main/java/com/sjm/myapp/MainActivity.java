@@ -2,6 +2,7 @@ package com.sjm.myapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -31,6 +33,7 @@ import com.sjm.myapp.Fragment.send_Alert;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
+    Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        String android_id = Secure.getString(getContentResolver(),
+                Secure.ANDROID_ID);
+        Log.e("android_id", android_id + "");
+        Application.preferences.setDeviceId(android_id);
+        Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
+        Application.preferences.setDeviceId("device_id23");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -83,15 +91,13 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this,Setting.class));
+            startActivity(new Intent(MainActivity.this, Setting.class));
 
-        }
-        else if (id == R.id.action_addlicence) {
-            startActivity(new Intent(MainActivity.this,AddLicence.class));
+        } else if (id == R.id.action_addlicence) {
+            startActivity(new Intent(MainActivity.this, AddLicence.class));
 
-        }
-        else if (id == R.id.action_contactus) {
-            startActivity(new Intent(MainActivity.this,ContactUs.class));
+        } else if (id == R.id.action_contactus) {
+            startActivity(new Intent(MainActivity.this, ContactUs.class));
 
         }
 

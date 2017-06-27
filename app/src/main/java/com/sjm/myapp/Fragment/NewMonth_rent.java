@@ -71,7 +71,7 @@ public class NewMonth_rent extends Fragment {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
                             Log.e("spinner.).toString()", spinner.getSelectedItem().toString());
-                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(), "1");
+                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(), "4");
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {

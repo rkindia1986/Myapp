@@ -77,7 +77,7 @@ public class AddLicence extends AppCompatActivity {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_installation_history("add_customer", edt_op_name.getText().toString(),  edt_op_contactno.getText().toString(), edt_op_add.getText().toString(),edt_op_name.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString());
+                            Call<String> call = api.add_installation_history("add_customer", edt_op_name.getText().toString(),edt_op_contactno.getText().toString(), edt_cab_name.getText().toString(), edt_op_add.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString(),Application.preferences.getDeviceId());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {

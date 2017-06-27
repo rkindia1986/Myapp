@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="@string/type" />
 
-        <RadioGroup
+        <RadioGroup android:id="@+id/rdotype"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:text="@string/con_type" />
 
-        <RadioGroup
+        <RadioGroup android:id="@+id/rdo_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"

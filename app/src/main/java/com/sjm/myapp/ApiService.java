@@ -82,6 +82,8 @@ public interface ApiService {
     @GET("index.php")//send_sms_by_customer
     Call<String> send_sms_by_customer(@Query("method") String method,@Query("licence_key") String licence_key,@Query("customer_id") String customer_id,@Query("sms_status") String sms_status);
 
+    @GET("index.php")//get_rent_report
+    Call<String> get_rent_report(@Query("method") String method,@Query("rent_start_date") String start_date,@Query("rent_end_date") String end_date,@Query("customer_connection_status ") String customer_connection_status ,@Query("payment_status") String payment_status,@Query("city") String city );
 
 
 }
