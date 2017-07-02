@@ -128,7 +128,7 @@ public class manageExp extends Fragment {
                             }
                             Log.e("type", type);
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(), "1");
+                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(), "4");
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
@@ -258,10 +258,10 @@ public class manageExp extends Fragment {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getString("status").equalsIgnoreCase("1")) {
+                    if (j.getInt("status")== 1) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                    } else if (j.getInt("status")== 0) {
                         Status = true;
                         message = j.optString("message");
 

@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity
         setTitle(getString(R.string.search).toUpperCase());
         Search_Fragment fragmentMenu = new Search_Fragment();
         replaceFragment(fragmentMenu, Search_Fragment.class.getSimpleName());
+
+
     }
 
     @Override
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity
             Update_Customer addCust_fragment = new Update_Customer();
             replaceFragment(addCust_fragment, Update_Customer.class.getSimpleName());
         } else if (id == R.id.new_mon_rent) {
-            setTitle(getString(R.string.new_mon_rent).toUpperCase());
+            setTitle(getString(R.string.change_rent).toUpperCase());
             NewMonth_rent addCust_fragment = new NewMonth_rent();
             replaceFragment(addCust_fragment, NewMonth_rent.class.getSimpleName());
 
@@ -156,12 +158,7 @@ public class MainActivity extends AppCompatActivity
             BackupRestore addCust_fragment = new BackupRestore();
             replaceFragment(addCust_fragment, BackupRestore.class.getSimpleName());
 
-        } else if (id == R.id.change_rent) {
-            setTitle(getString(R.string.change_rent).toUpperCase());
-            Changerent changerent = new Changerent();
-            replaceFragment(changerent, Changerent.class.getSimpleName());
-
-        } else if (id == R.id.man_exp) {
+        }  else if (id == R.id.man_exp) {
             setTitle(getString(R.string.man_exp).toUpperCase());
             manageExp manage = new manageExp();
             replaceFragment(manage, manageExp.class.getSimpleName());

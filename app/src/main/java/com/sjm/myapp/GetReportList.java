@@ -60,9 +60,9 @@ public class GetReportList extends AppCompatActivity {
         setTitle("REPORT LIST");
 
         rentRecords = GetReport.rentRecordList.getRentRecords();
-        txt_rentend.setText(GetReport.rentRecordList.getRentSummary().getRent_end_date());
-        txt_rentstart.setText(GetReport.rentRecordList.getRentSummary().getRent_from_date());
-        txt_renttotal.setText(GetReport.rentRecordList.getRentSummary().getTotal_based_on_total());
+        txt_rentend.setText("Rent End Date : " + GetReport.rentRecordList.getRentSummary().getRent_end_date());
+        txt_rentstart.setText("Rent Start Date : " +  GetReport.rentRecordList.getRentSummary().getRent_from_date());
+        txt_renttotal.setText("Total : " +  GetReport.rentRecordList.getRentSummary().getTotal_based_on_total());
 
         searchListAdapter = new PaymentListAdapter();
         listview.setAdapter(searchListAdapter);
@@ -100,9 +100,13 @@ public class GetReportList extends AppCompatActivity {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.rentraw, null);
-                v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
-                v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
-                v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtid = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtcustname = (TextView) convertView.findViewById(R.id.txt2);
+                v.txtAdd = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtpaymentstatus = (TextView) convertView.findViewById(R.id.txt4);
+                v.txtpayamt = (TextView) convertView.findViewById(R.id.txt5);
+                v.txtcreated = (TextView) convertView.findViewById(R.id.txt6);
+
 
                 // v.chec+kbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
@@ -111,18 +115,27 @@ public class GetReportList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtTitle.setText(rentRecords.get(position).getCustomer_id());
-            v.txtAddress.setText(rentRecords.get(position).getCreated_at());
-            v.txtCity.setText(rentRecords.get(position).getPayment_amount());
+            v.txtid.setText("Cust Id: " + rentRecords.get(position).getCustomer_id());
+            v.txtcreated.setText("Created : " +  rentRecords.get(position).getCreated_at());
+            v.txtcustname.setText("Name:" + rentRecords.get(position).getName());
+            v.txtAdd.setText("Add:" + rentRecords.get(position).getAddress() + ", " +rentRecords.get(position).getCity());
+            v.txtpaymentstatus.setText("Status:" + rentRecords.get(position).getPayment_status());
+            v.txtpayamt.setText("Amt:" + rentRecords.get(position).getPayment_amount());
 
             return convertView;
         }
     }
 
     private class ViewHolder {
-        TextView txtTitle;
-        TextView txtAddress;
-        TextView txtCity;
+        TextView txtid;
+        TextView txtcustname;
+        TextView txtAdd;
+        TextView txtpaymentstatus;
+        TextView txtpayamt;
+        TextView txtcreated;
+
+
+
 
         //  Button btnDone;
 

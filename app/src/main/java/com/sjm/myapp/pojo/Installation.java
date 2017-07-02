@@ -6,25 +6,71 @@ package com.sjm.myapp.pojo;
 
 public class Installation {
 
-    String id="";
-    String cable_network_name="";
-    String operator_address="";
-    String cable_network_address="";
-    String website_link="";
-    String website_login_id="";
-    String website_login_pwd="";
-    String master_pwd="";
-    String licence_key="";
-    String created_by="";
-    String created_at="";
-    String updated_at="";
+    String user_id = "";
+    String device_id = "";
+    String imei_number = "";
+    String verify_licence_key = "";
 
-    public String getId() {
-        return id;
+    String cable_operator_name = "";
+    String cable_operator_contact_no = "";
+    String cable_network_name = "";
+    String operator_address = "";
+    String cable_network_address = "";
+    String website_link = "";
+    String website_login_id = "";
+    String website_login_password = "";
+    String master_password = "";
+    String licence_key = "";
+    String created_by = "";
+    String created_at = "";
+    String updated_at = "";
+
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getDevice_id() {
+        return device_id;
+    }
+
+    public void setDevice_id(String device_id) {
+        this.device_id = device_id;
+    }
+
+    public String getImei_number() {
+        return imei_number;
+    }
+
+    public void setImei_number(String imei_number) {
+        this.imei_number = imei_number;
+    }
+
+    public String getVerify_licence_key() {
+        return verify_licence_key;
+    }
+
+    public void setVerify_licence_key(String verify_licence_key) {
+        this.verify_licence_key = verify_licence_key;
+    }
+
+    public String getCable_operator_name() {
+        return cable_operator_name;
+    }
+
+    public void setCable_operator_name(String cable_operator_name) {
+        this.cable_operator_name = cable_operator_name;
+    }
+
+    public String getCable_operator_contact_no() {
+        return cable_operator_contact_no;
+    }
+
+    public void setCable_operator_contact_no(String cable_operator_contact_no) {
+        this.cable_operator_contact_no = cable_operator_contact_no;
     }
 
     public String getCable_network_name() {
@@ -67,20 +113,20 @@ public class Installation {
         this.website_login_id = website_login_id;
     }
 
-    public String getWebsite_login_pwd() {
-        return website_login_pwd;
+    public String getWebsite_login_password() {
+        return website_login_password;
     }
 
-    public void setWebsite_login_pwd(String website_login_pwd) {
-        this.website_login_pwd = website_login_pwd;
+    public void setWebsite_login_password(String website_login_password) {
+        this.website_login_password = website_login_password;
     }
 
-    public String getMaster_pwd() {
-        return master_pwd;
+    public String getMaster_password() {
+        return master_password;
     }
 
-    public void setMaster_pwd(String master_pwd) {
-        this.master_pwd = master_pwd;
+    public void setMaster_password(String master_password) {
+        this.master_password = master_password;
     }
 
     public String getLicence_key() {

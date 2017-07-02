@@ -65,6 +65,12 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name=".GetReportList"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

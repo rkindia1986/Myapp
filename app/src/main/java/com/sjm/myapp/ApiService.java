@@ -82,9 +82,15 @@ public interface ApiService {
     @GET("index.php")//send_sms_by_customer
     Call<String> send_sms_by_customer(@Query("method") String method,@Query("licence_key") String licence_key,@Query("customer_id") String customer_id,@Query("sms_status") String sms_status);
 
-    @GET("index.php")//get_rent_report
-    Call<String> get_rent_report(@Query("method") String method,@Query("rent_start_date") String start_date,@Query("rent_end_date") String end_date,@Query("customer_connection_status ") String customer_connection_status ,@Query("payment_status") String payment_status,@Query("city") String city );
+       @GET("index.php")//get_rent_report
+    Call<String> get_rent_report(@Query("method") String method,@Query("rent_start_date") String start_date,@Query("rent_end_date") String end_date,@Query("customer_connection_status") String customer_connection_status ,@Query("payment_status") String payment_status,@Query("city") String city );
 
+    @GET("index.php")//expiring_customers_list
+    Call<String> get_expcust(@Query("method") String method);
+    @GET("index.php")//expiring_customers_list
+    Call<String> welcome(@Query("method") String method,@Query("device_id") String device_id,@Query("imei_number") String imei_number);
+    @GET("index.php")//send_multiple_sms
+    Call<String> send_multiple_sms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id,@Query("message") String message);
 
 }
 

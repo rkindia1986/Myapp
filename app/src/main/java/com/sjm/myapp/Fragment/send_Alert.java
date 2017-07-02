@@ -10,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.Application;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -35,14 +38,16 @@ import retrofit2.Response;
  * Created by Helly-PC on 05/31/2017.
  */
 
-public class send_Alert extends Fragment   {
+public class send_Alert extends Fragment {
     private static final String TAG = "send_Alert";
     ProgressDialog pd;
     private Unbinder unbinder;
-
+    @BindView(R.id.editText)
+    EditText editText;
     @BindView(R.id.spinner)
     Spinner spinner;
-
+    @BindView(R.id.rdogrpup)
+    RadioGroup rdogrpup;
     @BindView(R.id.rdo_custom)
     RadioButton rdo_custom;
     @BindView(R.id.rdo_paid)
@@ -53,6 +58,7 @@ public class send_Alert extends Fragment   {
     Button btn_sendalert;
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,19 +67,54 @@ public class send_Alert extends Fragment   {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
+        rdogrpup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (radioGroup.getCheckedRadioButtonId() == R.id.rdo_custom) {
+                    editText.setVisibility(View.VISIBLE);
 
+                } else if (radioGroup.getCheckedRadioButtonId() == R.id.rdo_paid) {
+                    editText.setVisibility(View.INVISIBLE);
+                } else if (radioGroup.getCheckedRadioButtonId() == R.id.rdo_due) {
+                    editText.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         getCityList();
 
+
+
+
+        btn_sendalert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int selectedId = rdogrpup.getCheckedRadioButtonId();
+                String type = "";
+                String messsage="";
+                if (selectedId == R.id.rdo_paid) {
+                    type = "PAID";
+                    messsage="Paid message";
+                } else if (selectedId == R.id.rdo_due) {
+                    type = "DUE";
+                    messsage="due message";
+                }else if (selectedId == R.id.rdo_custom) {
+                    type = "CUSTOM";
+                    messsage=editText.getText().toString();
+                }
+
+                SendAlert(type,spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(),messsage);
+            }
+        });
         return view;
     }
 
-    public void SendAlert() {
+    public void SendAlert(String pay_status,String city,String userid,String stat) {
 
         if (NetworkConnection.isNetworkAvailable(getContext())) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
-                Call<String> call = api.get_city_list("get_city_list");
+                Call<String> call = api.send_multiple_sms("send_multiple_sms",pay_status,city,userid,stat);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
@@ -142,9 +183,8 @@ public class send_Alert extends Fragment   {
             if (j != null) {
                 if (body.contains("status")) {
                     if (j.getString("status").equalsIgnoreCase("0")) {
-                        JSONArray jsonArray =  j.getJSONArray("result");
-                        for(int i=0;i<jsonArray.length();i++)
-                        {
+                        JSONArray jsonArray = j.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
                         }
                         adapter.notifyDataSetChanged();
@@ -165,6 +205,7 @@ public class send_Alert extends Fragment   {
             Utils.ShowMessageDialog(getContext(), "Error Occurred");
         }
     }
+
     public void showProgressDialog() {
         pd = new ProgressDialog(getContext());
         pd.setMessage("Please wait");
@@ -188,10 +229,6 @@ public class send_Alert extends Fragment   {
             pd = null;
         }
     }
-
-
-
-
 
 
 }

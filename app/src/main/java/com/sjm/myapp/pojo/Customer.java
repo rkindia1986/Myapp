@@ -5,28 +5,40 @@ package com.sjm.myapp.pojo;
  */
 
 public class Customer {
-String id="";
-    String customer_no="";
-    String name="";
-    String address="";
-    String city="";
-    String amount="";
-    String phone="";
-    String rent_amount="";
-    String stb_account_no_1="";
-    String nu_id_no_1="";
-    String caf_no_1="";
-    String stb_account_no_2="";
-    String nu_id_no_2="";
-    String caf_no_2="";
-    String connection_type="";
-    String customer_connection_status="";
-    String rent_start_date="";
-    String no_of_month="";
-    String created_at="";
-    String created_by="";
-    String updated_at="";
-    String updated_by="";
+
+
+
+    int isSync=0;
+    String id = "";
+    String customer_no = "";
+    String name = "";
+    String address = "";
+    String city = "";
+    String amount = "";
+    String phone = "";
+    String rent_amount = "";
+    String stb_account_no_1 = "";
+    String nu_id_no_1 = "";
+    String caf_no_1 = "";
+    String stb_account_no_2 = "";
+    String nu_id_no_2 = "";
+    String caf_no_2 = "";
+    String connection_type = "";
+    String customer_connection_status = "";
+    String rent_start_date = "";
+    String no_of_month = "";
+    String created_at = "";
+    String created_by = "";
+    String updated_at = "";
+    String updated_by = "";
+
+    public int getIsSync() {
+        return isSync;
+    }
+
+    public void setIsSync(int isSync) {
+        this.isSync = isSync;
+    }
 
     public String getId() {
         return id;

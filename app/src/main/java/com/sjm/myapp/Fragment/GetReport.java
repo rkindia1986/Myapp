@@ -238,6 +238,7 @@ public class GetReport extends Fragment   {
 
                 ApiService api = RetroClient.getApiService();
                 Call<String> call = api.get_rent_report("get_rent_report",txt_startdate.getText().toString(),txt_enddate.getText().toString(),con_status,type,spinner.getSelectedItem().toString());
+                Log.e(TAG, "getReport: call   "+ call.request().url().toString() );
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
@@ -272,16 +273,16 @@ public class GetReport extends Fragment   {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getString("status").equalsIgnoreCase("1")) {
+                    if (j.getInt("status")==1) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                    } else if (j.getInt("status")==0) {
                         Status = true;
                         message = j.optString("message");
                         Gson gson = new GsonBuilder().create();
 
-                        rentRecordList = gson.fromJson(body, RentRecordList.class);
-                        startActivity(new Intent(getContext(), GetReportList.class));
+                        rentRecordList = gson.fromJson(j.getJSONObject("result").toString(), RentRecordList.class);
+
                     } else {
                         Status = false;
                         message = "Error Occurred";

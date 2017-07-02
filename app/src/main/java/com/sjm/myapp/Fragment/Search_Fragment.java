@@ -1,5 +1,6 @@
 package com.sjm.myapp.Fragment;
 
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +20,14 @@ import android.widget.Spinner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.GetReportList;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SearchList;
 import com.sjm.myapp.Utils;
+import com.sjm.myapp.pojo.Installation;
+import com.sjm.myapp.pojo.RentRecordList;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
@@ -44,6 +48,7 @@ import retrofit2.Response;
 
 public class Search_Fragment extends Fragment {
     private static final String TAG = "Search_Fragment";
+    Installation installation;
     ProgressDialog pd;
     private Unbinder unbinder;
     @BindView(R.id.edt_search_add)
@@ -71,12 +76,13 @@ public class Search_Fragment extends Fragment {
     public static SearchCustomer categoryListModel = new SearchCustomer();
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.act_search, container, false);
         unbinder = ButterKnife.bind(this, view);
-
+        getInstallation();
 
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
@@ -224,9 +230,8 @@ public class Search_Fragment extends Fragment {
             if (j != null) {
                 if (body.contains("status")) {
                     if (j.getString("status").equalsIgnoreCase("0")) {
-                     JSONArray jsonArray =  j.getJSONArray("result");
-                        for(int i=0;i<jsonArray.length();i++)
-                        {
+                        JSONArray jsonArray = j.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
                         }
                         adapter.notifyDataSetChanged();
@@ -245,6 +250,80 @@ public class Search_Fragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
             Utils.ShowMessageDialog(getContext(), "Error Occurred");
+        }
+    }
+
+    public void getInstallation() {
+        if (NetworkConnection.isNetworkAvailable(getContext())) {
+            try {
+
+                ApiService api = RetroClient.getApiService();
+                Call<String> call = api.welcome("welcome", com.sjm.myapp.Application.preferences.getDeviceId(), com.sjm.myapp.Application.preferences.getimei_number());
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+
+                        parseWelcomeResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                        Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Utils.ShowMessageDialog(getContext(), "No Connection Available");
+        }
+
+    }
+
+    private void parseWelcomeResponse(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getInt("status")==0) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getInt("status")==1){
+                        Status = true;
+                        message = j.optString("message");
+                        Gson gson = new GsonBuilder().create();
+                        installation = gson.fromJson(j.getJSONObject("result").toString(), Installation.class);
+                        Log.e(TAG, "parseWelcomeResponse: "+ gson.toJson( installation).toString() );
+                        com.sjm.myapp.Application.preferences.setLICENCEKEY(installation.getLicence_key());
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+
+            //  Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        } else {
+            Utils.ShowMessageDialog(getContext(), message);
         }
     }
 
