@@ -97,6 +97,7 @@ public class SearchList extends AppCompatActivity {
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtAmount = (TextView) convertView.findViewById(R.id.txt3);
                 v.txtCNo = (TextView) convertView.findViewById(R.id.txtCno);
+                v.txtConn = (TextView) convertView.findViewById(R.id.txt5);
                 v.lytparnt = (LinearLayout) convertView.findViewById(R.id.lytparent);
                 // v.checkbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
@@ -109,7 +110,7 @@ public class SearchList extends AppCompatActivity {
             v.txtAddress.setText("Address: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAddress() + ", " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getCity());
             v.txtAmount.setText("Amount: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAmount());
             v.txtCNo.setText("C No: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_no());
-
+            v.txtConn.setText("Conn: " +  Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status());
             if (Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status().equalsIgnoreCase("off")) {
                 v.lytparnt.setBackgroundColor(getResources().getColor(R.color.red));
             } else {
@@ -123,7 +124,9 @@ public class SearchList extends AppCompatActivity {
         TextView txtname;
         TextView txtAddress;
         TextView txtAmount;
+
         TextView txtCNo;
+        TextView txtConn;
         LinearLayout lytparnt;
 
         //  Button btnDone;

@@ -1,6 +1,7 @@
 package com.sjm.myapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -48,11 +49,12 @@ public class AddLicence extends AppCompatActivity {
     EditText edt_web_link;
     @BindView(R.id.edt_web_loginpass)
     EditText edt_web_loginpass;
-    @BindView(R.id.edt_master_pass)
+    @BindView(R.id.edt_master_pass1)
     EditText edt_master_pass;
     @BindView(R.id.edt_web_loginid)
     EditText edt_web_loginid;
-
+    @BindView(R.id.edt_master_pass2)
+    EditText edt_master_pass2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,11 +79,12 @@ public class AddLicence extends AppCompatActivity {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_installation_history("add_customer", edt_op_name.getText().toString(),edt_op_contactno.getText().toString(), edt_cab_name.getText().toString(), edt_op_add.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString(),Application.preferences.getDeviceId());
+                            Call<String> call = api.add_installation_history("add_installation_history", edt_op_name.getText().toString(),edt_op_contactno.getText().toString(), edt_cab_name.getText().toString(), edt_op_add.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString(),Application.preferences.getDeviceId());
+                            Log.e(TAG, "call getDetailsByQr: " + call.request().url().toString());
+
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
-                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
 
                                     Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
                                     hideProgressDialog();
@@ -116,6 +119,7 @@ public class AddLicence extends AppCompatActivity {
         edt_web_loginpass.setText("");
         edt_web_loginid.setText("");
         edt_web_link.setText("");
+        edt_master_pass2.setText("");
     }
 
     private void parseResponse(String body) {
@@ -126,15 +130,17 @@ public class AddLicence extends AppCompatActivity {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getString("status").equalsIgnoreCase("1")) {
+                    if (j.getInt("status") == 1) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                    } else if (j.getInt("status") == 0) {
 
-                        if (j.getString("message").equalsIgnoreCase("success")) {
+                        if (j.getString("message").equalsIgnoreCase("Installation Successfully.")) {
                             Status = true;
                             message = j.optString("message");
-                            ClearData();
+                            Application.preferences.setLICENCEKEY(edt_licencekey.getText().toString().trim());
+                            Application.preferences.setUSerid("4");
+
                         } else {
                             Status = false;
                             message = j.optString("message");
@@ -156,7 +162,10 @@ public class AddLicence extends AppCompatActivity {
 
         }
         if (Status) {
-            Toast.makeText(AddLicence.this, "Customer added successfully ", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddLicence.this, message, Toast.LENGTH_LONG).show();
+            startActivity(new Intent(AddLicence.this,MainActivity.class));
+            finish();
+
         } else {
             Utils.ShowMessageDialog(AddLicence.this, message);
         }
@@ -193,42 +202,69 @@ public class AddLicence extends AppCompatActivity {
     }
 
     public boolean checkValidation() {
+
+        if (TextUtils.isEmpty(edt_licencekey.getText().toString().trim())) {
+            edt_licencekey.setError("Please fill data");
+            return false;
+        }     if (TextUtils.isEmpty(edt_op_name.getText().toString().trim())) {
+            edt_op_name.setError("Please fill data");
+            return false;
+        }   if (TextUtils.isEmpty(edt_op_contactno.getText().toString().trim())) {
+            edt_op_contactno.setError("Please fill data");
+            return false;
+        }
         if (TextUtils.isEmpty(edt_cab_name.getText().toString().trim())) {
             edt_cab_name.setError("Please fill data");
             return false;
         }
-        if (TextUtils.isEmpty(edt_licencekey.getText().toString().trim())) {
-            edt_licencekey.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(edt_master_pass.getText().toString().trim())) {
-            edt_master_pass.setError("Please fill data");
-            return false;
-        }
+
         if (TextUtils.isEmpty(edt_op_add.getText().toString().trim())) {
             edt_op_add.setError("Please fill data");
             return false;
         }
-        if (TextUtils.isEmpty(edt_op_contactno.getText().toString().trim())) {
-            edt_op_contactno.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(edt_op_name.getText().toString().trim())) {
-            edt_op_name.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(edt_web_loginpass.getText().toString().trim())) {
-            edt_web_loginpass.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(edt_web_loginid.getText().toString().trim())) {
-            edt_web_loginid.setError("Please fill data");
-            return false;
-        }
+
         if (TextUtils.isEmpty(edt_web_link.getText().toString().trim())) {
             edt_web_link.setError("Please fill data");
             return false;
         }
+
+        if (TextUtils.isEmpty(edt_web_loginid.getText().toString().trim())) {
+            edt_web_loginid.setError("Please fill data");
+            return false;
+        } if (TextUtils.isEmpty(edt_web_loginpass.getText().toString().trim())) {
+            edt_web_loginpass.setError("Please fill data");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(edt_master_pass.getText().toString().trim())) {
+            edt_master_pass.setError("Please fill data");
+            return false;
+        }
+        if (TextUtils.isEmpty(edt_master_pass2.getText().toString().trim())) {
+            edt_master_pass2.setError("Please fill data");
+            return false;
+        }
+
+
+        if(edt_master_pass.getText().toString().trim().length() <4)
+        {
+            edt_master_pass.setError("Master password length atleast 4 digit");
+
+            return false;
+        }
+
+        if(edt_master_pass2.getText().toString().trim().length() <4)
+        {
+            edt_master_pass2.setError("Master password length atleast 4 digit");
+            return false;
+        }
+        if(!edt_master_pass.getText().toString().trim().equals(edt_master_pass2.getText().toString().trim()))
+        {
+            edt_master_pass2.setError("Password does not match");
+
+            return false;
+        }
+
 
         return true;
     }

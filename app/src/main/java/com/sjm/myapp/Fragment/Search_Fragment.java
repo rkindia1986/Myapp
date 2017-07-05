@@ -85,7 +85,7 @@ public class Search_Fragment extends Fragment {
         View view = inflater.inflate(R.layout.act_search, container, false);
         unbinder = ButterKnife.bind(this, view);
         getInstallation();
-        sqlLiteDbHelper=new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
         sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
@@ -221,8 +221,10 @@ public class Search_Fragment extends Fragment {
         } else {
             cityList.clear();
             cityList = sqlLiteDbHelper.Get_AllCity();
+            adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
             adapter.notifyDataSetChanged();
-            Utils.ShowMessageDialog(getContext(), "No Connection Available");
+            spinner.setAdapter(adapter);
+            //  Utils.ShowMessageDialog(getContext(), "No Connection Available");
         }
 
     }
@@ -240,8 +242,7 @@ public class Search_Fragment extends Fragment {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
                         }
-                        if(cityList!=null && cityList.size() >0)
-                        {
+                        if (cityList != null && cityList.size() > 0) {
                             sqlLiteDbHelper.UpdateCity(cityList);
                         }
                         adapter.notifyDataSetChanged();
@@ -264,35 +265,37 @@ public class Search_Fragment extends Fragment {
     }
 
     public void getInstallation() {
-        if (NetworkConnection.isNetworkAvailable(getContext())) {
-            try {
+        if (com.sjm.myapp.Application.preferences.getUSerid().equalsIgnoreCase("") &&
+                com.sjm.myapp.Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
+            if (NetworkConnection.isNetworkAvailable(getContext())) {
+                try {
 
-                ApiService api = RetroClient.getApiService();
-                Call<String> call = api.welcome("welcome", com.sjm.myapp.Application.preferences.getDeviceId(), com.sjm.myapp.Application.preferences.getimei_number());
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
+                    ApiService api = RetroClient.getApiService();
+                    Call<String> call = api.welcome("welcome", com.sjm.myapp.Application.preferences.getDeviceId(), com.sjm.myapp.Application.preferences.getimei_number());
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            Log.e(TAG, "call getDetailsByQr: " + call.toString());
 
-                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                            Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
 
-                        parseWelcomeResponse(response.body());
-                    }
+                            parseWelcomeResponse(response.body());
+                        }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
 
-                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                        Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
+                            Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                            Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Utils.ShowMessageDialog(getContext(), "No Connection Available");
             }
-        } else {
-            Utils.ShowMessageDialog(getContext(), "No Connection Available");
         }
-
     }
 
     private void parseWelcomeResponse(String body) {
@@ -303,15 +306,15 @@ public class Search_Fragment extends Fragment {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getInt("status")==0) {
+                    if (j.getInt("status") == 0) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getInt("status")==1){
+                    } else if (j.getInt("status") == 1) {
                         Status = true;
                         message = j.optString("message");
                         Gson gson = new GsonBuilder().create();
                         installation = gson.fromJson(j.getJSONObject("result").toString(), Installation.class);
-                        Log.e(TAG, "parseWelcomeResponse: "+ gson.toJson( installation).toString() );
+                        Log.e(TAG, "parseWelcomeResponse: " + gson.toJson(installation).toString());
                         com.sjm.myapp.Application.preferences.setLICENCEKEY(installation.getLicence_key());
                     } else {
                         Status = false;

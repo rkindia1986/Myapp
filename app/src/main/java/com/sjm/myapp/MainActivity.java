@@ -1,5 +1,6 @@
 package com.sjm.myapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
@@ -14,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,21 +37,26 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     Preferences preferences;
     SqlLiteDbHelper sqlLiteDbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sqlLiteDbHelper=new SqlLiteDbHelper(MainActivity.this);
+        sqlLiteDbHelper = new SqlLiteDbHelper(MainActivity.this);
         sqlLiteDbHelper.openDataBase();
         String android_id = Secure.getString(getContentResolver(),
                 Secure.ANDROID_ID);
         Log.e("android_id", android_id + "");
+        TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         Application.preferences.setDeviceId(android_id);
-        Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
-        Application.preferences.setDeviceId("device_id23");
-        Application.preferences.setUSerid("4");
+        //Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
+        Application.preferences.setLICENCEKEY("");
+        Application.preferences.setDeviceId(mngr.getDeviceId());
+        //Application.preferences.setUSerid("4");
+        Application.preferences.setUSerid("");
+        Application.preferences.setimei_number(mngr.getDeviceId());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -82,7 +89,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        if (Application.preferences.getLICENCEKEY().equalsIgnoreCase(""))
+            getMenuInflater().inflate(R.menu.main, menu);
+        else
+            getMenuInflater().inflate(R.menu.mainedit, menu);
         return true;
     }
 
@@ -160,7 +170,7 @@ public class MainActivity extends AppCompatActivity
             BackupRestore addCust_fragment = new BackupRestore();
             replaceFragment(addCust_fragment, BackupRestore.class.getSimpleName());
 
-        }  else if (id == R.id.man_exp) {
+        } else if (id == R.id.man_exp) {
             setTitle(getString(R.string.man_exp).toUpperCase());
             manageExp manage = new manageExp();
             replaceFragment(manage, manageExp.class.getSimpleName());

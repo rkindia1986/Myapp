@@ -112,13 +112,23 @@
             android:layout_height="wrap_content">
 
             <EditText android:singleLine="true"
-                android:id="@+id/edt_master_pass"
+                android:id="@+id/edt_master_pass1" android:password="true" android:inputType="numberPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/master_pass" />
 
         </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <EditText android:singleLine="true"
+                android:id="@+id/edt_master_pass2" android:password="true" android:inputType="numberPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/master_pass2" />
+
+        </android.support.design.widget.TextInputLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:padding="10dp"

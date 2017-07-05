@@ -82,11 +82,13 @@
     <string name="web_loginid">Enter Website Login id</string>
     <string name="web_loginpass">Enter Website Login Password</string>
     <string name="master_pass">Enter Master Password</string>
+    <string name="master_pass2">Confirm Master Password</string>
     <string name="install_page">Installation Page</string>
     <string name="submit">Submit</string>
     <string name="clear">Clear</string>
 
 <string name="adlice">Add Licence</string>
+    <string name="edtlice">Edit Licence</string>
     <string name="callshan">Call Shan Patel</string>
     <string name="callsuresh">Call Sureshbhai</string>
     <string name="contactus">Contact Us</string>
