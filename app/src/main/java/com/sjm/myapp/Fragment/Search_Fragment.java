@@ -25,6 +25,7 @@ import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SearchList;
+import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Installation;
 import com.sjm.myapp.pojo.RentRecordList;
@@ -76,6 +77,7 @@ public class Search_Fragment extends Fragment {
     public static SearchCustomer categoryListModel = new SearchCustomer();
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
+    private SqlLiteDbHelper sqlLiteDbHelper;
 
     @Nullable
     @Override
@@ -83,7 +85,8 @@ public class Search_Fragment extends Fragment {
         View view = inflater.inflate(R.layout.act_search, container, false);
         unbinder = ButterKnife.bind(this, view);
         getInstallation();
-
+        sqlLiteDbHelper=new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
@@ -216,6 +219,9 @@ public class Search_Fragment extends Fragment {
                 e.printStackTrace();
             }
         } else {
+            cityList.clear();
+            cityList = sqlLiteDbHelper.Get_AllCity();
+            adapter.notifyDataSetChanged();
             Utils.ShowMessageDialog(getContext(), "No Connection Available");
         }
 
@@ -233,6 +239,10 @@ public class Search_Fragment extends Fragment {
                         JSONArray jsonArray = j.getJSONArray("result");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
+                        }
+                        if(cityList!=null && cityList.size() >0)
+                        {
+                            sqlLiteDbHelper.UpdateCity(cityList);
                         }
                         adapter.notifyDataSetChanged();
                     } else {

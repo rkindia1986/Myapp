@@ -90,7 +90,9 @@ public interface ApiService {
     @GET("index.php")//expiring_customers_list
     Call<String> welcome(@Query("method") String method,@Query("device_id") String device_id,@Query("imei_number") String imei_number);
     @GET("index.php")//send_multiple_sms
-    Call<String> send_multiple_sms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id,@Query("message") String message);
+    Call<String> send_multiple_sms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id);
+    @GET("index.php")//send_multiple_sms
+    Call<String> send_multiple_Customsms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id,@Query("message") String message);
 
 }
 

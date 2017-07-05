@@ -30,7 +30,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "lagngeet.sqlite";
+    private static final String DATABASE_NAME = "cable.sqlite";
     private static final String DB_PATH_SUFFIX = "/databases/";
     static Context ctx;
     public static String CUST_SYNC = "sync";
@@ -84,7 +84,8 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
     }
 
     // Getting single contact
-    public ArrayList<String> Get_AllCity(String query) {
+    public ArrayList<String> Get_AllCity() {
+        String query ="select * from city";
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<String> slist = new ArrayList<String>();
         Cursor cursor = db.rawQuery(query, null);

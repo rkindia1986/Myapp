@@ -34,20 +34,22 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     Preferences preferences;
-
+    SqlLiteDbHelper sqlLiteDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sqlLiteDbHelper=new SqlLiteDbHelper(MainActivity.this);
+        sqlLiteDbHelper.openDataBase();
         String android_id = Secure.getString(getContentResolver(),
                 Secure.ANDROID_ID);
         Log.e("android_id", android_id + "");
         Application.preferences.setDeviceId(android_id);
         Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
         Application.preferences.setDeviceId("device_id23");
-
+        Application.preferences.setUSerid("4");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

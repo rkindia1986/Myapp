@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,38 +84,53 @@ public class send_Alert extends Fragment {
         getCityList();
 
 
-
-
         btn_sendalert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int selectedId = rdogrpup.getCheckedRadioButtonId();
                 String type = "";
-                String messsage="";
+                String messsage = "";
                 if (selectedId == R.id.rdo_paid) {
                     type = "PAID";
-                    messsage="Paid message";
+                    messsage = "";
+                    SendAlert(type, spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(), messsage);
                 } else if (selectedId == R.id.rdo_due) {
                     type = "DUE";
-                    messsage="due message";
-                }else if (selectedId == R.id.rdo_custom) {
+                    messsage = "";
+                    SendAlert(type, spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(), messsage);
+                } else if (selectedId == R.id.rdo_custom) {
                     type = "CUSTOM";
-                    messsage=editText.getText().toString();
+                    messsage = editText.getText().toString();
+                    if(checkValidation())
+                    {
+                        SendAlert(type, spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(), messsage);
+                    }
                 }
 
-                SendAlert(type,spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(),messsage);
+
             }
         });
         return view;
     }
-
-    public void SendAlert(String pay_status,String city,String userid,String stat) {
+    public boolean checkValidation() {
+        if (TextUtils.isEmpty(editText.getText().toString().trim())) {
+            editText.setError("Please enter message here");
+            return false;
+        }
+        return true;
+    }
+    public void SendAlert(String pay_status, String city, String userid, String stat) {
 
         if (NetworkConnection.isNetworkAvailable(getContext())) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
-                Call<String> call = api.send_multiple_sms("send_multiple_sms",pay_status,city,userid,stat);
+                Call<String> call;
+                if (stat.equalsIgnoreCase(""))
+                    call = api.send_multiple_sms("send_multiple_sms", pay_status, city, userid);
+                else
+                    call = api.send_multiple_Customsms("send_multiple_sms", pay_status, city, userid, stat);
+
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
@@ -122,7 +138,7 @@ public class send_Alert extends Fragment {
 
                         Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
                         hideProgressDialog();
-                        parseCityResponse(response.body());
+
                     }
 
                     @Override
