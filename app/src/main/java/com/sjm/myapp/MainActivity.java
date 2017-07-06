@@ -1,14 +1,19 @@
 package com.sjm.myapp;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +24,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.sjm.myapp.Fragment.AddCust_Fragment;
 import com.sjm.myapp.Fragment.Backup;
@@ -37,6 +43,29 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     Preferences preferences;
     SqlLiteDbHelper sqlLiteDbHelper;
+    public static final int MULTIPLE_PERMISSIONS = 11;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(new Intent(MainActivity.this,MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,19 +73,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sqlLiteDbHelper = new SqlLiteDbHelper(MainActivity.this);
-        sqlLiteDbHelper.openDataBase();
-        String android_id = Secure.getString(getContentResolver(),
-                Secure.ANDROID_ID);
-        Log.e("android_id", android_id + "");
-        TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        Application.preferences.setDeviceId(android_id +"123");
-        //Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
-        Application.preferences.setLICENCEKEY("");
-        Application.preferences.setDeviceId(mngr.getDeviceId()  +"123");
-        //Application.preferences.setUSerid("4");
-        Application.preferences.setUSerid("");
-        Application.preferences.setimei_number(mngr.getDeviceId()  +"123");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -68,10 +85,46 @@ public class MainActivity extends AppCompatActivity
         NavigationMenuView navMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         navigationView.setItemIconTintList(null);
         navMenuView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
+
+        int MyVersion = Build.VERSION.SDK_INT;
+        if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (!checkIfAlreadyhavePermission()) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+                        1);
+            } else {
+                init();
+            }
+        } else {
+            init();
+        }
+    }
+
+    private boolean checkIfAlreadyhavePermission() {
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        if (result == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void init() {
+
+
+        sqlLiteDbHelper = new SqlLiteDbHelper(MainActivity.this);
+        sqlLiteDbHelper.openDataBase();
+        String android_id = Secure.getString(getContentResolver(),
+                Secure.ANDROID_ID);
+        Log.e("android_id", android_id + "");
+        TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        Application.preferences.setDeviceId(android_id + "1234");
+        Application.preferences.setimei_number(mngr.getDeviceId() + "1234");
+
         setTitle(getString(R.string.search).toUpperCase());
         Search_Fragment fragmentMenu = new Search_Fragment();
         replaceFragment(fragmentMenu, Search_Fragment.class.getSimpleName());
-
 
     }
 
@@ -93,6 +146,7 @@ public class MainActivity extends AppCompatActivity
             getMenuInflater().inflate(R.menu.main, menu);
         else
             getMenuInflater().inflate(R.menu.mainedit, menu);
+
         return true;
     }
 
@@ -113,7 +167,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.action_editlicence) {
             startActivity(new Intent(MainActivity.this, EditLicence.class));
 
-        }else if (id == R.id.action_contactus) {
+        } else if (id == R.id.action_contactus) {
             startActivity(new Intent(MainActivity.this, ContactUs.class));
 
         }
