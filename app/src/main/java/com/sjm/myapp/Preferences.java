@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import org.json.JSONObject;
+
 @SuppressLint("CommitPrefEdits")
 public class Preferences {
     SharedPreferences pref;
@@ -20,6 +22,16 @@ public class Preferences {
     public static final String MASTERPASS = "MASTERPASS";
     public static final String USerid = "user_id";
     public static final String verify_licence_key = "verify_licence_key";
+    public static final String Details = "Details";
+    public void setDetails(String Details1) {
+        editor.putString(Details, Details1);
+        editor.commit();
+    }
+
+    public String getDetails() {
+        return pref.getString(Details, "");
+    }
+
 
     public void setverify_licence_key(String DeviceIdd) {
         editor.putString(verify_licence_key, DeviceIdd);

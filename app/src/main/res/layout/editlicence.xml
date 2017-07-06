@@ -16,7 +16,7 @@
 
 
             <EditText android:singleLine="true"
-                android:id="@+id/edt_licencekey"
+                android:id="@+id/edt_licencekey" android:enabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/licencekey" />
@@ -100,8 +100,8 @@
             android:layout_height="wrap_content">
 
             <EditText android:singleLine="true"
-                android:id="@+id/edt_web_loginpass"  android:password="true" android:inputType="textPassword"
-                android:layout_width="match_parent"
+                android:id="@+id/edt_web_loginpass"
+                android:layout_width="match_parent" android:password="true" android:inputType="textPassword"
                 android:layout_height="wrap_content"
                 android:hint="@string/web_loginpass" />
 

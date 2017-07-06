@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,29 +64,27 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         return slist;
     }
 
-    public void UpdateCustomer(Customer customer) {
+    public void UpdateCustomer(String data) {
 
         Gson gson = new GsonBuilder().create();
-        try {
-            JSONObject jsonObject = new JSONObject(gson.toJson(customer));
-            SQLiteDatabase database = this.getWritableDatabase();
+
+        Customer customer = gson.fromJson(data, Customer.class);
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (!customer.getId().equalsIgnoreCase("0"))
             database.execSQL("delete from customer where cust_id='" + customer.getId() + "'");
-            ContentValues values = new ContentValues();
-            values.put(CUST_DETAILS, jsonObject.toString());
-            values.put(CUST_SYNC, customer.getIsSync());
-            values.put(CUST_ID, customer.getId());
-            database.insert("customer", null, values);
-            database.close();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        ContentValues values = new ContentValues();
+        values.put(CUST_DETAILS, data);
+        values.put(CUST_SYNC, customer.getIsSync());
+        values.put(CUST_ID, customer.getId());
+        database.insert("customer", null, values);
+        database.close();
 
 
     }
 
     // Getting single contact
     public ArrayList<String> Get_AllCity() {
-        String query ="select * from city";
+        String query = "select * from city";
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<String> slist = new ArrayList<String>();
         Cursor cursor = db.rawQuery(query, null);

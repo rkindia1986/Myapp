@@ -20,6 +20,7 @@ import android.widget.RadioGroup;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.Application;
 import com.sjm.myapp.ExpenseReportList;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
@@ -128,7 +129,7 @@ public class manageExp extends Fragment {
                             }
                             Log.e("type", type);
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(), "4");
+                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(),  Application.preferences.getUSerid());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {

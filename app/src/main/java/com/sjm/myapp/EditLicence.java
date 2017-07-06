@@ -14,9 +14,11 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.sjm.myapp.pojo.Installation_History;
-import com.sjm.myapp.pojo.SearchCustomer;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import butterknife.BindView;
@@ -30,8 +32,8 @@ import retrofit2.Response;
  * Created by Helly-PC on 06/02/2017.
  */
 
-public class AddLicence extends AppCompatActivity {
-    private static final String TAG = "AddLicence";
+public class EditLicence extends AppCompatActivity {
+    private static final String TAG = "EditLicence";
     ProgressDialog pd;
     private Unbinder unbinder;
 
@@ -60,6 +62,8 @@ public class AddLicence extends AppCompatActivity {
     EditText edt_web_loginid;
     @BindView(R.id.edt_master_pass2)
     EditText edt_master_pass2;
+    Installation_History installation_history;
+    boolean nodatafound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +71,13 @@ public class AddLicence extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.addlicence);
         unbinder = ButterKnife.bind(this);
-        setTitle(getString(R.string.adlice).toUpperCase());
+        setTitle(getString(R.string.edtlice).toUpperCase());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        Gson gson = new GsonBuilder().create();
+        GetHistory();
+
+
 
         btnclear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,11 +89,11 @@ public class AddLicence extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
-                    if (NetworkConnection.isNetworkAvailable(AddLicence.this)) {
+                    if (NetworkConnection.isNetworkAvailable(EditLicence.this)) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_installation_history("add_installation_history", edt_op_name.getText().toString(), edt_op_contactno.getText().toString(), edt_cab_name.getText().toString(), edt_op_add.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString(), Application.preferences.getDeviceId());
+                            Call<String> call = api.update_installation_history("update_installation_history", edt_op_name.getText().toString(), edt_op_contactno.getText().toString(), edt_cab_name.getText().toString(), edt_op_add.getText().toString(), edt_web_link.getText().toString(), edt_web_loginid.getText().toString(), edt_web_loginpass.getText().toString(), edt_master_pass.getText().toString(), edt_licencekey.getText().toString());
                             Log.e(TAG, "call getDetailsByQr: " + call.request().url().toString());
 
                             call.enqueue(new Callback<String>() {
@@ -101,14 +109,14 @@ public class AddLicence extends AppCompatActivity {
                                 public void onFailure(Call<String> call, Throwable t) {
                                     hideProgressDialog();
                                     Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                                    Utils.ShowMessageDialog(AddLicence.this, "Error Occurred");
+                                    Utils.ShowMessageDialog(EditLicence.this, "Error Occurred");
                                 }
                             });
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else {
-                        Utils.ShowMessageDialog(AddLicence.this, "No Connection Available");
+                        Utils.ShowMessageDialog(EditLicence.this, "No Connection Available");
                     }
                 }
             }
@@ -141,22 +149,19 @@ public class AddLicence extends AppCompatActivity {
                         Status = false;
                     } else if (j.getInt("status") == 0) {
 
-                        if (j.getString("message").equalsIgnoreCase("Installation Successfully.")) {
-                            Status = true;
-                            message = j.optString("message");
-                            Gson gson = new GsonBuilder().create();
-                            Installation_History installation_history = gson.fromJson(j.getJSONObject("result").toString(), Installation_History.class);
-                            if (installation_history != null && installation_history.getLicence_key() != null && installation_history.getLicence_key().length() > 5 && installation_history.getVerify_licence_key().equalsIgnoreCase("1")) {
-                                Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
-                                Application.preferences.setUSerid(installation_history.getUser_id());
-                                Application.preferences.setMASTERPASS(installation_history.getMaster_password());
-                                Application.preferences.setverify_licence_key(installation_history.getLicence_key());
-                                Application.preferences.setDetails(j.getJSONObject("result").toString());
-                            }
-                        } else {
-                            Status = false;
-                            message = j.optString("message");
+
+                        Status = true;
+                        message = j.optString("message");
+                        // Gson gson = new GsonBuilder().create();
+                        //Installation_History installation_history = gson.fromJson(body, Installation_History.class);
+                        if (message.contains("Installation Updated Successfully.")) {
+                            //Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
+                            Application.preferences.setUSerid(installation_history.getUser_id());
+                            Application.preferences.setMASTERPASS(edt_master_pass.getText().toString());
+                            Application.preferences.setverify_licence_key("1");
+                            GetHistory();
                         }
+
                     } else {
                         Status = false;
                         message = "Error Occurred";
@@ -174,17 +179,17 @@ public class AddLicence extends AppCompatActivity {
 
         }
         if (Status) {
-            Toast.makeText(AddLicence.this, message, Toast.LENGTH_LONG).show();
-            startActivity(new Intent(AddLicence.this, MainActivity.class));
+            Toast.makeText(EditLicence.this, message, Toast.LENGTH_LONG).show();
+            startActivity(new Intent(EditLicence.this, MainActivity.class));
             finish();
 
         } else {
-            Utils.ShowMessageDialog(AddLicence.this, message);
+            Utils.ShowMessageDialog(EditLicence.this, message);
         }
     }
 
     public void showProgressDialog() {
-        pd = new ProgressDialog(AddLicence.this);
+        pd = new ProgressDialog(EditLicence.this);
         pd.setMessage("Please wait");
         pd.setIndeterminate(false);
         pd.setCancelable(false);
@@ -281,4 +286,102 @@ public class AddLicence extends AppCompatActivity {
         return true;
     }
 
+    public void GetHistory() {
+        if (NetworkConnection.isNetworkAvailable(EditLicence.this)) {
+            try {
+                showProgressDialog();
+                ApiService api = RetroClient.getApiService();
+                Call<String> call = api.get_installation_history("get_installation_history", Application.preferences.getLICENCEKEY());
+                Log.e(TAG, "call getDetailsByQr: " + call.request().url().toString());
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                        hideProgressDialog();
+                        parseResponses(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                        Utils.ShowMessageDialog(EditLicence.this, "Error Occurred");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Utils.ShowMessageDialog(EditLicence.this, "No Connection Available");
+        }
+    }
+
+    private void parseResponses(String body) {
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getInt("status") == 1) {
+                        message = j.optString("message");
+                        Status = false;
+                    } else if (j.getInt("status") == 0) {
+
+
+                        Status = true;
+                        message = j.optString("message");
+                        JSONArray jsonArray = j.optJSONArray("result");
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            Gson gson = new GsonBuilder().create();
+                            installation_history = gson.fromJson(jsonArray.getJSONObject(0).toString(), Installation_History.class);
+                            if (installation_history != null && installation_history.getLicence_key() != null && installation_history.getLicence_key().length() > 5 && installation_history.getVerify_licence_key().equalsIgnoreCase("1")) {
+                                Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
+                                Application.preferences.setUSerid(installation_history.getUser_id());
+                                Application.preferences.setMASTERPASS(installation_history.getMaster_password());
+                                Application.preferences.setverify_licence_key(installation_history.getLicence_key());
+                                Application.preferences.setDetails(jsonArray.getJSONObject(0).toString());
+                            }
+                        }
+
+                    } else {
+                        Status = false;
+                        message = "Error Occurred";
+                    }
+                }
+            } else {
+                Status = false;
+                message = "Error Occurred";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+        if (Status) {
+
+            if (installation_history != null) {
+                edt_cab_name.setText(installation_history.getCable_network_name());
+                edt_licencekey.setText(installation_history.getLicence_key());
+                edt_master_pass.setText(installation_history.getMaster_password());
+                edt_master_pass2.setText(installation_history.getMaster_password());
+                edt_op_add.setText(installation_history.getOperator_address());
+                edt_op_contactno.setText(installation_history.getCable_operator_contact_no());
+                edt_op_name.setText(installation_history.getCable_operator_name());
+                edt_web_link.setText(installation_history.getWebsite_link());
+                edt_web_loginid.setText(installation_history.getWebsite_login_id());
+                edt_web_loginpass.setText(installation_history.getWebsite_login_password());
+
+            }
+
+
+        } else {
+            Utils.ShowMessageDialog(EditLicence.this, message);
+        }
+    }
 }

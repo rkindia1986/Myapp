@@ -50,13 +50,13 @@ public class MainActivity extends AppCompatActivity
                 Secure.ANDROID_ID);
         Log.e("android_id", android_id + "");
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        Application.preferences.setDeviceId(android_id);
+        Application.preferences.setDeviceId(android_id +"123");
         //Application.preferences.setLICENCEKEY("device_id23HiWKh0qQ");
         Application.preferences.setLICENCEKEY("");
-        Application.preferences.setDeviceId(mngr.getDeviceId());
+        Application.preferences.setDeviceId(mngr.getDeviceId()  +"123");
         //Application.preferences.setUSerid("4");
         Application.preferences.setUSerid("");
-        Application.preferences.setimei_number(mngr.getDeviceId());
+        Application.preferences.setimei_number(mngr.getDeviceId()  +"123");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.action_addlicence) {
             startActivity(new Intent(MainActivity.this, AddLicence.class));
 
-        } else if (id == R.id.action_contactus) {
+        } else if (id == R.id.action_editlicence) {
+            startActivity(new Intent(MainActivity.this, EditLicence.class));
+
+        }else if (id == R.id.action_contactus) {
             startActivity(new Intent(MainActivity.this, ContactUs.class));
 
         }

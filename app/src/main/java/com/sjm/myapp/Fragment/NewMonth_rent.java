@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.Application;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -71,7 +72,7 @@ public class NewMonth_rent extends Fragment {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
                             Log.e("spinner.).toString()", spinner.getSelectedItem().toString());
-                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(), "4");
+                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(),  Application.preferences.getUSerid());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {

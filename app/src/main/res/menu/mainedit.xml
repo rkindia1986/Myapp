@@ -7,7 +7,7 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_addlicence"
+        android:id="@+id/action_editlicence"
         android:orderInCategory="100"
         android:title="@string/edtlice"
         app:showAsAction="never" />
