@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_weight="0.5"
+            android:layout_width="match_parent" android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:padding="2dp" android:textStyle="bold"
+            android:text="Sr." />
+
+
+        <TextView android:textColor="@color/black"
+             android:layout_weight="0.3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp" android:textStyle="bold"
+            android:padding="2dp"
+            android:text="Description" />
+        <TextView
+            android:layout_weight="0.45"
+            android:layout_width="match_parent" android:textColor="@color/black"
+            android:layout_height="wrap_content" android:textStyle="bold"
+            android:padding="2dp"
+            android:text="Amount" />
+        <TextView android:textColor="@color/black"
+             android:layout_weight="0.4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp" android:textStyle="bold"
+            android:text="Date"
+            android:id="@+id/textView3" />
+    </LinearLayout>
+    <LinearLayout android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal">
+        </LinearLayout>
+    <ListView android:id="@+id/listview" android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <LinearLayout android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal">
+    </LinearLayout>
+    <LinearLayout android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"><TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent" android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        android:padding="2dp" android:textStyle="bold"
+        android:text="" />
+        <TextView android:textColor="@color/black"
+            android:layout_weight="0.3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:gravity="right"
+            android:layout_marginLeft="10dp" android:textStyle="bold"
+            android:padding="2dp" android:textSize="18sp"
+            android:text="Total :  "/>
+        <TextView android:gravity="left"
+             android:layout_weight="0.45" android:id="@+id/txttotal"
+            android:layout_width="match_parent" android:textColor="@color/black"
+            android:layout_height="wrap_content" android:textStyle="bold"
+            android:padding="2dp"
+            />
+
+
+        <TextView android:textColor="@color/black"
+             android:layout_weight="0.4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="18sp"
+            android:padding="2dp" android:textStyle="bold"
+             />
+    </LinearLayout>
+</LinearLayout>

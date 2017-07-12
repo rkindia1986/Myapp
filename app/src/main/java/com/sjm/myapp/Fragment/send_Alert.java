@@ -1,6 +1,7 @@
 package com.sjm.myapp.Fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,12 +17,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
 import com.sjm.myapp.Application;
 import com.sjm.myapp.NetworkConnection;
+import com.sjm.myapp.PaymentList;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.Utils;
+import com.sjm.myapp.ViewDtails;
+import com.sjm.myapp.pojo.PaymentRecordsList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -101,8 +107,7 @@ public class send_Alert extends Fragment {
                 } else if (selectedId == R.id.rdo_custom) {
                     type = "CUSTOM";
                     messsage = editText.getText().toString();
-                    if(checkValidation())
-                    {
+                    if (checkValidation()) {
                         SendAlert(type, spinner.getSelectedItem().toString().toString(), Application.preferences.getUSerid(), messsage);
                     }
                 }
@@ -112,6 +117,7 @@ public class send_Alert extends Fragment {
         });
         return view;
     }
+
     public boolean checkValidation() {
         if (TextUtils.isEmpty(editText.getText().toString().trim())) {
             editText.setError("Please enter message here");
@@ -119,6 +125,7 @@ public class send_Alert extends Fragment {
         }
         return true;
     }
+
     public void SendAlert(String pay_status, String city, String userid, String stat) {
 
         if (NetworkConnection.isNetworkAvailable(getContext())) {
@@ -138,6 +145,7 @@ public class send_Alert extends Fragment {
 
                         Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
                         hideProgressDialog();
+                        ParseResponse(response.body());
 
                     }
 
@@ -220,6 +228,35 @@ public class send_Alert extends Fragment {
             e.printStackTrace();
             Utils.ShowMessageDialog(getContext(), "Error Occurred");
         }
+    }
+
+    private void ParseResponse(String body) {
+
+        String message = "Error Occurred";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("message")) {
+
+
+                    if (j.getString("message").equalsIgnoreCase("success")) {
+                        message = j.optString("message");
+                    }
+
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+
+        Utils.ShowMessageDialog(getActivity(), message);
+
+
     }
 
     public void showProgressDialog() {

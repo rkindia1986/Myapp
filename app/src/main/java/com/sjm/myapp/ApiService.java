@@ -74,7 +74,7 @@ public interface ApiService {
     Call<String> add_installation_history(@Query("method") String method,@Query("cable_operator_name") String cable_operator_name ,@Query("cable_operator_contact_no") String cable_operator_contact_no,@Query("cable_network_name") String cable_network_name,@Query("operator_address") String operator_address,@Query("website_link") String website_link,@Query("website_login_id") String website_login_id,@Query("website_login_password") String website_login_pwd,@Query("master_password") String master_pwd,@Query("licence_key") String licence_key,@Query("device_id") String device_id);
 
     @GET("index.php")//update_installation_history
-    Call<String> update_installation_history(@Query("method") String method,@Query("cable_operator_name") String cable_operator_name ,@Query("cable_operator_contact_no") String cable_operator_contact_no,@Query("cable_network_name") String cable_network_name,@Query("operator_address") String operator_address,@Query("website_link") String website_link,@Query("website_login_id") String website_login_id,@Query("website_login_password") String website_login_pwd,@Query("master_password") String master_pwd,@Query("licence_key") String licence_key);
+    Call<String> update_installation_history(@Query("method") String method,@Query("cable_operator_name") String cable_operator_name ,@Query("cable_operator_contact_no") String cable_operator_contact_no,@Query("cable_network_name") String cable_network_name,@Query("operator_address") String operator_address,@Query("website_link") String website_link,@Query("website_login_id") String website_login_id,@Query("website_login_password") String website_login_pwd,@Query("master_password") String master_pwd,@Query("licence_key") String licence_key,@Query("device_id") String device_id);
 
     @GET("index.php")//get_installation_history
     Call<String> get_installation_history(@Query("method") String method,@Query("licence_key") String licence_key);
@@ -93,6 +93,12 @@ public interface ApiService {
     Call<String> send_multiple_sms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id);
     @GET("index.php")//send_multiple_sms
     Call<String> send_multiple_Customsms(@Query("method") String method,@Query("payment_status") String payment_status,@Query("city") String city,@Query("user_id") String user_id,@Query("message") String message);
+
+    @GET("index.php")//change_master_password
+    Call<String> change_master_password(@Query("method") String method,@Query("licence_key") String licence_key,@Query("device_id") String device_id,@Query("old_password") String old_password,@Query("new_password") String new_password,@Query("confirm_password") String confirm_password);
+    @GET("index.php")//update_website_link
+    Call<String> update_website_link(@Query("method") String method,@Query("licence_key") String licence_key,@Query("device_id") String device_id,@Query("website_link") String website_link);
+
 
 }
 

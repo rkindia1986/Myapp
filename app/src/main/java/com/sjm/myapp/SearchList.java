@@ -94,6 +94,7 @@ public class SearchList extends AppCompatActivity {
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.searchlistraw, null);
                 v.txtname = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtdate = (TextView) convertView.findViewById(R.id.txt7);
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtAmount = (TextView) convertView.findViewById(R.id.txt3);
                 v.txtCNo = (TextView) convertView.findViewById(R.id.txtCno);
@@ -111,6 +112,7 @@ public class SearchList extends AppCompatActivity {
             v.txtAmount.setText("Amount: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getAmount());
             v.txtCNo.setText("C No: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_no());
             v.txtConn.setText("Conn: " +  Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status());
+            v.txtdate.setText("Start: " + Search_Fragment.categoryListModel.getLstCustomer().get(position).getRent_start_date() );
             if (Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status().equalsIgnoreCase("off")) {
                 v.lytparnt.setBackgroundColor(getResources().getColor(R.color.red));
             } else {
@@ -127,6 +129,7 @@ public class SearchList extends AppCompatActivity {
 
         TextView txtCNo;
         TextView txtConn;
+        TextView txtdate;
         LinearLayout lytparnt;
 
         //  Button btnDone;

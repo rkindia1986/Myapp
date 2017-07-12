@@ -55,9 +55,7 @@ public class RentList extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(RentList.this, ViewDtails.class);
-                intent.putExtra("selected", i);
-                startActivity(intent);
+
             }
         });
     }
@@ -88,9 +86,11 @@ public class RentList extends AppCompatActivity {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.rentraw, null);
-                v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
-                v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
-                v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtid = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtpayamt = (TextView) convertView.findViewById(R.id.txt2);
+                v.txtPayStatus = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtrentstart = (TextView) convertView.findViewById(R.id.txt4);
+                v.rentENd = (TextView) convertView.findViewById(R.id.txt5);
 
                 // v.chec+kbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
@@ -99,18 +99,22 @@ public class RentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtTitle.setText(rentRecords.get(position).getCustomer_id());
-            v.txtAddress.setText(rentRecords.get(position).getCreated_at());
-            v.txtCity.setText(rentRecords.get(position).getPayment_amount());
+            v.txtid.setText("ID: " + rentRecords.get(position).getId());
+            v.txtpayamt.setText("Amt: " + rentRecords.get(position).getAmount());
+            v.txtPayStatus.setText("Ststus: " + rentRecords.get(position).getPayment_status());
+            v.txtrentstart.setText("Rent Start: " + rentRecords.get(position).getRent_start_date());
+            v.rentENd.setText("Rent End: " + rentRecords.get(position).getRent_end_date());
 
             return convertView;
         }
     }
 
     private class ViewHolder {
-        TextView txtTitle;
-        TextView txtAddress;
-        TextView txtCity;
+        TextView txtid;
+        TextView txtpayamt;
+        TextView txtPayStatus;
+        TextView txtrentstart;
+        TextView rentENd;
 
         //  Button btnDone;
 

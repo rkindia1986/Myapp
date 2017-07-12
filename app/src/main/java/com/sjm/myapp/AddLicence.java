@@ -1,8 +1,10 @@
 package com.sjm.myapp;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -174,13 +176,29 @@ public class AddLicence extends AppCompatActivity {
 
         }
         if (Status) {
-            Toast.makeText(AddLicence.this, message, Toast.LENGTH_LONG).show();
-            startActivity(new Intent(AddLicence.this, MainActivity.class));
-            finish();
-
+            //Toast.makeText(AddLicence.this, message, Toast.LENGTH_LONG).show();
+            SHowDialog(message);
         } else {
             Utils.ShowMessageDialog(AddLicence.this, message);
         }
+    }
+    public void SHowDialog(String msg)
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddLicence.this);
+        alertDialog.setTitle(R.string.app_name);
+        alertDialog.setMessage(msg);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(AddLicence.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                });
+
+        alertDialog.show();
     }
 
     public void showProgressDialog() {

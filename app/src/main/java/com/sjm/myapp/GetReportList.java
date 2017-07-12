@@ -99,7 +99,7 @@ public class GetReportList extends AppCompatActivity {
             if (convertView == null) {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.rentraw, null);
+                convertView = li.inflate(R.layout.reportraw, null);
                 v.txtid = (TextView) convertView.findViewById(R.id.txt1);
                 v.txtcustname = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtAdd = (TextView) convertView.findViewById(R.id.txt3);
@@ -116,8 +116,10 @@ public class GetReportList extends AppCompatActivity {
             }
 
             v.txtid.setText("Cust Id: " + rentRecords.get(position).getCustomer_id());
-            v.txtcreated.setText("Created : " +  rentRecords.get(position).getCreated_at());
             v.txtcustname.setText("Name:" + rentRecords.get(position).getName());
+
+            v.txtcreated.setText("Created : " +  rentRecords.get(position).getCreated_at());
+
             v.txtAdd.setText("Add:" + rentRecords.get(position).getAddress() + ", " +rentRecords.get(position).getCity());
             v.txtpaymentstatus.setText("Status:" + rentRecords.get(position).getPayment_status());
             v.txtpayamt.setText("Amt:" + rentRecords.get(position).getPayment_amount());

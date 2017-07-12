@@ -2,10 +2,13 @@ package com.sjm.myapp.Fragment;
 
 import android.app.Application;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +19,14 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sjm.myapp.AddLicence;
 import com.sjm.myapp.ApiService;
 import com.sjm.myapp.GetReportList;
+import com.sjm.myapp.MainActivity;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -28,6 +34,7 @@ import com.sjm.myapp.SearchList;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Installation;
+import com.sjm.myapp.pojo.Installation_History;
 import com.sjm.myapp.pojo.RentRecordList;
 import com.sjm.myapp.pojo.SearchCustomer;
 
@@ -84,7 +91,8 @@ public class Search_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.act_search, container, false);
         unbinder = ButterKnife.bind(this, view);
-        getInstallation();
+        if (com.sjm.myapp.Application.preferences.getLICENCEKEY().trim().equalsIgnoreCase(""))
+            getInstallation();
         sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
         sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
@@ -95,42 +103,45 @@ public class Search_Fragment extends Fragment {
         btnsearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                int selectedId = radiogroup.getCheckedRadioButtonId();
-                if (selectedId == R.id.rdo_all) {
-                    connectionStatus = "all";
-                } else if (selectedId == R.id.rdo_off) {
-                    connectionStatus = "off";
-                } else if (selectedId == R.id.rdo_on) {
-                    connectionStatus = "on";
-                }
-                if (NetworkConnection.isNetworkAvailable(getContext())) {
-                    try {
-                        showProgressDialog();
-                        ApiService api = RetroClient.getApiService();
-                        Call<String> call = api.SearchCustomer("get_customer_search", edt_search_custname.getText().toString(), edt_search_sutno.getText().toString(), edt_search_add.getText().toString(), spinner.getSelectedItem().toString().toString(), connectionStatus, edt_search_stbac.getText().toString());
-                        call.enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                Log.e(TAG, "call getDetailsByQr: " + call.toString());
-
-                                Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                                hideProgressDialog();
-                                parseResponse(response.body());
-                            }
-
-                            @Override
-                            public void onFailure(Call<String> call, Throwable t) {
-                                hideProgressDialog();
-                                Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                                Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if (com.sjm.myapp.Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
+                    Utils.ShowMessageDialog(getContext(), "Required Licence? Please contact us");
                 } else {
-                    Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                    int selectedId = radiogroup.getCheckedRadioButtonId();
+                    if (selectedId == R.id.rdo_all) {
+                        connectionStatus = "all";
+                    } else if (selectedId == R.id.rdo_off) {
+                        connectionStatus = "off";
+                    } else if (selectedId == R.id.rdo_on) {
+                        connectionStatus = "on";
+                    }
+                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                        try {
+                            showProgressDialog();
+                            ApiService api = RetroClient.getApiService();
+                            Call<String> call = api.SearchCustomer("get_customer_search", edt_search_custname.getText().toString(), edt_search_sutno.getText().toString(), edt_search_add.getText().toString(), spinner.getSelectedItem().toString().toString(), connectionStatus, edt_search_stbac.getText().toString());
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                    hideProgressDialog();
+                                    parseResponse(response.body());
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    hideProgressDialog();
+                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                    Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                    }
                 }
 
 
@@ -312,10 +323,25 @@ public class Search_Fragment extends Fragment {
                     } else if (j.getInt("status") == 1) {
                         Status = true;
                         message = j.optString("message");
-                        Gson gson = new GsonBuilder().create();
-                        installation = gson.fromJson(j.getJSONObject("result").toString(), Installation.class);
-                        Log.e(TAG, "parseWelcomeResponse: " + gson.toJson(installation).toString());
-                        com.sjm.myapp.Application.preferences.setLICENCEKEY(installation.getLicence_key());
+                        if (message.equalsIgnoreCase("Awesome! Your account verified.")) {
+                            Gson gson = new GsonBuilder().create();
+                            try {
+
+                                Installation_History installation_history = gson.fromJson(j.optJSONObject("result").toString(), Installation_History.class);
+                                if (installation_history != null && installation_history.getLicence_key() != null && installation_history.getLicence_key().length() > 5 && installation_history.getVerify_licence_key().equalsIgnoreCase("1")) {
+                                    com.sjm.myapp.Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
+                                    com.sjm.myapp.Application.preferences.setUSerid(installation_history.getUser_id());
+                                    com.sjm.myapp.Application.preferences.setMASTERPASS(installation_history.getMaster_password());
+                                    com.sjm.myapp.Application.preferences.setverify_licence_key(installation_history.getLicence_key());
+                                    com.sjm.myapp.Application.preferences.setDetails(j.getJSONObject("result").toString());
+                                }
+                            } catch (Exception e) {
+
+                            }
+                        } else {
+                            Status = false;
+                            message = j.optString("message");
+                        }
                     } else {
                         Status = false;
                         message = "Error Occurred";
@@ -333,11 +359,35 @@ public class Search_Fragment extends Fragment {
 
         }
         if (Status) {
-
-            //  Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            SHowDialog(message);
         } else {
             Utils.ShowMessageDialog(getContext(), message);
         }
     }
 
+    public void SHowDialog(String msg) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+        alertDialog.setTitle(R.string.app_name);
+        alertDialog.setMessage(msg);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (Build.VERSION.SDK_INT >= 11) {
+                            getActivity().recreate();
+                        } else {
+                            Intent intent = getActivity().getIntent();
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            getActivity().finish();
+                            getActivity().overridePendingTransition(0, 0);
+
+                            startActivity(intent);
+                            getActivity().overridePendingTransition(0, 0);
+                        }
+                    }
+                });
+
+        alertDialog.show();
+    }
 }

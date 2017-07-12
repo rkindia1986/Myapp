@@ -7,10 +7,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.renderscript.ScriptGroup;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -330,11 +333,18 @@ public class ViewDtails extends AppCompatActivity {
     public void ShowMessageDialog(final int kk) {
         final EditText input = new EditText(ViewDtails.this);
         input.setHint("Enter Passcode");
+        input.setInputType(InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setSelection(input.getText().length());
         input.setSingleLine();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+
         final AlertDialog dialog = new AlertDialog.Builder(ViewDtails.this)
                 .setView(input)
                 .setTitle(R.string.sec_alert)
@@ -342,7 +352,6 @@ public class ViewDtails extends AppCompatActivity {
                 .setPositiveButton("OK", null) //Set to null. We override the onclick
                 .setNegativeButton("CANCEL", null)
                 .create();
-
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
@@ -365,7 +374,7 @@ public class ViewDtails extends AppCompatActivity {
                         if (TextUtils.isEmpty(input.getText())) {
                             input.setError("Enter Passcode");
 
-                        } else if (input.getText().toString().trim().equalsIgnoreCase("1111")) {
+                        } else if (input.getText().toString().trim().equalsIgnoreCase(Application.preferences.getMASTERPASS())) {
                             dialog.dismiss();
                             if (kk == 1) {
                                 UpdateConnection();

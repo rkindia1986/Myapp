@@ -55,9 +55,7 @@ public class PaymentList extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(PaymentList.this, ViewDtails.class);
-                intent.putExtra("selected", i);
-                startActivity(intent);
+
             }
         });
     }
@@ -88,9 +86,9 @@ public class PaymentList extends AppCompatActivity {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.listraw, null);
-                v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
-                v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
-                v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
+                v.txtid = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtamt = (TextView) convertView.findViewById(R.id.txt2);
+                v.txtdate = (TextView) convertView.findViewById(R.id.txt3);
 
                 // v.checkbox.setChecked(false);
                 //   v.checkbox.setChecked(listChecked.get(position));
@@ -99,18 +97,18 @@ public class PaymentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtTitle.setText(paymentRecords.get(position).getCustomer_id());
-            v.txtAddress.setText(paymentRecords.get(position).getCreated_at());
-            v.txtCity.setText(paymentRecords.get(position).getPayment_amount());
+            v.txtid.setText("ID : " + paymentRecords.get(position).getCustomer_id());
+            v.txtdate.setText("Date: "+ paymentRecords.get(position).getCreated_at());
+            v.txtamt.setText("Amt: "+ paymentRecords.get(position).getPayment_amount());
 
             return convertView;
         }
     }
 
     private class ViewHolder {
-        TextView txtTitle;
-        TextView txtAddress;
-        TextView txtCity;
+        TextView txtid;
+        TextView txtamt;
+        TextView txtdate;
 
         //  Button btnDone;
 

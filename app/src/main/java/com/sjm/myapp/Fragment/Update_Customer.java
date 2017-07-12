@@ -182,10 +182,11 @@ public class Update_Customer extends Fragment {
                             Log.e("sdate", sdate);
 
                             Call<String> call = api.Edit_customer("edit_customer", cust_name.getText().toString(), cust_no.getText().toString(), cust_add.getText().toString(), cust_city.getText().toString(), amt.getText().toString(), phone.getText().toString(), rent_amt.getText().toString(), stb_acc_no.getText().toString(), stb_nuid.getText().toString(), cafno.getText().toString(), stb_ac2.getText().toString(), stb_nuid2.getText().toString(), cafno2.getText().toString(), conn_type, conn_status, sdate, edt_month.getText().toString(), "1");
+                            Log.e(TAG, "call getDetailsByQr: " + call.request().url().toString());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
-                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
 
                                     Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
                                     hideProgressDialog();

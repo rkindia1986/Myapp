@@ -54,8 +54,17 @@ public class MainActivity extends AppCompatActivity
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    startActivity(new Intent(MainActivity.this,MainActivity.class));
-                    finish();
+                    if (Build.VERSION.SDK_INT >= 11) {
+                        recreate();
+                    } else {
+                        Intent intent = getIntent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        overridePendingTransition(0, 0);
+
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
                 }
@@ -181,59 +190,61 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if (Application.preferences.getLICENCEKEY().equalsIgnoreCase("")){
+            Utils.ShowMessageDialog(MainActivity.this, "Required Licence? Please contact us");
+        }else {
+            if (id == R.id.search) {
+                // Handle the camera action
+                setTitle(getString(R.string.search).toUpperCase());
+                Search_Fragment fragmentMenu = new Search_Fragment();
+                replaceFragment(fragmentMenu, Search_Fragment.class.getSimpleName());
+            } else if (id == R.id.add_cust) {
+                setTitle(getString(R.string.add_cust).toUpperCase());
+                AddCust_Fragment addCust_fragment = new AddCust_Fragment();
+                replaceFragment(addCust_fragment, AddCust_Fragment.class.getSimpleName());
 
-        if (id == R.id.search) {
-            // Handle the camera action
-            setTitle(getString(R.string.search).toUpperCase());
-            Search_Fragment fragmentMenu = new Search_Fragment();
-            replaceFragment(fragmentMenu, Search_Fragment.class.getSimpleName());
-        } else if (id == R.id.add_cust) {
-            setTitle(getString(R.string.add_cust).toUpperCase());
-            AddCust_Fragment addCust_fragment = new AddCust_Fragment();
-            replaceFragment(addCust_fragment, AddCust_Fragment.class.getSimpleName());
+            } else if (id == R.id.up_cust) {
+                setTitle(getString(R.string.up_cust).toUpperCase());
+                Update_Customer addCust_fragment = new Update_Customer();
+                replaceFragment(addCust_fragment, Update_Customer.class.getSimpleName());
+            } else if (id == R.id.new_mon_rent) {
+                setTitle(getString(R.string.change_rent).toUpperCase());
+                NewMonth_rent addCust_fragment = new NewMonth_rent();
+                replaceFragment(addCust_fragment, NewMonth_rent.class.getSimpleName());
 
-        } else if (id == R.id.up_cust) {
-            setTitle(getString(R.string.up_cust).toUpperCase());
-            Update_Customer addCust_fragment = new Update_Customer();
-            replaceFragment(addCust_fragment, Update_Customer.class.getSimpleName());
-        } else if (id == R.id.new_mon_rent) {
-            setTitle(getString(R.string.change_rent).toUpperCase());
-            NewMonth_rent addCust_fragment = new NewMonth_rent();
-            replaceFragment(addCust_fragment, NewMonth_rent.class.getSimpleName());
+            } else if (id == R.id.get_report) {
+                setTitle(getString(R.string.get_report).toUpperCase());
+                GetReport addCust_fragment = new GetReport();
+                replaceFragment(addCust_fragment, GetReport.class.getSimpleName());
 
-        } else if (id == R.id.get_report) {
-            setTitle(getString(R.string.get_report).toUpperCase());
-            GetReport addCust_fragment = new GetReport();
-            replaceFragment(addCust_fragment, GetReport.class.getSimpleName());
+            } else if (id == R.id.send_alert) {
+                setTitle(getString(R.string.send_alert).toUpperCase());
+                send_Alert addCust_fragment = new send_Alert();
+                replaceFragment(addCust_fragment, send_Alert.class.getSimpleName());
 
-        } else if (id == R.id.send_alert) {
-            setTitle(getString(R.string.send_alert).toUpperCase());
-            send_Alert addCust_fragment = new send_Alert();
-            replaceFragment(addCust_fragment, send_Alert.class.getSimpleName());
+            } else if (id == R.id.exp_cust) {
+                setTitle(getString(R.string.exp_cust).toUpperCase());
+                Exp_Customer addCust_fragment = new Exp_Customer();
+                replaceFragment(addCust_fragment, Exp_Customer.class.getSimpleName());
 
-        } else if (id == R.id.exp_cust) {
-            setTitle(getString(R.string.exp_cust).toUpperCase());
-            Exp_Customer addCust_fragment = new Exp_Customer();
-            replaceFragment(addCust_fragment, Exp_Customer.class.getSimpleName());
+            } else if (id == R.id.backup) {
+                setTitle(getString(R.string.backup).toUpperCase());
+                Backup addCust_fragment = new Backup();
+                replaceFragment(addCust_fragment, Backup.class.getSimpleName());
 
-        } else if (id == R.id.backup) {
-            setTitle(getString(R.string.backup).toUpperCase());
-            Backup addCust_fragment = new Backup();
-            replaceFragment(addCust_fragment, Backup.class.getSimpleName());
+            } else if (id == R.id.rest_back) {
 
-        } else if (id == R.id.rest_back) {
+                setTitle(getString(R.string.rest_back).toUpperCase());
+                BackupRestore addCust_fragment = new BackupRestore();
+                replaceFragment(addCust_fragment, BackupRestore.class.getSimpleName());
 
-            setTitle(getString(R.string.rest_back).toUpperCase());
-            BackupRestore addCust_fragment = new BackupRestore();
-            replaceFragment(addCust_fragment, BackupRestore.class.getSimpleName());
+            } else if (id == R.id.man_exp) {
+                setTitle(getString(R.string.man_exp).toUpperCase());
+                manageExp manage = new manageExp();
+                replaceFragment(manage, manageExp.class.getSimpleName());
 
-        } else if (id == R.id.man_exp) {
-            setTitle(getString(R.string.man_exp).toUpperCase());
-            manageExp manage = new manageExp();
-            replaceFragment(manage, manageExp.class.getSimpleName());
-
+            }
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

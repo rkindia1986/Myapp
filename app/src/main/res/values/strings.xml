@@ -94,7 +94,7 @@
     <string name="contactus">Contact Us</string>
     <string name="gen_setting">General Setting</string>
     <string name="set">SET</string>
-
+    <string name="setmaster">SET MASTER PASSWORD</string>
     <string name="set_wlink">Set Website Link</string>
     <string name="set_mast_pass">Set Master Password</string>
     

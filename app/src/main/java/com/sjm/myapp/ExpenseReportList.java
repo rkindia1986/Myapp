@@ -27,7 +27,8 @@ public class ExpenseReportList extends AppCompatActivity {
     private static final String TAG = "ExpenseReportList";
     ProgressDialog pd;
     private Unbinder unbinder;
-
+    @BindView(R.id.txttotal)
+    TextView txttotal;
     @BindView(R.id.listview)
     ListView listview;
     ExpenseListAdapter searchListAdapter;
@@ -37,7 +38,7 @@ public class ExpenseReportList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.searchlist);
+        setContentView(R.layout.expensereport);
         unbinder = ButterKnife.bind(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -53,6 +54,11 @@ public class ExpenseReportList extends AppCompatActivity {
 
             }
         });
+        int total = 0;
+        for (int i = 0; i < manageExp.expenseReport.getLstExpense().size(); i++) {
+            total = total + Integer.parseInt(manageExp.expenseReport.getLstExpense().get(i).getAmount());
+        }
+        txttotal.setText(total+"");
     }
 
     class ExpenseListAdapter extends BaseAdapter {
@@ -80,9 +86,10 @@ public class ExpenseReportList extends AppCompatActivity {
             if (convertView == null) {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.listraw, null);
+                convertView = li.inflate(R.layout.expense, null);
                 v.txtTitle = (TextView) convertView.findViewById(R.id.txt1);
                 v.txtAddress = (TextView) convertView.findViewById(R.id.txt2);
+                v.txtif = (TextView) convertView.findViewById(R.id.txt4);
                 v.txtCity = (TextView) convertView.findViewById(R.id.txt3);
 
                 // v.checkbox.setChecked(false);
@@ -95,6 +102,7 @@ public class ExpenseReportList extends AppCompatActivity {
             v.txtTitle.setText(manageExp.expenseReport.getLstExpense().get(position).getAmount());
             v.txtAddress.setText(manageExp.expenseReport.getLstExpense().get(position).getDescription());
             v.txtCity.setText(manageExp.expenseReport.getLstExpense().get(position).getExpense_type());
+            v.txtif.setText(manageExp.expenseReport.getLstExpense().get(position).getId());
 
             return convertView;
         }
@@ -103,6 +111,7 @@ public class ExpenseReportList extends AppCompatActivity {
     private class ViewHolder {
         TextView txtTitle;
         TextView txtAddress;
+        TextView txtif;
         TextView txtCity;
 
         //  Button btnDone;
