@@ -8,7 +8,7 @@ public class Customer {
 
 
 
-    int isSync=0;
+    String sync="0";
     String id = "";
     String customer_no = "";
     String name = "";
@@ -26,18 +26,27 @@ public class Customer {
     String connection_type = "";
     String customer_connection_status = "";
     String rent_start_date = "";
+    String rent_end_date = "";
     String no_of_month = "";
     String created_at = "";
     String created_by = "";
     String updated_at = "";
     String updated_by = "";
 
-    public int getIsSync() {
-        return isSync;
+    public String getSync() {
+        return sync;
     }
 
-    public void setIsSync(int isSync) {
-        this.isSync = isSync;
+    public void setSync(String sync) {
+        this.sync = sync;
+    }
+
+    public String getRent_end_date() {
+        return rent_end_date;
+    }
+
+    public void setRent_end_date(String rent_end_date) {
+        this.rent_end_date = rent_end_date;
     }
 
     public String getId() {

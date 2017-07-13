@@ -32,7 +32,14 @@ import com.sjm.myapp.pojo.SearchCustomer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,8 +104,9 @@ public class AddCust_Fragment extends Fragment {
     @BindView(R.id.datePicker)
     DatePicker datePicker;
     SqlLiteDbHelper sqlLiteDbHelper;
-    String sdate;
+    String sdate,created_at,updatedat;
     JSONObject jsonObject;
+    private int myear, mmonth, mday, mhour, mmin,msec;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -111,9 +119,33 @@ public class AddCust_Fragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
-                     jsonObject = new JSONObject();
+                    int selectedId = rdogroup.getCheckedRadioButtonId();
+
+                    if (selectedId == R.id.rdo_manual) {
+                        conn_type = "manual";
+                    } else if (selectedId == R.id.rdo_continus) {
+                        conn_type = "continuous";
+                    } else if (selectedId == R.id.rdo_plan) {
+                        conn_type = "plan";
+                    }
+
+
+
+                    sdate = Utils.getDate( datePicker.getDayOfMonth(),(datePicker.getMonth() + 1),datePicker.getYear());
+                    Calendar c = Calendar.getInstance();
+                    mday = c.get(Calendar.DAY_OF_MONTH);
+                    mmonth = c.get(Calendar.MONTH);
+                    myear = c.get(Calendar.YEAR);
+                    mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                    mmin = c.get(Calendar.MINUTE);
+                    msec= c.get(Calendar.SECOND);
+
+                    created_at = Utils.getDatetime(myear,mmonth,mday,mhour,mmin,msec);
+                    updatedat = Utils.getDatetime(myear,mmonth,mday,mhour,mmin,msec);
+                    Log.e("sdate", sdate);
+                    jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("isSync",0);
+                        jsonObject.put("sync", 0);
                         jsonObject.put("id", "0");
                         jsonObject.put("customer_no", "0");
                         jsonObject.put("name", cust_name.getText().toString());
@@ -131,8 +163,11 @@ public class AddCust_Fragment extends Fragment {
                         jsonObject.put("connection_type", conn_type);
                         jsonObject.put("customer_connection_status", conn_status);
                         jsonObject.put("rent_start_date", sdate);
+                        jsonObject.put("created_at", created_at);
+                        jsonObject.put("created_by", Application.preferences.getUSerid());
+                        jsonObject.put("updated_at", updatedat);
+                        jsonObject.put("updated_by", Application.preferences.getUSerid());
                         jsonObject.put("no_of_month", edt_month.getText().toString());
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -142,17 +177,7 @@ public class AddCust_Fragment extends Fragment {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
-                            int selectedId = rdogroup.getCheckedRadioButtonId();
 
-                            if (selectedId == R.id.rdo_manual) {
-                                conn_type = "manual";
-                            } else if (selectedId == R.id.rdo_continus) {
-                                conn_type = "continuous";
-                            } else if (selectedId == R.id.rdo_plan) {
-                                conn_type = "plan";
-                            }
-                            sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
-                            Log.e("sdate", sdate);
 
                             Call<String> call = api.add_customer("add_customer", cust_name.getText().toString(), cust_no.getText().toString(), cust_add.getText().toString(), cust_city.getText().toString(), amt.getText().toString(), phone.getText().toString(), rent_amt.getText().toString(), stb_acc_no.getText().toString(), stb_nuid.getText().toString(), cafno.getText().toString(), stb_ac2.getText().toString(), stb_nuid2.getText().toString(), cafno2.getText().toString(), conn_type, conn_status, sdate, edt_month.getText().toString(), Application.preferences.getUSerid());
                             call.enqueue(new Callback<String>() {
@@ -169,15 +194,20 @@ public class AddCust_Fragment extends Fragment {
                                 public void onFailure(Call<String> call, Throwable t) {
                                     hideProgressDialog();
                                     Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                                    Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                                    Gson gson = new GsonBuilder().create();
+                                    Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                                    sqlLiteDbHelper.UpdateCustomer(customer);
+                                    Utils.ShowMessageDialog(getContext(), "Saved Successfully");
                                 }
                             });
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else {
-                        sqlLiteDbHelper.UpdateCustomer(jsonObject.toString());
-                        Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                        Gson gson = new GsonBuilder().create();
+                        Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                        sqlLiteDbHelper.UpdateCustomer(customer);
+                        Utils.ShowMessageDialog(getContext(), "Saved Successfully");
                     }
                 }
             }
@@ -219,9 +249,12 @@ public class AddCust_Fragment extends Fragment {
                         if (j.getString("message").equalsIgnoreCase("success")) {
                             Status = true;
                             message = j.optString("message");
+                            Gson gson = new GsonBuilder().create();
+
                             JSONObject jsonObject = j.optJSONObject("result");
-                            jsonObject.put("isSync",1);
-                            sqlLiteDbHelper.UpdateCustomer(jsonObject.toString());
+                            Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                            customer.setSync("1");
+                            sqlLiteDbHelper.UpdateCustomer(customer);
                         } else {
                             Status = false;
                             message = j.optString("message");

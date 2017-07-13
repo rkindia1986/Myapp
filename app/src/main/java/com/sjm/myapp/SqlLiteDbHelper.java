@@ -54,7 +54,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
             for (int i = 0; i < cursor.getCount(); i++) {
                 Gson gson = new GsonBuilder().create();
                 Customer customer = gson.fromJson(cursor.getString(cursor.getColumnIndex(CUST_DETAILS)), Customer.class);
-                customer.setIsSync(cursor.getInt(cursor.getColumnIndex(CUST_SYNC)));
+                customer.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
                 cursor.moveToNext();
                 slist.add(customer);
             }
@@ -64,19 +64,86 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         return slist;
     }
 
-    public void UpdateCustomer(String data) {
+    // Getting single contact
+    public ArrayList<Customer> Get_AllCustomers2(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<Customer> slist = new ArrayList<Customer>();
+        Cursor cursor = db.rawQuery(query, null);
 
-        Gson gson = new GsonBuilder().create();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Customer customer = new Customer();
+                customer.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
+                customer.setId(cursor.getString(cursor.getColumnIndex("id")));
+                customer.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_no")));
+                customer.setName(cursor.getString(cursor.getColumnIndex("name")));
+                customer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+                customer.setCity(cursor.getString(cursor.getColumnIndex("city")));
+                customer.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
+                customer.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
+                customer.setRent_amount(cursor.getString(cursor.getColumnIndex("rent_amount")));
+                customer.setCaf_no_1(cursor.getString(cursor.getColumnIndex("caf_no_1")));
+                customer.setCaf_no_2(cursor.getString(cursor.getColumnIndex("caf_no_2")));
+                customer.setStb_account_no_1(cursor.getString(cursor.getColumnIndex("stb_account_no_1")));
+                customer.setStb_account_no_2(cursor.getString(cursor.getColumnIndex("stb_account_no_2")));
+                customer.setNu_id_no_1(cursor.getString(cursor.getColumnIndex("nu_id_no_1")));
+                customer.setNu_id_no_2(cursor.getString(cursor.getColumnIndex("nu_id_no_2")));
 
-        Customer customer = gson.fromJson(data, Customer.class);
+                customer.setConnection_type(cursor.getString(cursor.getColumnIndex("connection_type")));
+
+                customer.setCustomer_connection_status(cursor.getString(cursor.getColumnIndex("customer_connection_status")));
+
+                customer.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
+                customer.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
+                customer.setNo_of_month(cursor.getString(cursor.getColumnIndex("no_of_month")));
+
+                customer.setUpdated_by(cursor.getString(cursor.getColumnIndex("updated_by")));
+                customer.setUpdated_at(cursor.getString(cursor.getColumnIndex("updated_at")));
+                customer.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                customer.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+                slist.add(customer);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+        }
+        return slist;
+    }
+
+    public void UpdateCustomer(Customer customer) {
+
+
         SQLiteDatabase database = this.getWritableDatabase();
-        if (!customer.getId().equalsIgnoreCase("0"))
-            database.execSQL("delete from customer where cust_id='" + customer.getId() + "'");
+        if (!customer.getCustomer_no().equalsIgnoreCase("0"))
+            database.execSQL("delete from Customer_Master where customer_no='" + customer.getCustomer_no() + "'");
         ContentValues values = new ContentValues();
-        values.put(CUST_DETAILS, data);
-        values.put(CUST_SYNC, customer.getIsSync());
-        values.put(CUST_ID, customer.getId());
-        database.insert("customer", null, values);
+
+        values.put("sync", customer.getSync());
+        values.put("id", customer.getId());
+        values.put("customer_no", customer.getCustomer_no());
+        values.put("name", customer.getName());
+        values.put("address", customer.getAddress());
+        values.put("city", customer.getCity());
+        values.put("amount", customer.getAmount());
+        values.put("phone", customer.getPhone());
+        values.put("rent_amount", customer.getRent_amount());
+        values.put("stb_account_no_1", customer.getStb_account_no_1());
+        values.put("nu_id_no_1", customer.getNu_id_no_1());
+        values.put("caf_no_1", customer.getCaf_no_1());
+        values.put("stb_account_no_2", customer.getStb_account_no_2());
+        values.put("nu_id_no_2", customer.getNu_id_no_2());
+        values.put("caf_no_2", customer.getCaf_no_2());
+        values.put("connection_type", customer.getConnection_type());
+        values.put("customer_connection_status", customer.getCustomer_connection_status());
+        values.put("rent_start_date", customer.getRent_start_date());
+        values.put("no_of_month", customer.getNo_of_month());
+        values.put("updated_by", customer.getUpdated_by());
+        values.put("updated_at", customer.getUpdated_at());
+        values.put("created_by", customer.getCreated_by());
+        values.put("created_at", customer.getCreated_at());
+        values.put("rent_end_date", customer.getRent_end_date());
+
+        database.insert("Customer_Master", null, values);
         database.close();
 
 

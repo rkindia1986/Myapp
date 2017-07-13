@@ -23,4 +23,27 @@ public class Utils {
         alertDialog.show();
     }
 
+    public static String gettime(int hour, int min,int sec) {
+       String s = new StringBuilder().append(String.format("%02d", hour)).append(":")
+                .append(String.format("%02d", min)).append(":").append(String.format("%02d", sec)).toString();
+        return s;
+    }
+    public static String getDatetime(String date,int hour, int min,int sec) {
+        String s = new StringBuilder().append(date).append(" ").append(String.format("%02d", hour)).append(":")
+                .append(String.format("%02d", min)).append(":").append(String.format("%02d", sec)).toString() ;
+        return s;
+    }
+    public static String getDatetime(int d,int m,int y,int hour, int min,int sec) {
+        String s = new StringBuilder().append(String.format("%04d", y)).append("-")
+                .append(String.format("%02d", m)).append("-").append(String.format("%02d", d)).append(" ").append(String.format("%02d", hour)).append(":")
+                .append(String.format("%02d", min)).append(":").append(String.format("%02d", sec)).toString() ;
+        return s;
+    }
+    public static String getDate(int d,int m,int y) {
+        String s = new StringBuilder().append(String.format("%04d", y)).append("-")
+                .append(String.format("%02d", m)).append("-").append(String.format("%02d", d)).toString() ;
+        return s;
+    }
+
+
 }

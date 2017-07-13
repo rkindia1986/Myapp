@@ -140,7 +140,11 @@ public class Search_Fragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else {
-                        Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                        categoryListModel = new SearchCustomer();
+                        categoryListModel.setLstCustomer(sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master"));
+                        Intent intent = new Intent(getActivity(), SearchList.class);
+                        startActivity(intent);
+                        //Utils.ShowMessageDialog(getContext(), "No Connection Available");
                     }
                 }
 
