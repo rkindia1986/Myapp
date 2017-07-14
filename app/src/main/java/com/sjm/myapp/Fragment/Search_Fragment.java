@@ -33,6 +33,7 @@ import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SearchList;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
+import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.Installation;
 import com.sjm.myapp.pojo.Installation_History;
 import com.sjm.myapp.pojo.RentRecordList;
@@ -85,6 +86,7 @@ public class Search_Fragment extends Fragment {
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
     private SqlLiteDbHelper sqlLiteDbHelper;
+    private Customer selCustomer;
 
     @Nullable
     @Override
@@ -98,8 +100,9 @@ public class Search_Fragment extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
+        showProgressDialog();
 
-        getCityList();
+        UploadCustomer();
         btnsearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,7 +213,7 @@ public class Search_Fragment extends Fragment {
 
         if (NetworkConnection.isNetworkAvailable(getContext())) {
             try {
-                showProgressDialog();
+
                 ApiService api = RetroClient.getApiService();
                 Call<String> call = api.get_city_list("get_city_list");
                 call.enqueue(new Callback<String>() {
@@ -234,6 +237,7 @@ public class Search_Fragment extends Fragment {
                 e.printStackTrace();
             }
         } else {
+            hideProgressDialog();
             cityList.clear();
             cityList = sqlLiteDbHelper.Get_AllCity();
             adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
@@ -394,4 +398,102 @@ public class Search_Fragment extends Fragment {
 
         alertDialog.show();
     }
+
+
+    public void UploadCustomer() {
+
+        ArrayList<Customer> tempcustomers = sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master where sync = '0'");
+        if (tempcustomers != null && tempcustomers.size() > 0) {
+            selCustomer = tempcustomers.get(0);
+
+            if (NetworkConnection.isNetworkAvailable(getContext())) {
+                try {
+
+                    ApiService api = RetroClient.getApiService();
+
+
+                    Call<String> call = api.add_customer("add_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
+                            Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+
+                            parseAddCustResponse(response.body());
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                            getCityList();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                getCityList();
+            }
+        } else {
+            getCityList();
+        }
+
+    }
+
+    private void parseAddCustResponse(String body) {
+
+
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+
+                        if (j.getString("message").equalsIgnoreCase("success")) {
+                            Status = true;
+                            message = j.optString("message");
+                            Gson gson = new GsonBuilder().create();
+
+                            JSONObject jsonObject = j.optJSONObject("result");
+                            Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                            customer.setSync("1");
+                            customer.setSyncid(selCustomer.getSyncid());
+
+                            sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getId());
+
+                        } else {
+                            Status = false;
+
+                        }
+                    } else {
+                        Status = false;
+
+                    }
+                }
+            } else {
+                Status = false;
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+
+
+        }
+        if (Status) {
+            UploadCustomer();
+        } else {
+            getCityList();
+        }
+
+    }
+
 }

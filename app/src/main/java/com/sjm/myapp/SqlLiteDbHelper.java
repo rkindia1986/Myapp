@@ -75,6 +75,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 Customer customer = new Customer();
                 customer.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
                 customer.setId(cursor.getString(cursor.getColumnIndex("id")));
+                customer.setSyncid(cursor.getString(cursor.getColumnIndex("syncid")));
                 customer.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_no")));
                 customer.setName(cursor.getString(cursor.getColumnIndex("name")));
                 customer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
@@ -111,8 +112,6 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
     }
 
     public void UpdateCustomer(Customer customer) {
-
-
         SQLiteDatabase database = this.getWritableDatabase();
         if (!customer.getCustomer_no().equalsIgnoreCase("0"))
             database.execSQL("delete from Customer_Master where customer_no='" + customer.getCustomer_no() + "'");
@@ -120,6 +119,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
         values.put("sync", customer.getSync());
         values.put("id", customer.getId());
+        values.put("syncid", customer.getSyncid());
         values.put("customer_no", customer.getCustomer_no());
         values.put("name", customer.getName());
         values.put("address", customer.getAddress());
@@ -148,7 +148,41 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
 
     }
+    public void UpdateCustomer(Customer customer,String tempid) {
 
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("sync", customer.getSync());
+        values.put("id", customer.getId());
+        values.put("syncid", customer.getSyncid());
+        values.put("customer_no", customer.getCustomer_no());
+        values.put("name", customer.getName());
+        values.put("address", customer.getAddress());
+        values.put("city", customer.getCity());
+        values.put("amount", customer.getAmount());
+        values.put("phone", customer.getPhone());
+        values.put("rent_amount", customer.getRent_amount());
+        values.put("stb_account_no_1", customer.getStb_account_no_1());
+        values.put("nu_id_no_1", customer.getNu_id_no_1());
+        values.put("caf_no_1", customer.getCaf_no_1());
+        values.put("stb_account_no_2", customer.getStb_account_no_2());
+        values.put("nu_id_no_2", customer.getNu_id_no_2());
+        values.put("caf_no_2", customer.getCaf_no_2());
+        values.put("connection_type", customer.getConnection_type());
+        values.put("customer_connection_status", customer.getCustomer_connection_status());
+        values.put("rent_start_date", customer.getRent_start_date());
+        values.put("no_of_month", customer.getNo_of_month());
+        values.put("updated_by", customer.getUpdated_by());
+        values.put("updated_at", customer.getUpdated_at());
+        values.put("created_by", customer.getCreated_by());
+        values.put("created_at", customer.getCreated_at());
+        values.put("rent_end_date", customer.getRent_end_date());
+
+        database.update("Customer_Master",values, "id="+ tempid, null);
+        database.close();
+    }
     // Getting single contact
     public ArrayList<String> Get_AllCity() {
         String query = "select * from city";

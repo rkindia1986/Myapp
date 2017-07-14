@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <EditText android:singleLine="true"
                 android:id="@+id/cust_add"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/stb_acc_no"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -129,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/stb_nuid"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -143,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/cafno"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -157,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/stb_ac2"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -171,7 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/stb_nuid2"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/cafno2"
-                android:inputType="number"
+                android:inputType="text"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
@@ -209,13 +209,6 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/rdo_manual"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:checked="true"
-                    android:text="@string/manual" />
 
                 <RadioButton
                     android:id="@+id/rdo_continus"

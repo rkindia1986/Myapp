@@ -2,6 +2,7 @@ package com.sjm.myapp.Fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -85,8 +86,7 @@ public class AddCust_Fragment extends Fragment {
     EditText cafno2;
     @BindView(R.id.rdogroup)
     RadioGroup rdogroup;
-    @BindView(R.id.rdo_manual)
-    RadioButton rdo_manual;
+
     @BindView(R.id.rdo_continus)
     RadioButton rdo_continus;
     @BindView(R.id.rdo_plan)
@@ -121,15 +121,11 @@ public class AddCust_Fragment extends Fragment {
                 if (checkValidation()) {
                     int selectedId = rdogroup.getCheckedRadioButtonId();
 
-                    if (selectedId == R.id.rdo_manual) {
-                        conn_type = "manual";
-                    } else if (selectedId == R.id.rdo_continus) {
+                     if (selectedId == R.id.rdo_continus) {
                         conn_type = "continuous";
                     } else if (selectedId == R.id.rdo_plan) {
                         conn_type = "plan";
                     }
-
-
 
                     sdate = Utils.getDate( datePicker.getDayOfMonth(),(datePicker.getMonth() + 1),datePicker.getYear());
                     Calendar c = Calendar.getInstance();
@@ -145,9 +141,11 @@ public class AddCust_Fragment extends Fragment {
                     Log.e("sdate", sdate);
                     jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("sync", 0);
-                        jsonObject.put("id", "0");
-                        jsonObject.put("customer_no", "0");
+                        String customid = "temp"+ SystemClock.currentThreadTimeMillis();
+                        jsonObject.put("sync", "0");
+                        jsonObject.put("id",customid);
+                        jsonObject.put("syncid",customid);
+                        jsonObject.put("customer_no", cust_no.getText().toString());
                         jsonObject.put("name", cust_name.getText().toString());
                         jsonObject.put("address", cust_add.getText().toString());
                         jsonObject.put("city", cust_city.getText().toString());
@@ -196,6 +194,7 @@ public class AddCust_Fragment extends Fragment {
                                     Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
                                     Gson gson = new GsonBuilder().create();
                                     Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+
                                     sqlLiteDbHelper.UpdateCustomer(customer);
                                     Utils.ShowMessageDialog(getContext(), "Saved Successfully");
                                 }
@@ -254,6 +253,7 @@ public class AddCust_Fragment extends Fragment {
                             JSONObject jsonObject = j.optJSONObject("result");
                             Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
                             customer.setSync("1");
+                            customer.setSyncid(customer.getId());
                             sqlLiteDbHelper.UpdateCustomer(customer);
                         } else {
                             Status = false;
@@ -380,8 +380,13 @@ public class AddCust_Fragment extends Fragment {
         stb_ac2.setText("");
         stb_nuid2.setText("");
         cafno2.setText("");
-        rdo_manual.setChecked(true);
+        rdo_continus.setChecked(true);
 
+
+    }
+
+    public void UploadCustomer()
+    {
 
     }
 

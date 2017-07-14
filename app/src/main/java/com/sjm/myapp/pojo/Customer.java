@@ -7,9 +7,9 @@ package com.sjm.myapp.pojo;
 public class Customer {
 
 
-
-    String sync="0";
+    String sync = "0";
     String id = "";
+    String syncid = "0";
     String customer_no = "";
     String name = "";
     String address = "";
@@ -32,6 +32,14 @@ public class Customer {
     String created_by = "";
     String updated_at = "";
     String updated_by = "";
+
+    public String getSyncid() {
+        return syncid;
+    }
+
+    public void setSyncid(String syncid) {
+        this.syncid = syncid;
+    }
 
     public String getSync() {
         return sync;
