@@ -111,6 +111,77 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         return slist;
     }
 
+    public Customer Get_Customers(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        Customer customer = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                customer = new Customer();
+                customer.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
+                customer.setId(cursor.getString(cursor.getColumnIndex("id")));
+                customer.setSyncid(cursor.getString(cursor.getColumnIndex("syncid")));
+                customer.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_no")));
+                customer.setName(cursor.getString(cursor.getColumnIndex("name")));
+                customer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+                customer.setCity(cursor.getString(cursor.getColumnIndex("city")));
+                customer.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
+                customer.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
+                customer.setRent_amount(cursor.getString(cursor.getColumnIndex("rent_amount")));
+                customer.setCaf_no_1(cursor.getString(cursor.getColumnIndex("caf_no_1")));
+                customer.setCaf_no_2(cursor.getString(cursor.getColumnIndex("caf_no_2")));
+                customer.setStb_account_no_1(cursor.getString(cursor.getColumnIndex("stb_account_no_1")));
+                customer.setStb_account_no_2(cursor.getString(cursor.getColumnIndex("stb_account_no_2")));
+                customer.setNu_id_no_1(cursor.getString(cursor.getColumnIndex("nu_id_no_1")));
+                customer.setNu_id_no_2(cursor.getString(cursor.getColumnIndex("nu_id_no_2")));
+
+                customer.setConnection_type(cursor.getString(cursor.getColumnIndex("connection_type")));
+
+                customer.setCustomer_connection_status(cursor.getString(cursor.getColumnIndex("customer_connection_status")));
+
+                customer.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
+                customer.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
+                customer.setNo_of_month(cursor.getString(cursor.getColumnIndex("no_of_month")));
+
+                customer.setUpdated_by(cursor.getString(cursor.getColumnIndex("updated_by")));
+                customer.setUpdated_at(cursor.getString(cursor.getColumnIndex("updated_at")));
+                customer.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                customer.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+        }
+        return customer;
+    }
+
+    public boolean checkCustomer(Customer customer) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor c = database.rawQuery("select * from Customer_Master where customer_no='" + customer.getCustomer_no() + "'", null);
+        if (c != null) {
+            if (c.getCount() > 0) {
+                return true;
+            }
+        }
+        database.close();
+        return false;
+    }
+
+    public void UpdateCustomerConnection(String custno, String ConnStatus) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update Customer_Master set customer_connection_status='" + ConnStatus + "',sync='0' where customer_no='" + custno + "'");
+        database.close();
+    }
+
+    public void DeleteCustomer(String custno) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        database.execSQL("delete from Customer_Master where customer_no='" + custno + "'");
+        database.close();
+        //TODO delete relevent table data also
+    }
+
     public void UpdateCustomer(Customer customer) {
         SQLiteDatabase database = this.getWritableDatabase();
         if (!customer.getCustomer_no().equalsIgnoreCase("0"))
@@ -142,13 +213,33 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("created_by", customer.getCreated_by());
         values.put("created_at", customer.getCreated_at());
         values.put("rent_end_date", customer.getRent_end_date());
-
         database.insert("Customer_Master", null, values);
         database.close();
+    }
 
+
+    public void InsertDeleted(String custid) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (!custid.contains("temp")) {
+            database.execSQL("delete from Deleted where id='" + custid + "'");
+            ContentValues values = new ContentValues();
+            values.put("id", custid);
+            database.insert("Deleted", null, values);
+            database.close();
+        } else {
+
+
+        }
+    }
+
+    public void Deleted(String custid) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("delete from Deleted where id='" + custid + "'");
+        database.close();
 
     }
-    public void UpdateCustomer(Customer customer,String tempid) {
+
+    public void UpdateCustomer(Customer customer, String tempid) {
 
 
         SQLiteDatabase database = this.getWritableDatabase();
@@ -179,10 +270,11 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("created_by", customer.getCreated_by());
         values.put("created_at", customer.getCreated_at());
         values.put("rent_end_date", customer.getRent_end_date());
-
-        database.update("Customer_Master",values, "id="+ tempid, null);
+        database.execSQL("delete from Customer_Master where syncid like'" + tempid + "'");
+        database.insert("Customer_Master", null, values);
         database.close();
     }
+
     // Getting single contact
     public ArrayList<String> Get_AllCity() {
         String query = "select * from city";
@@ -198,6 +290,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
             cursor.close();
             db.close();
         }
+
         return slist;
     }
 
@@ -206,7 +299,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = this.getWritableDatabase();
         for (int i = 0; i < slist.size(); i++) {
-            database.execSQL("delete from city where details='" + slist + "'");
+            database.execSQL("delete from city where details like'" + slist.get(i) + "'");
             ContentValues values = new ContentValues();
             values.put(CUST_DETAILS, slist.get(i));
 

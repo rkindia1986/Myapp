@@ -104,9 +104,10 @@ public class AddCust_Fragment extends Fragment {
     @BindView(R.id.datePicker)
     DatePicker datePicker;
     SqlLiteDbHelper sqlLiteDbHelper;
-    String sdate,created_at,updatedat;
+    String sdate, created_at, updatedat;
     JSONObject jsonObject;
-    private int myear, mmonth, mday, mhour, mmin,msec;
+    private int myear, mmonth, mday, mhour, mmin, msec;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -121,30 +122,30 @@ public class AddCust_Fragment extends Fragment {
                 if (checkValidation()) {
                     int selectedId = rdogroup.getCheckedRadioButtonId();
 
-                     if (selectedId == R.id.rdo_continus) {
+                    if (selectedId == R.id.rdo_continus) {
                         conn_type = "continuous";
                     } else if (selectedId == R.id.rdo_plan) {
                         conn_type = "plan";
                     }
 
-                    sdate = Utils.getDate( datePicker.getDayOfMonth(),(datePicker.getMonth() + 1),datePicker.getYear());
+                    sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
                     Calendar c = Calendar.getInstance();
                     mday = c.get(Calendar.DAY_OF_MONTH);
                     mmonth = c.get(Calendar.MONTH);
                     myear = c.get(Calendar.YEAR);
                     mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
                     mmin = c.get(Calendar.MINUTE);
-                    msec= c.get(Calendar.SECOND);
+                    msec = c.get(Calendar.SECOND);
 
-                    created_at = Utils.getDatetime(myear,mmonth,mday,mhour,mmin,msec);
-                    updatedat = Utils.getDatetime(myear,mmonth,mday,mhour,mmin,msec);
+                    created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                    updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
                     Log.e("sdate", sdate);
                     jsonObject = new JSONObject();
                     try {
-                        String customid = "temp"+ SystemClock.currentThreadTimeMillis();
+                        String customid = "temp" + SystemClock.currentThreadTimeMillis();
                         jsonObject.put("sync", "0");
-                        jsonObject.put("id",customid);
-                        jsonObject.put("syncid",customid);
+                        jsonObject.put("id", customid);
+                        jsonObject.put("syncid", customid);
                         jsonObject.put("customer_no", cust_no.getText().toString());
                         jsonObject.put("name", cust_name.getText().toString());
                         jsonObject.put("address", cust_add.getText().toString());
@@ -171,7 +172,7 @@ public class AddCust_Fragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                 /*   if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
@@ -202,12 +203,17 @@ public class AddCust_Fragment extends Fragment {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    } else {*/
+                    Gson gson = new GsonBuilder().create();
+                    Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                    if (sqlLiteDbHelper.checkCustomer(customer)) {
+                        Utils.ShowMessageDialog(getContext(), "Customer Exist. Customer number is exist");
                     } else {
-                        Gson gson = new GsonBuilder().create();
-                        Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
                         sqlLiteDbHelper.UpdateCustomer(customer);
                         Utils.ShowMessageDialog(getContext(), "Saved Successfully");
+                        cleardata();
                     }
+                    // }
                 }
             }
         });
@@ -216,9 +222,7 @@ public class AddCust_Fragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 int selectedId = rdogroup.getCheckedRadioButtonId();
-                if (selectedId == R.id.rdo_manual) {
-                    lyt_rentplanchange.setVisibility(View.GONE);
-                } else if (selectedId == R.id.rdo_continus) {
+                 if (selectedId == R.id.rdo_continus) {
                     edt_month.setEnabled(false);
                     lyt_rentplanchange.setVisibility(View.VISIBLE);
                 } else if (selectedId == R.id.rdo_plan) {
@@ -385,8 +389,7 @@ public class AddCust_Fragment extends Fragment {
 
     }
 
-    public void UploadCustomer()
-    {
+    public void UploadCustomer() {
 
     }
 

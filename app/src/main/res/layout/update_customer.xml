@@ -236,19 +236,13 @@
                         android:layout_marginTop="5dp"
                         android:orientation="horizontal">
 
-                        <RadioButton
-                            android:id="@+id/rdo_manual"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:checked="true"
-                            android:text="@string/manual" />
+
 
                         <RadioButton
                             android:id="@+id/rdo_continus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
+                            android:layout_margin="5dp" android:checked="true"
                             android:text="@string/continus" />
 
                         <RadioButton
@@ -267,7 +261,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="match_parent"

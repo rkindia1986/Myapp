@@ -127,6 +127,7 @@ public class ViewDtails extends AppCompatActivity {
 
     @BindView(R.id.datePicker)
     DatePicker datePicker;
+    SqlLiteDbHelper sqlLiteDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,9 +141,12 @@ public class ViewDtails extends AppCompatActivity {
         if (selectedId != 0) {
 
         }
+
         setTitle("VIEW DETAILS");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        sqlLiteDbHelper = new SqlLiteDbHelper(ViewDtails.this);
+        sqlLiteDbHelper.openDataBase();
         btn_changeplan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -394,7 +398,17 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public void UpdateConnection() {
-        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+        if (customer.getCustomer_connection_status().equalsIgnoreCase("on")) {
+            UpdatedStatus = "off";
+        } else {
+            UpdatedStatus = "on";
+        }
+        customer.setCustomer_connection_status(UpdatedStatus);
+        sqlLiteDbHelper.UpdateCustomerConnection(customer.getCustomer_no(), UpdatedStatus);
+        txt_connstatus.setText(UpdatedStatus);
+        Toast.makeText(ViewDtails.this, "Connection Updated Successfully", Toast.LENGTH_SHORT).show();
+
+       /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
@@ -426,7 +440,7 @@ public class ViewDtails extends AppCompatActivity {
             }
         } else {
             Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-        }
+        }*/
 
     }
 
@@ -872,7 +886,13 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public void DeletCustomer() {
-        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+        sqlLiteDbHelper.InsertDeleted(customer.getId());
+        sqlLiteDbHelper.DeleteCustomer(customer.getCustomer_no());
+        Search_Fragment.categoryListModel.getLstCustomer().remove(selectedId);
+        Toast.makeText(ViewDtails.this, "Customer Deleted Successfully", Toast.LENGTH_LONG).show();
+        finish();
+
+     /*   if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
@@ -900,7 +920,7 @@ public class ViewDtails extends AppCompatActivity {
             }
         } else {
             Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-        }
+        }*/
     }
 
     public void getPlanAlert() {

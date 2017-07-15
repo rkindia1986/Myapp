@@ -111,13 +111,13 @@ public class Search_Fragment extends Fragment {
                 } else {
                     int selectedId = radiogroup.getCheckedRadioButtonId();
                     if (selectedId == R.id.rdo_all) {
-                        connectionStatus = "all";
+                        connectionStatus = "";
                     } else if (selectedId == R.id.rdo_off) {
                         connectionStatus = "off";
                     } else if (selectedId == R.id.rdo_on) {
                         connectionStatus = "on";
                     }
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                    /*if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
@@ -142,12 +142,22 @@ public class Search_Fragment extends Fragment {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else {
-                        categoryListModel = new SearchCustomer();
-                        categoryListModel.setLstCustomer(sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master"));
+                    } else {*/
+                    categoryListModel = new SearchCustomer();
+                    String que = "select * from Customer_Master where customer_no like '%" + edt_search_sutno.getText().toString().trim() +
+                            "%' and name like '%" + edt_search_custname.getText().toString().trim() +
+                            "%' and (stb_account_no_1 like '%" + edt_search_stbac.getText().toString().trim()
+                            + "%' or stb_account_no_2 like '%" + edt_search_stbac.getText().toString().trim()
+                            + "%') and address like '%" + edt_search_add.getText().toString().trim()
+                            + "%' and city like '%" + spinner.getSelectedItem().toString().toString()
+                            + "%' and customer_connection_status like '%" + connectionStatus + "%'";
+                    ArrayList<Customer> customers = sqlLiteDbHelper.Get_AllCustomers2(que);
+                    if (customers != null && customers.size() > 0) {
+                        categoryListModel.setLstCustomer(customers);
                         Intent intent = new Intent(getActivity(), SearchList.class);
                         startActivity(intent);
-                        //Utils.ShowMessageDialog(getContext(), "No Connection Available");
+                    } else {
+                        Utils.ShowMessageDialog(getContext(), "No Customer Available");
                     }
                 }
 
@@ -402,7 +412,7 @@ public class Search_Fragment extends Fragment {
 
     public void UploadCustomer() {
 
-        ArrayList<Customer> tempcustomers = sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master where sync = '0'");
+        ArrayList<Customer> tempcustomers = sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master where sync like '0'");
         if (tempcustomers != null && tempcustomers.size() > 0) {
             selCustomer = tempcustomers.get(0);
 
@@ -410,13 +420,17 @@ public class Search_Fragment extends Fragment {
                 try {
 
                     ApiService api = RetroClient.getApiService();
-
-
-                    Call<String> call = api.add_customer("add_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                    Call<String> call = null;
+                    if (selCustomer.getId().equalsIgnoreCase(selCustomer.getSyncid())) {
+                        call = api.add_customer("add_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                    } else {
+                        call = api.Edit_customer("edit_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                    }
+                    Log.e(TAG, "call add_customer: " + call.request().url().toString());
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
-                            Log.e(TAG, "call getDetailsByQr: " + call.toString());
+
 
                             Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
 
@@ -466,7 +480,7 @@ public class Search_Fragment extends Fragment {
                             customer.setSync("1");
                             customer.setSyncid(selCustomer.getSyncid());
 
-                            sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getId());
+                            sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
 
                         } else {
                             Status = false;

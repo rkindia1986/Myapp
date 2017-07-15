@@ -2,6 +2,7 @@ package com.sjm.myapp.Fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -24,12 +25,19 @@ import com.sjm.myapp.Application;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
+import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +60,6 @@ public class Update_Customer extends Fragment {
     EditText cust_no;
     @BindView(R.id.btn_loaddata)
     Button btn_loaddata;
-    Customer customer;
 
 
     @BindView(R.id.cust_name)
@@ -82,8 +89,6 @@ public class Update_Customer extends Fragment {
     EditText cafno2;
     @BindView(R.id.rdogroup)
     RadioGroup rdogroup;
-    @BindView(R.id.rdo_manual)
-    RadioButton rdo_manual;
     @BindView(R.id.rdo_continus)
     RadioButton rdo_continus;
     @BindView(R.id.rdo_plan)
@@ -99,6 +104,9 @@ public class Update_Customer extends Fragment {
     ArrayList<String> s = new ArrayList<String>();
     @BindView(R.id.datePicker)
     DatePicker datePicker;
+    Customer customer;
+    SqlLiteDbHelper sqlLiteDbHelper;
+    private int myear, mmonth, mday, mhour, mmin, msec;
 
     @Nullable
     @Override
@@ -106,13 +114,13 @@ public class Update_Customer extends Fragment {
         View view = inflater.inflate(R.layout.update_customer, container, false);
         unbinder = ButterKnife.bind(this, view);
         cleardata();
+        sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper.openDataBase();
         rdogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 int selectedId = rdogroup.getCheckedRadioButtonId();
-                if (selectedId == R.id.rdo_manual) {
-                    lyt_rentplanchange.setVisibility(View.GONE);
-                } else if (selectedId == R.id.rdo_continus) {
+                if (selectedId == R.id.rdo_continus) {
                     edt_month.setEnabled(false);
                     lyt_rentplanchange.setVisibility(View.VISIBLE);
                 } else if (selectedId == R.id.rdo_plan) {
@@ -127,7 +135,14 @@ public class Update_Customer extends Fragment {
             public void onClick(View view) {
                 cleardata();
                 if (checkValidation()) {
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                    customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + cust_no.getText().toString().trim() + "'");
+                    if (customer != null) {
+                        setData();
+                    } else {
+                        Utils.ShowMessageDialog(getContext(), "No Customer Available");
+                    }
+
+                    /*  if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
@@ -155,7 +170,7 @@ public class Update_Customer extends Fragment {
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Connection Available");
                     }
-
+*/
                 }
             }
         });
@@ -165,22 +180,68 @@ public class Update_Customer extends Fragment {
             public void onClick(View view) {
 
                 if (checkValidation2()) {
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                    int selectedId = rdogroup.getCheckedRadioButtonId();
+                    String conn_type = "";
+                    String conn_status = "on";
+                    if (selectedId == R.id.rdo_continus) {
+                        conn_type = "continuous";
+                    } else if (selectedId == R.id.rdo_plan) {
+                        conn_type = "plan";
+                    }
+                    String sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
+                    Log.e("sdate", sdate);
+                    Calendar c = Calendar.getInstance();
+                    mday = c.get(Calendar.DAY_OF_MONTH);
+                    mmonth = c.get(Calendar.MONTH);
+                    myear = c.get(Calendar.YEAR);
+                    mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                    mmin = c.get(Calendar.MINUTE);
+                    msec = c.get(Calendar.SECOND);
+
+
+                    String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        String customid = "temp" + SystemClock.currentThreadTimeMillis();
+                        jsonObject.put("sync", "0");
+                        jsonObject.put("id", customer.getId());
+                        jsonObject.put("syncid", customer.getSyncid());
+                        jsonObject.put("customer_no", customer.getCustomer_no());
+                        jsonObject.put("name", cust_name.getText().toString());
+                        jsonObject.put("address", cust_add.getText().toString());
+                        jsonObject.put("city", cust_city.getText().toString());
+                        jsonObject.put("amount", amt.getText().toString());
+                        jsonObject.put("phone", phone.getText().toString());
+                        jsonObject.put("rent_amount", rent_amt.getText().toString());
+                        jsonObject.put("stb_account_no_1", stb_acc_no.getText().toString());
+                        jsonObject.put("nu_id_no_1", stb_nuid.getText().toString());
+                        jsonObject.put("caf_no_1", cafno.getText().toString());
+                        jsonObject.put("stb_account_no_2", stb_ac2.getText().toString());
+                        jsonObject.put("nu_id_no_2", stb_nuid2.getText().toString());
+                        jsonObject.put("caf_no_2", cafno2.getText().toString());
+                        jsonObject.put("connection_type", conn_type);
+                        jsonObject.put("customer_connection_status", conn_status);
+                        jsonObject.put("rent_start_date", sdate);
+                        jsonObject.put("created_at", customer.getCreated_at());
+                        jsonObject.put("created_by", customer.getCreated_by());
+                        jsonObject.put("updated_at", updatedat);
+                        jsonObject.put("updated_by", Application.preferences.getUSerid());
+                        jsonObject.put("no_of_month", edt_month.getText().toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Gson gson = new GsonBuilder().create();
+                    Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+                    sqlLiteDbHelper.UpdateCustomer(customer);
+                    Utils.ShowMessageDialog(getContext(), "Saved Successfully");
+                    cleardata();
+                 /*   if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
-                            int selectedId = rdogroup.getCheckedRadioButtonId();
-                            String conn_type = "";
-                            String conn_status = "on";
-                            if (selectedId == R.id.rdo_manual) {
-                                conn_type = "manual";
-                            } else if (selectedId == R.id.rdo_continus) {
-                                conn_type = "continuous";
-                            } else if (selectedId == R.id.rdo_plan) {
-                                conn_type = "plan";
-                            }
-                            String sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
-                            Log.e("sdate", sdate);
+
 
                             Call<String> call = api.Edit_customer("edit_customer", cust_name.getText().toString(), cust_no.getText().toString(), cust_add.getText().toString(), cust_city.getText().toString(), amt.getText().toString(), phone.getText().toString(), rent_amt.getText().toString(), stb_acc_no.getText().toString(), stb_nuid.getText().toString(), cafno.getText().toString(), stb_ac2.getText().toString(), stb_nuid2.getText().toString(), cafno2.getText().toString(), conn_type, conn_status, sdate, edt_month.getText().toString(), Application.preferences.getUSerid());
                             Log.e(TAG, "call getDetailsByQr: " + call.request().url().toString());
@@ -207,7 +268,9 @@ public class Update_Customer extends Fragment {
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Connection Available");
 
-                    }
+                    }*/
+
+
                 }
             }
         });
@@ -363,7 +426,7 @@ public class Update_Customer extends Fragment {
         stb_ac2.setText("");
         stb_nuid2.setText("");
         cafno2.setText("");
-        rdo_manual.setChecked(true);
+        rdo_continus.setChecked(true);
         edt_month.setText("");
 
 
@@ -401,8 +464,6 @@ public class Update_Customer extends Fragment {
             rdo_plan.setChecked(true);
         } else if (customer.getConnection_type().equalsIgnoreCase("continuous")) {
             rdo_continus.setChecked(true);
-        } else {
-            rdo_manual.setChecked(true);
         }
 
         edt_month.setText(customer.getNo_of_month());
@@ -421,6 +482,22 @@ public class Update_Customer extends Fragment {
         stb_nuid2.setEnabled(true);
         cafno2.setEnabled(true);
         edt_month.setEnabled(true);
+
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            Log.e(".getRent_start_date()", customer.getRent_start_date());
+            String[] sint = customer.getRent_start_date().split("-");
+            Date myDate = simpleDateFormat.parse(customer.getRent_start_date());
+            if (myDate != null) {
+                Log.e(TAG, "setData: " + sint[0] + " " + sint[1] + " " + sint[2]);
+                datePicker.updateDate(Integer.parseInt(sint[0]), Integer.parseInt(sint[1]) - 1, Integer.parseInt(sint[2]));
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public boolean checkValidation2() {
