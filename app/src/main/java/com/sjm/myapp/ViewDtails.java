@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.PaymentRecordsList;
 import com.sjm.myapp.pojo.PlanAlert;
 import com.sjm.myapp.pojo.RentRecordsList;
@@ -39,6 +40,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -234,7 +236,18 @@ public class ViewDtails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
-                    if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+                    PaymentRecord paymentRecord = new PaymentRecord();
+                 String   sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+                    paymentRecord.setSync("0");
+                    paymentRecord.setPayment_amount(edt_addpayment.getText().toString());
+                    paymentRecord.setCreated_by(Application.preferences.getUSerid());
+                    paymentRecord.setCustomer_id(customer.getId());
+                    paymentRecord.setCreated_at(sdate);
+                    paymentRecord.setId(customer.getId());
+                    sqlLiteDbHelper.InsertPayment(paymentRecord);
+                    Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
+
+                   /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
                         try {
                             showProgressDialog();
                             ApiService api = RetroClient.getApiService();
@@ -262,7 +275,7 @@ public class ViewDtails extends AppCompatActivity {
                         }
                     } else {
                         Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-                    }
+                    }*/
                 }
             }
         });
@@ -624,7 +637,7 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public void GetPaymentRecord() {
-        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+      /*  if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
@@ -652,8 +665,17 @@ public class ViewDtails extends AppCompatActivity {
             }
         } else {
             Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-        }
+        }*/
+        paymentRecordsList = new PaymentRecordsList();
 
+
+        ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * customer_payment where id='" + customer.getCustomer_no() + "'");
+        if (paymentRecords != null && paymentRecords.size() > 0) {
+            paymentRecordsList.setLstPaymentrecords(paymentRecords);
+            startActivity(new Intent(ViewDtails.this, PaymentList.class));
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, "No Data Available");
+        }
     }
 
     private void parsePaymentResponse(String body) {

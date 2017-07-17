@@ -481,6 +481,8 @@ public class Search_Fragment extends Fragment {
                             customer.setSyncid(selCustomer.getSyncid());
 
                             sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
+                            sqlLiteDbHelper.UpdateAllPaymentIDs(selCustomer.getSyncid(),customer.getId());
+                            sqlLiteDbHelper.UpdateAllExpenseIDs(selCustomer.getSyncid(),customer.getId());
 
                         } else {
                             Status = false;

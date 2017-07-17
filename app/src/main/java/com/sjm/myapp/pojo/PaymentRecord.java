@@ -5,11 +5,29 @@ package com.sjm.myapp.pojo;
  */
 
 public class PaymentRecord {
+    int tempid;
     String id="";
+    String sync="0";
     String customer_id="";
     String payment_amount="";
     String created_at="";
     String created_by="";
+
+    public int getTempid() {
+        return tempid;
+    }
+
+    public void setTempid(int tempid) {
+        this.tempid = tempid;
+    }
+
+    public String getSync() {
+        return sync;
+    }
+
+    public void setSync(String sync) {
+        this.sync = sync;
+    }
 
     public String getId() {
         return id;

@@ -5,13 +5,40 @@ package com.sjm.myapp.pojo;
  */
 
 public class Expense {
+    int tempid;
    String id="";
+    String sync="0";
     String expense_type="";
     String description="";
     String amount="";
     String user_id="";
     String expense_date="";
     String created_at="";
+    String created_by="";
+
+    public int getTempid() {
+        return tempid;
+    }
+
+    public void setTempid(int tempid) {
+        this.tempid = tempid;
+    }
+
+    public String getSync() {
+        return sync;
+    }
+
+    public void setSync(String sync) {
+        this.sync = sync;
+    }
+
+    public String getCreated_by() {
+        return created_by;
+    }
+
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
+    }
 
     public String getId() {
         return id;

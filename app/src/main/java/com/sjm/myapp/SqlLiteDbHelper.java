@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.Expense;
+import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
@@ -215,6 +217,106 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("rent_end_date", customer.getRent_end_date());
         database.insert("Customer_Master", null, values);
         database.close();
+    }
+    public void InsertExpense(Expense expense) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("id", expense.getId());
+        values.put("expense_type", expense.getExpense_type());
+        values.put("description", expense.getDescription());
+        values.put("amount", expense.getAmount());
+        values.put("expense_date", expense.getExpense_date());
+        values.put("created_at", expense.getCreated_at());
+        values.put("created_by", expense.getCreated_by());
+        values.put("sync", expense.getSync());
+
+        database.insert("manage_expense", null, values);
+        database.close();
+    }
+    public void UpdateExpense(Expense expense) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update manage_expense set sync='1' where tempid=" + expense.getTempid() + "");
+        database.close();
+    }
+    public void UpdateAllExpenseIDs(String oldid,String newid) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update manage_expense set id='"+ newid + "' where id='" + oldid + "'");
+        database.close();
+    }
+
+    public ArrayList<Expense> getExpenserecords(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        ArrayList<Expense> expenses = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Expense expense = new Expense();
+                expense.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
+                expense.setId(cursor.getString(cursor.getColumnIndex("id")));
+                expense.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                expense.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
+                expense.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+                expense.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
+                expense.setExpense_date(cursor.getString(cursor.getColumnIndex("expense_date")));
+                expense.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+                expense.setExpense_type(cursor.getString(cursor.getColumnIndex("expense_type")));
+                expenses.add(expense);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+        }
+        return expenses;
+    }
+    public void UpdateAllPaymentIDs(String oldid,String newid) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update customer_payment set id='"+ newid + "' where id='" + oldid + "'");
+        database.close();
+    }
+    public void InsertPayment(PaymentRecord paymentRecord) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("id", paymentRecord.getId());
+        values.put("amount", paymentRecord.getPayment_amount());
+        values.put("created_at", paymentRecord.getCreated_at());
+        values.put("created_by", paymentRecord.getCreated_by());
+        values.put("sync", paymentRecord.getSync());
+
+        database.insert("customer_payment", null, values);
+        database.close();
+    }
+    public void UpdatePayment(PaymentRecord paymentRecord) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update customer_payment set sync='1' where tempid=" + paymentRecord.getTempid() + "");
+        database.close();
+    }
+
+    public ArrayList<PaymentRecord> getPaymentrecords(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+
+       ArrayList<PaymentRecord> paymentRecords = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                PaymentRecord paymentRecord = new PaymentRecord();
+                paymentRecord.setSync(cursor.getString(cursor.getColumnIndex(CUST_SYNC)));
+                paymentRecord.setId(cursor.getString(cursor.getColumnIndex("id")));
+                paymentRecord.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                paymentRecord.setPayment_amount(cursor.getString(cursor.getColumnIndex("amount")));
+                paymentRecord.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+                paymentRecord.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
+                paymentRecords.add(paymentRecord);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+        }
+        return paymentRecords;
     }
 
 
