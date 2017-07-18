@@ -222,7 +222,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put("id", expense.getId());
+        values.put("id", expense.getUser_id());
         values.put("expense_type", expense.getExpense_type());
         values.put("description", expense.getDescription());
         values.put("amount", expense.getAmount());

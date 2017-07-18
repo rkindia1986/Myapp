@@ -25,10 +25,15 @@ import com.sjm.myapp.ExpenseReportList;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
+import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
+import com.sjm.myapp.pojo.Expense;
 import com.sjm.myapp.pojo.ExpenseReport;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,6 +85,7 @@ public class manageExp extends Fragment {
 
     @BindView(R.id.btn_getreport)
     Button btn_getreport;
+    SqlLiteDbHelper  sqlLiteDbHelper;
 
     public static ExpenseReport expenseReport;
 
@@ -88,6 +94,9 @@ public class manageExp extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.manage_expense, container, false);
         unbinder = ButterKnife.bind(this, view);
+        sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper.openDataBase();
+
 
         txt_startdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,20 +125,47 @@ public class manageExp extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
+
+                    int selectedId = rdogroup_1.getCheckedRadioButtonId();
+                    String type = "";
+
+                    if (selectedId == R.id.rdo_expense) {
+                        type = "expense";
+                    } else if (selectedId == R.id.rdo_income) {
+                        type = "income";
+                    }
+                    Expense exp = new Expense();
+                    exp.setDescription(edt_desc.getText().toString());
+                    exp.setSync("0");
+                    exp.setExpense_type(type);
+                    exp.setId(Application.preferences.getUSerid());
+                    exp.setAmount(edt_amount.getText().toString());
+                    exp.setExpense_date(txt_date.getText().toString());
+                    exp.setUser_id(Application.preferences.getUSerid());
+
+                    Calendar c = Calendar.getInstance();
+                    int mday = c.get(Calendar.DAY_OF_MONTH);
+                    int mmonth = c.get(Calendar.MONTH);
+                    int myear = c.get(Calendar.YEAR);
+                    int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                    int mmin = c.get(Calendar.MINUTE);
+                    int msec = c.get(Calendar.SECOND);
+
+                    String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                    String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                    exp.setCreated_at(created_at);
+                    exp.setCreated_by(Application.preferences.getUSerid());
+                    sqlLiteDbHelper.InsertExpense(exp);
+                    clearAddExpFields();
+                    Utils.ShowMessageDialog(getContext(), type +" added successfully");
+                    /*
                     if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
-                            int selectedId = rdogroup_1.getCheckedRadioButtonId();
-                            String type = "";
 
-                            if (selectedId == R.id.rdo_expense) {
-                                type = "expense";
-                            } else if (selectedId == R.id.rdo_income) {
-                                type = "income";
-                            }
                             Log.e("type", type);
                             ApiService api = RetroClient.getApiService();
-                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(),  Application.preferences.getUSerid());
+                            Call<String> call = api.add_expense_income("add_expense_income", type, edt_desc.getText().toString(), edt_amount.getText().toString(), txt_date.getText().toString(), Application.preferences.getUSerid());
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
@@ -152,7 +188,7 @@ public class manageExp extends Fragment {
                         }
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Connection Available");
-                    }
+                    }*/
                 }
             }
         });
@@ -161,17 +197,34 @@ public class manageExp extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkValidation2()) {
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
+                    int selectedId = rdogroup_2.getCheckedRadioButtonId();
+                    String type = "";
+
+                    if (selectedId == R.id.rdo_typeexpense) {
+                        type = "expense";
+                    } else if (selectedId == R.id.rdo_typeincome) {
+                        type = "income";
+                    }
+                    expenseReport = new ExpenseReport();
+                    ArrayList<Expense> arrexp= sqlLiteDbHelper.getExpenserecords("select * from manage_expense where expense_type like '" + type + "' and expense_date between '" + txt_startdate.getText().toString() +"' AND '" + txt_enddate.getText().toString() +"'");
+                    expenseReport.setLstExpense(arrexp);
+                    if (arrexp != null && arrexp.size() >0) {
+                        if (expenseReport != null && expenseReport.getLstExpense() != null && expenseReport.getLstExpense().size() > 0) {
+                            Intent intent = new Intent(getContext(), ExpenseReportList.class);
+                            startActivity(intent);
+                        } else {
+                            Utils.ShowMessageDialog(getContext(), "No records found");
+                        }
+                        //  Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                    } else {
+                        Utils.ShowMessageDialog(getContext(), "No Data Available");
+                    }
+
+
+                    /*if (NetworkConnection.isNetworkAvailable(getContext())) {
                         try {
                             showProgressDialog();
-                            int selectedId = rdogroup_2.getCheckedRadioButtonId();
-                            String type = "";
 
-                            if (selectedId == R.id.rdo_typeexpense) {
-                                type = "expense";
-                            } else if (selectedId == R.id.rdo_typeincome) {
-                                type = "income";
-                            }
                             Log.e("type", type);
                             ApiService api = RetroClient.getApiService();
                             Call<String> call = api.get_expense_report("get_expense_report", type, txt_startdate.getText().toString(), txt_enddate.getText().toString());
@@ -197,7 +250,7 @@ public class manageExp extends Fragment {
                         }
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Connection Available");
-                    }
+                    }*/
                 }
             }
         });
@@ -259,10 +312,10 @@ public class manageExp extends Fragment {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getInt("status")== 1) {
+                    if (j.getInt("status") == 1) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getInt("status")== 0) {
+                    } else if (j.getInt("status") == 0) {
                         Status = true;
                         message = j.optString("message");
 

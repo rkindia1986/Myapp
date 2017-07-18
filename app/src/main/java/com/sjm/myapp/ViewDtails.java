@@ -246,7 +246,7 @@ public class ViewDtails extends AppCompatActivity {
                     paymentRecord.setId(customer.getId());
                     sqlLiteDbHelper.InsertPayment(paymentRecord);
                     Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
-
+                    edt_addpayment.setText("");
                    /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
                         try {
                             showProgressDialog();
