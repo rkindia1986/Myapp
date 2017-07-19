@@ -5,6 +5,7 @@ package com.sjm.myapp.pojo;
  */
 
 public class RentRecord {
+    int tempid;
     String id = "";
     String customer_id = "";
     String payment_status = "";
@@ -15,6 +16,7 @@ public class RentRecord {
     String updated_at = "";
     String created_by = "";
     String updated_by = "";
+String sync="";
 
     String customer_total_amount;
 
@@ -34,6 +36,22 @@ public class RentRecord {
     String connection_type;
     String customer_connection_status;
     String no_of_month;
+
+    public int getTempid() {
+        return tempid;
+    }
+
+    public void setTempid(int tempid) {
+        this.tempid = tempid;
+    }
+
+    public String getSync() {
+        return sync;
+    }
+
+    public void setSync(String sync) {
+        this.sync = sync;
+    }
 
     public String getCustomer_total_amount() {
         return customer_total_amount;

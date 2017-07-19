@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.Expense;
 import com.sjm.myapp.pojo.PaymentRecord;
+import com.sjm.myapp.pojo.RentRecord;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
@@ -218,6 +219,15 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.insert("Customer_Master", null, values);
         database.close();
     }
+
+    public void UpdateCustomerPayment(String  custno, String amt) {
+     Customer c=   Get_Customers("select * from Customer_Master where customer_no like '" + custno + "'");
+       int s = Integer.parseInt(c.getAmount()) + Integer.parseInt(amt);
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update Customer_Master set amount='" + s + "' where customer_no like '" + custno + "'");
+        database.close();
+    }
+
     public void InsertExpense(Expense expense) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -472,4 +482,53 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 // TODO Auto-generated method stub
 
     }
+
+
+
+    public void InsertRentRecord(RentRecord customer) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("sync", customer.getSync());
+        values.put("id", customer.getId());
+        values.put("customer_id", customer.getCustomer_no());
+        values.put("payment_status", customer.getPayment_status());
+        values.put("payment_amount", customer.getPayment_amount());
+        values.put("rent_start_date", customer.getRent_start_date());
+        values.put("rent_end_date", customer.getRent_end_date());
+        values.put("created_at", customer.getCreated_at());
+        values.put("created_by", customer.getCreated_by());
+        values.put("updated_at", customer.getUpdated_at());
+        values.put("updated_by", customer.getUpdated_by());
+
+        database.insert("rent_record", null, values);
+        database.close();
+    }
+
+    public void UpdateRentRecord(RentRecord customer) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("sync", customer.getSync());
+        values.put("id", customer.getId());
+        values.put("customer_id", customer.getCustomer_no());
+        values.put("payment_status", customer.getPayment_status());
+        values.put("payment_amount", customer.getPayment_amount());
+        values.put("rent_start_date", customer.getRent_start_date());
+        values.put("rent_end_date", customer.getRent_end_date());
+        values.put("created_at", customer.getCreated_at());
+        values.put("created_by", customer.getCreated_by());
+        values.put("updated_at", customer.getUpdated_at());
+        values.put("updated_by", customer.getUpdated_by());
+
+        database.update("rent_record",  values,"tempid=?"    ,new String[]{String.valueOf(customer.getTempid())});
+        database.close();
+    }
+    public void isUniqueEmail_registration()
+    {
+
+    }
+    public void isUniqueCustomer_no_registration()
+    {
+
+    }
+
 }
