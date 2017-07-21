@@ -6,20 +6,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.Expense;
 import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.RentRecord;
-import com.sjm.myapp.pojo.SearchCustomer;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,6 +77,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 customer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
                 customer.setCity(cursor.getString(cursor.getColumnIndex("city")));
                 customer.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
+                customer.setAmount2(cursor.getString(cursor.getColumnIndex("amount2")));
                 customer.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
                 customer.setRent_amount(cursor.getString(cursor.getColumnIndex("rent_amount")));
                 customer.setCaf_no_1(cursor.getString(cursor.getColumnIndex("caf_no_1")));
