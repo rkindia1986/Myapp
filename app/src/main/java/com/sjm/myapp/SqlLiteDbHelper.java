@@ -173,6 +173,11 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.execSQL("Update Customer_Master set customer_connection_status='" + ConnStatus + "',sync='0' where customer_no='" + custno + "'");
         database.close();
     }
+    public void UpdateRent(String cityname, String rentamt) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update Customer_Master set rent_amount='" + rentamt + "' where city='" + cityname + "'");
+        database.close();
+    }
 
     public void UpdateAmount(String custno, String Amount1, String Amount2) {
         SQLiteDatabase database = this.getWritableDatabase();

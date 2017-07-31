@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.sjm.myapp.ApiService;
-import com.sjm.myapp.Application;
-import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
-import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 
@@ -30,9 +25,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Helly-PC on 05/31/2017.
@@ -52,7 +44,8 @@ public class NewMonth_rent extends Fragment {
     Spinner spinner;
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
-SqlLiteDbHelper sqlLiteDbHelper;
+    SqlLiteDbHelper sqlLiteDbHelper;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,35 +63,8 @@ SqlLiteDbHelper sqlLiteDbHelper;
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
-                    if (NetworkConnection.isNetworkAvailable(getContext())) {
-                        try {
-                            showProgressDialog();
-                            ApiService api = RetroClient.getApiService();
-                            Log.e("spinner.).toString()", spinner.getSelectedItem().toString());
-                            Call<String> call = api.update_new_month_rent("update_new_month_rent", edt_new_month_rent.getText().toString(), spinner.getSelectedItem().toString(),  Application.preferences.getUSerid());
-                            call.enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
-
-                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                                    hideProgressDialog();
-                                    parseResponse(response.body());
-                                }
-
-                                @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                    hideProgressDialog();
-                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                                    Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Utils.ShowMessageDialog(getContext(), "No Connection Available");
-                    }
+                    sqlLiteDbHelper.UpdateRent(spinner.getSelectedItem().toString(), edt_new_month_rent.getText().toString());
+                    Utils.ShowMessageDialog(getContext(), "Rent Updated successfully");
                 }
             }
         });
