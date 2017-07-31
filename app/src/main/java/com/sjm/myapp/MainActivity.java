@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
@@ -29,7 +30,6 @@ import android.widget.Toast;
 import com.sjm.myapp.Fragment.AddCust_Fragment;
 import com.sjm.myapp.Fragment.Backup;
 import com.sjm.myapp.Fragment.BackupRestore;
-import com.sjm.myapp.Fragment.Changerent;
 import com.sjm.myapp.Fragment.Exp_Customer;
 import com.sjm.myapp.Fragment.GetReport;
 import com.sjm.myapp.Fragment.NewMonth_rent;
@@ -38,8 +38,14 @@ import com.sjm.myapp.Fragment.Update_Customer;
 import com.sjm.myapp.Fragment.manageExp;
 import com.sjm.myapp.Fragment.send_Alert;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "Mainact" ;
     NavigationView navigationView;
     Preferences preferences;
     SqlLiteDbHelper sqlLiteDbHelper;
@@ -130,6 +136,29 @@ public class MainActivity extends AppCompatActivity
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         Application.preferences.setDeviceId(android_id + "1234");
         Application.preferences.setimei_number(mngr.getDeviceId() + "1234");
+
+
+
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            if (sd.canWrite()) {
+                String currentDBPath = "/data/data/" + getPackageName() + "/databases/cable.sqlite";
+                String backupDBPath = "cable.sqlite";
+                File currentDB = new File(currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.e(TAG,"currentDB 111 "+backupDB);
+                if (currentDB.exists()) {
+                    Log.e(TAG,"currentDB "+backupDB);
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setTitle(getString(R.string.search).toUpperCase());
         Search_Fragment fragmentMenu = new Search_Fragment();

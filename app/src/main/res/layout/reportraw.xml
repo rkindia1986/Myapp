@@ -15,7 +15,7 @@
             android:id="@+id/txt1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:padding="2dp"
             android:text="Name"
             android:textColor="@color/black" />
@@ -24,7 +24,7 @@
             android:id="@+id/txt2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:padding="2dp"
             android:text="Id"
             android:textColor="@color/black" />

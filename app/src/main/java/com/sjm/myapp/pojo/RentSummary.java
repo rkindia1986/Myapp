@@ -5,7 +5,8 @@ package com.sjm.myapp.pojo;
  */
 
 public class RentSummary {
-              String total_based_on_total;
+
+    String total_based_on_total;
     String rent_from_date;
     String rent_end_date;
 

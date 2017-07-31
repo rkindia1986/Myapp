@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,17 +18,13 @@ import android.widget.Spinner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sjm.myapp.ApiService;
-import com.sjm.myapp.ExpenseReportList;
 import com.sjm.myapp.GetReportList;
-import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
-import com.sjm.myapp.RentList;
-import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
-import com.sjm.myapp.ViewDtails;
+import com.sjm.myapp.pojo.RentRecord;
 import com.sjm.myapp.pojo.RentRecordList;
+import com.sjm.myapp.pojo.RentSummary;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,17 +34,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.sjm.myapp.Fragment.manageExp.expenseReport;
 
 /**
  * Created by Helly-PC on 05/31/2017.
  */
 
-public class GetReport extends Fragment   {
+public class GetReport extends Fragment {
     private static final String TAG = "GetReport";
     ProgressDialog pd;
     private Unbinder unbinder;
@@ -84,6 +74,7 @@ public class GetReport extends Fragment   {
     ArrayAdapter<String> adapter;
 
     public static RentRecordList rentRecordList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.reports, container, false);
@@ -140,9 +131,8 @@ public class GetReport extends Fragment   {
             if (j != null) {
                 if (body.contains("status")) {
                     if (j.getString("status").equalsIgnoreCase("0")) {
-                        JSONArray jsonArray =  j.getJSONArray("result");
-                        for(int i=0;i<jsonArray.length();i++)
-                        {
+                        JSONArray jsonArray = j.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             cityList.add(jsonArray.getString(i));
                         }
                         adapter.notifyDataSetChanged();
@@ -163,6 +153,7 @@ public class GetReport extends Fragment   {
             Utils.ShowMessageDialog(getContext(), "Error Occurred");
         }
     }
+
     public void showProgressDialog() {
         pd = new ProgressDialog(getContext());
         pd.setMessage("Please wait");
@@ -188,58 +179,42 @@ public class GetReport extends Fragment   {
     }
 
     public void getReport() {
-
-        if (NetworkConnection.isNetworkAvailable(getContext())) {
-            try {
-                showProgressDialog();
-                int selectedId = rdotype.getCheckedRadioButtonId();
-                String type = "";
-                if (selectedId == R.id.rdo_paid) {
-                    type = "PAID";
-                } else if (selectedId == R.id.rdo_due) {
-                    type = "DUE";
-                }
-
-
-                 selectedId = rdo_status.getCheckedRadioButtonId();
-                String con_status = "";
-                if (selectedId == R.id.rdo_all) {
-                    con_status = "ALL";
-                } else if (selectedId == R.id.rdo_off) {
-                    con_status = "off";
-                }else if (selectedId == R.id.rdo_on) {
-                    con_status = "on";
-                }
-
-
-
-
-                ApiService api = RetroClient.getApiService();
-                Call<String> call = api.get_rent_report("get_rent_report",txt_startdate.getText().toString(),txt_enddate.getText().toString(),con_status,type,spinner.getSelectedItem().toString());
-                Log.e(TAG, "getReport: call   "+ call.request().url().toString() );
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
-
-                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                        hideProgressDialog();
-                        parseGetReportResponse(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        hideProgressDialog();
-                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                        Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Utils.ShowMessageDialog(getContext(), "No Connection Available");
+        int selectedId = rdotype.getCheckedRadioButtonId();
+        String type = "";
+        if (selectedId == R.id.rdo_paid) {
+            type = "PAID";
+        } else if (selectedId == R.id.rdo_due) {
+            type = "DUE";
         }
+        selectedId = rdo_status.getCheckedRadioButtonId();
+        String con_status = "";
+        if (selectedId == R.id.rdo_all) {
+            con_status = "ALL";
+        } else if (selectedId == R.id.rdo_off) {
+            con_status = "off";
+        } else if (selectedId == R.id.rdo_on) {
+            con_status = "on";
+        }
+
+        rentRecordList = new RentRecordList();
+        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getRentRecordbycity(spinner.getSelectedItem().toString(), txt_startdate.getText().toString(), txt_enddate.getText().toString(), con_status, type);
+        if (rentRecords != null && rentRecords.size() > 0) {
+            int total = 0;
+            for (int i = 0; i < rentRecords.size(); i++) {
+                total = total + Integer.parseInt(rentRecords.get(i).getPayment_amount());
+            }
+            RentSummary rentSummary = new RentSummary();
+            rentSummary.setRent_from_date(txt_startdate.getText().toString());
+            rentSummary.setRent_end_date(txt_enddate.getText().toString());
+            rentSummary.setTotal_based_on_total(total + "");
+            rentRecordList.setRentSummary(rentSummary);
+            rentRecordList.setRentRecords(rentRecords);
+            Intent intent = new Intent(getContext(), GetReportList.class);
+            startActivity(intent);
+        } else {
+            Utils.ShowMessageDialog(getContext(), "No Record Available");
+        }
+
 
     }
 
@@ -251,10 +226,10 @@ public class GetReport extends Fragment   {
             if (j != null) {
                 if (body.contains("status")) {
 
-                    if (j.getInt("status")==1) {
+                    if (j.getInt("status") == 1) {
                         message = j.optString("message");
                         Status = false;
-                    } else if (j.getInt("status")==0) {
+                    } else if (j.getInt("status") == 0) {
                         Status = true;
                         message = j.optString("message");
                         Gson gson = new GsonBuilder().create();

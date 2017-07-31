@@ -2,7 +2,6 @@ package com.sjm.myapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -15,9 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sjm.myapp.Fragment.GetReport;
-import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.RentRecord;
-import com.sjm.myapp.pojo.RentRecordList;
 
 import java.util.ArrayList;
 
@@ -100,8 +97,8 @@ public class GetReportList extends AppCompatActivity {
                 v = new ViewHolder();
                 LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = li.inflate(R.layout.reportraw, null);
-                v.txtid = (TextView) convertView.findViewById(R.id.txt1);
-                v.txtcustname = (TextView) convertView.findViewById(R.id.txt2);
+                v.txtcustname = (TextView) convertView.findViewById(R.id.txt1);
+                v.txtid = (TextView) convertView.findViewById(R.id.txt2);
                 v.txtAdd = (TextView) convertView.findViewById(R.id.txt3);
                 v.txtpaymentstatus = (TextView) convertView.findViewById(R.id.txt4);
                 v.txtpayamt = (TextView) convertView.findViewById(R.id.txt5);
@@ -115,13 +112,13 @@ public class GetReportList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtid.setText("Cust Id: " + rentRecords.get(position).getCustomer_id());
+            v.txtid.setText("Cust No: " + rentRecords.get(position).getCustomer_no());
             v.txtcustname.setText("Name:" + rentRecords.get(position).getName());
 
-            v.txtcreated.setText("Created : " +  rentRecords.get(position).getCreated_at());
+            v.txtcreated.setText("date:" +  rentRecords.get(position).getCreated_at());
 
             v.txtAdd.setText("Add:" + rentRecords.get(position).getAddress() + ", " +rentRecords.get(position).getCity());
-            v.txtpaymentstatus.setText("Status:" + rentRecords.get(position).getPayment_status());
+            v.txtpaymentstatus.setText("" + rentRecords.get(position).getPayment_status());
             v.txtpayamt.setText("Amt:" + rentRecords.get(position).getPayment_amount());
 
             return convertView;

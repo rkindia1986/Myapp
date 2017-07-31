@@ -16,7 +16,7 @@ public class RentRecord {
     String updated_at = "";
     String created_by = "";
     String updated_by = "";
-String sync="";
+    String sync = "";
 
     String customer_total_amount;
 
