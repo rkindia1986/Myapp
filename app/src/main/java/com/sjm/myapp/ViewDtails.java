@@ -34,6 +34,7 @@ import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.PaymentRecordsList;
 import com.sjm.myapp.pojo.PlanAlert;
+import com.sjm.myapp.pojo.RentRecord;
 import com.sjm.myapp.pojo.RentRecordsList;
 
 import org.json.JSONObject;
@@ -130,6 +131,7 @@ public class ViewDtails extends AppCompatActivity {
     @BindView(R.id.datePicker)
     DatePicker datePicker;
     SqlLiteDbHelper sqlLiteDbHelper;
+    Date PlanENddate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,16 +239,20 @@ public class ViewDtails extends AppCompatActivity {
             public void onClick(View view) {
                 if (checkValidation()) {
                     PaymentRecord paymentRecord = new PaymentRecord();
-                 String   sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+                    String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
                     paymentRecord.setSync("0");
+                    int s1 = Integer.parseInt(customer.getAmount()) + Integer.parseInt(edt_addpayment.getText().toString());
+                    int s2 = Integer.parseInt(customer.getAmount2()) + Integer.parseInt(edt_addpayment.getText().toString());
                     paymentRecord.setPayment_amount(edt_addpayment.getText().toString());
                     paymentRecord.setCreated_by(Application.preferences.getUSerid());
                     paymentRecord.setCustomer_id(customer.getId());
                     paymentRecord.setCreated_at(sdate);
                     paymentRecord.setId(customer.getId());
                     sqlLiteDbHelper.InsertPayment(paymentRecord);
+                    sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), s1 + "", s2 + "");
                     Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
                     edt_addpayment.setText("");
+                    AUtoUpdateRent();
                    /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
                         try {
                             showProgressDialog();
@@ -305,6 +311,7 @@ public class ViewDtails extends AppCompatActivity {
             }
         });
         customer = categoryListModel.getLstCustomer().get(selectedId);
+        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
         setdata();
         btn_deleteclient.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -338,6 +345,7 @@ public class ViewDtails extends AppCompatActivity {
 
             }
         });
+        AUtoUpdateRent();
     }
 
     @Override
@@ -669,7 +677,8 @@ public class ViewDtails extends AppCompatActivity {
         paymentRecordsList = new PaymentRecordsList();
 
 
-        ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * customer_payment where id='" + customer.getCustomer_no() + "'");
+        ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * from customer_payment where id='" + customer.getId() + "'");
+        //ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * from customer_payment where id='" + customer.getId() + "'");
         if (paymentRecords != null && paymentRecords.size() > 0) {
             paymentRecordsList.setLstPaymentrecords(paymentRecords);
             startActivity(new Intent(ViewDtails.this, PaymentList.class));
@@ -732,7 +741,7 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public void GetRentRecord() {
-        if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
+       /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
                 showProgressDialog();
                 ApiService api = RetroClient.getApiService();
@@ -761,6 +770,16 @@ public class ViewDtails extends AppCompatActivity {
             }
         } else {
             Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+        }
+*/
+        rentRecordsList = new RentRecordsList();
+        ArrayList<RentRecord> arrrent = sqlLiteDbHelper.getRentRecord(customer.getCustomer_no());
+        rentRecordsList.setLstrentrecord(arrrent);
+
+        if (rentRecordsList != null && rentRecordsList.getLstrentrecord().size() > 0) {
+            startActivity(new Intent(ViewDtails.this, RentList.class));
+        } else {
+            Utils.ShowMessageDialog(ViewDtails.this, "Records not available");
         }
 
     }
@@ -889,8 +908,8 @@ public class ViewDtails extends AppCompatActivity {
                     if (myDate != null) {
                         calendar.setTime(myDate);
                         calendar.add(Calendar.MONTH, Integer.parseInt(customer.getNo_of_month()));
-                        Date date = calendar.getTime();
-                        txt_enddate.setText(simpleDateFormat.format(date));
+                        PlanENddate = calendar.getTime();
+                        txt_enddate.setText(simpleDateFormat.format(PlanENddate));
 
                     }
 
@@ -976,7 +995,7 @@ public class ViewDtails extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
+            //  Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
         }
     }
 
@@ -1028,5 +1047,228 @@ public class ViewDtails extends AppCompatActivity {
             }
         }
     }
+
+    public void AUtoUpdateRent() {
+        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+        /*if (TextUtils.isEmpty(customer.getAmount2()) || customer.getAmount2().equalsIgnoreCase("")) {
+            customer.setAmount2(customer.getAmount());
+
+        }*/
+        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getPaidRentRecordbydate(customer.getCustomer_no(), customer.getRent_start_date());
+        String StartRentDate = "";
+        String EndRentDate = "";
+        Calendar ccc = Calendar.getInstance();
+        Date cdate = ccc.getTime();
+        if (rentRecords != null && rentRecords.size() > 0) {
+            StartRentDate = rentRecords.get(0).getRent_start_date();
+            Calendar calendar = Calendar.getInstance();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date myDate = simpleDateFormat.parse(StartRentDate);
+                if (myDate != null) {
+                    calendar.setTime(myDate);
+                    calendar.add(Calendar.MONTH, 1);
+                    Date startdate = calendar.getTime();
+                    StartRentDate = simpleDateFormat.format(startdate);
+                    calendar.add(Calendar.MONTH, 1);
+                    Date enddate = calendar.getTime();
+                    EndRentDate = simpleDateFormat.format(enddate);
+                    boolean PlanEnded = false;
+                    if (PlanENddate != null) {
+                        if (startdate.after(PlanENddate)) {
+                            PlanEnded = true;
+                        }
+                    }
+                    if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                        Calendar c = Calendar.getInstance();
+                        int mday = c.get(Calendar.DAY_OF_MONTH);
+                        int mmonth = c.get(Calendar.MONTH);
+                        int myear = c.get(Calendar.YEAR);
+                        int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                        int mmin = c.get(Calendar.MINUTE);
+                        int msec = c.get(Calendar.SECOND);
+                        String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                        String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+
+                        int amount = Integer.parseInt(customer.getAmount2());
+                        int rentamount = Integer.parseInt(customer.getRent_amount());
+                        RentRecord rentRecord = new RentRecord();
+                        rentRecord.setSync("0");
+                        rentRecord.setCustomer_no(customer.getCustomer_no());
+                        rentRecord.setId(customer.getId());
+
+
+                        rentRecord.setPayment_amount(customer.getRent_amount());
+                        rentRecord.setCreated_by(Application.preferences.getUSerid());
+                        rentRecord.setCreated_at(created_at);
+                        rentRecord.setUpdated_at(updatedat);
+                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+
+
+                        Gson gson = new GsonBuilder().create();
+
+                        Log.e("i = ", gson.toJson(rentRecord).toString());
+                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+                        rentRecord.setRent_start_date(StartRentDate);
+
+                        if (Integer.parseInt(customer.getAmount2()) >= Integer.parseInt(customer.getRent_amount())) {
+                            ///Insert Status Paid
+                            rentRecord.setRent_start_date(StartRentDate);
+                            rentRecord.setRent_end_date(EndRentDate);
+                            rentRecord.setPayment_status("PAID");
+                            amount = amount - rentamount;
+                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount(), amount + "");
+                            AUtoUpdateRent();
+                        } else {
+                            ///Insert Status DUE
+                            rentRecord.setPayment_status("DUE");
+
+                            for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
+
+                                calendar = Calendar.getInstance();
+                                try {
+                                    myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
+                                    if (myDate != null) {
+                                        calendar.setTime(myDate);
+                                        calendar.add(Calendar.MONTH, 1);
+                                        enddate = calendar.getTime();
+                                        rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
+                                        Log.e("i = " + i, gson.toJson(rentRecord).toString());
+                                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                                        PlanEnded = false;
+                                        if (PlanENddate != null) {
+                                            if (myDate.after(PlanENddate)) {
+                                                PlanEnded = true;
+                                            }
+                                        }
+
+                                        if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                            rentRecord.setRent_start_date(rentRecord.getRent_end_date());
+                                        } else {
+                                            break;
+                                        }
+                                    }
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "AUtoUpdateRent: " + "Date is bigger than current date");
+                    }
+
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            StartRentDate = customer.getRent_start_date();
+            Calendar calendar = Calendar.getInstance();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date myDate = simpleDateFormat.parse(StartRentDate);
+                if (myDate != null) {
+
+                    calendar.setTime(myDate);
+                    calendar.add(Calendar.MONTH, 1);
+                    Date enddate = calendar.getTime();
+                    EndRentDate = simpleDateFormat.format(enddate);
+                    boolean PlanEnded = false;
+                    if (PlanENddate != null) {
+                        if (myDate.after(PlanENddate)) {
+                            PlanEnded = true;
+                        }
+                    }
+                    if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                        Calendar c = Calendar.getInstance();
+                        int mday = c.get(Calendar.DAY_OF_MONTH);
+                        int mmonth = c.get(Calendar.MONTH);
+                        int myear = c.get(Calendar.YEAR);
+                        int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                        int mmin = c.get(Calendar.MINUTE);
+                        int msec = c.get(Calendar.SECOND);
+                        String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                        String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+
+                        int amount = Integer.parseInt(customer.getAmount2());
+                        int rentamount = Integer.parseInt(customer.getRent_amount());
+
+                        RentRecord rentRecord = new RentRecord();
+                        rentRecord.setSync("0");
+                        rentRecord.setCustomer_no(customer.getCustomer_no());
+                        rentRecord.setId(customer.getId());
+
+                        rentRecord.setRent_start_date(StartRentDate);
+                        rentRecord.setRent_end_date(EndRentDate);
+                        rentRecord.setPayment_amount(customer.getRent_amount());
+                        rentRecord.setCreated_by(Application.preferences.getUSerid());
+                        rentRecord.setCreated_at(created_at);
+                        rentRecord.setUpdated_at(updatedat);
+                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                        Gson gson = new GsonBuilder().create();
+
+                        Log.e("i = ", gson.toJson(rentRecord).toString());
+                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+
+                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                        if (Integer.parseInt(customer.getAmount2()) >= Integer.parseInt(customer.getRent_amount())) {
+                            ///Insert Status Paid
+                            rentRecord.setPayment_status("PAID");
+                            amount = amount - rentamount;
+                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount(), amount + "");
+                            AUtoUpdateRent();
+                        } else {
+                            ///Insert Status DUE
+                            rentRecord.setPayment_status("DUE");
+                            for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
+
+                                calendar = Calendar.getInstance();
+                                try {
+                                    myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
+                                    if (myDate != null) {
+                                        calendar.setTime(myDate);
+                                        calendar.add(Calendar.MONTH, 1);
+                                        enddate = calendar.getTime();
+                                        rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
+                                        Log.e("i = " + i, gson.toJson(rentRecord).toString());
+                                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                                        if (enddate.equals(cdate) || enddate.before(cdate)) {
+                                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                            rentRecord.setRent_start_date(rentRecord.getRent_end_date());
+                                        } else {
+                                            break;
+                                        }
+                                    }
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+
+                    } else {
+
+                    }
+
+                }
+
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 
 }

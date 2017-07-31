@@ -27,11 +27,12 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button android:background="@drawable/btn_selector"
+        <Button
             android:id="@+id/btn_loaddata"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_selector"
             android:text="@string/load_data" />
     </LinearLayout>
 
@@ -40,9 +41,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout android:layout_marginTop="5dp"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -92,7 +94,8 @@
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
 
                     <EditText
                         android:id="@+id/amt"
@@ -237,12 +240,12 @@
                         android:orientation="horizontal">
 
 
-
                         <RadioButton
                             android:id="@+id/rdo_continus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp" android:checked="true"
+                            android:layout_margin="5dp"
+                            android:checked="true"
                             android:text="@string/continus" />
 
                         <RadioButton
@@ -310,10 +313,11 @@
                 </LinearLayout>
 
 
-                <Button android:background="@drawable/btn_selector"
+                <Button
                     android:id="@+id/btn_updatecust"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_selector"
                     android:text="@string/up_cust" />
 
 

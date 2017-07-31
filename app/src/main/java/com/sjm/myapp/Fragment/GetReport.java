@@ -26,6 +26,7 @@ import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RentList;
 import com.sjm.myapp.RetroClient;
+import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.ViewDtails;
 import com.sjm.myapp.pojo.RentRecordList;
@@ -78,7 +79,7 @@ public class GetReport extends Fragment   {
 
     @BindView(R.id.btn_getreport)
     Button btn_getreport;
-
+    SqlLiteDbHelper sqlLiteDbHelper;
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
 
@@ -87,7 +88,8 @@ public class GetReport extends Fragment   {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.reports, container, false);
         unbinder = ButterKnife.bind(this, view);
-
+        sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
@@ -122,35 +124,11 @@ public class GetReport extends Fragment   {
 
     public void getCityList() {
 
-        if (NetworkConnection.isNetworkAvailable(getContext())) {
-            try {
-                showProgressDialog();
-                ApiService api = RetroClient.getApiService();
-                Call<String> call = api.get_city_list("get_city_list");
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
-
-                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                        hideProgressDialog();
-                        parseCityResponse(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        hideProgressDialog();
-                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                        Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Utils.ShowMessageDialog(getContext(), "No Connection Available");
-        }
-
+        cityList.clear();
+        cityList = sqlLiteDbHelper.Get_AllCity();
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
+        adapter.notifyDataSetChanged();
+        spinner.setAdapter(adapter);
     }
 
     private void parseCityResponse(String body) {

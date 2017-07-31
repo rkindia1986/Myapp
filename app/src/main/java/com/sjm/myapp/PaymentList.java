@@ -65,12 +65,12 @@ public class PaymentList extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return Search_Fragment.categoryListModel.getLstCustomer().size();
+            return paymentRecords.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return Search_Fragment.categoryListModel.getLstCustomer().get(position);
+            return paymentRecords.get(position);
         }
 
         @Override
@@ -97,7 +97,7 @@ public class PaymentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtid.setText("ID : " + paymentRecords.get(position).getCustomer_id());
+            v.txtid.setText("ID : " + paymentRecords.get(position).getId());
             v.txtdate.setText("Date: "+ paymentRecords.get(position).getCreated_at());
             v.txtamt.setText("Amt: "+ paymentRecords.get(position).getPayment_amount());
 

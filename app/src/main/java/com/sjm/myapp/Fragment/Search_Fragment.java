@@ -479,7 +479,7 @@ public class Search_Fragment extends Fragment {
                             Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
                             customer.setSync("1");
                             customer.setSyncid(selCustomer.getSyncid());
-
+                            customer.setAmount2(selCustomer.getAmount2());
                             sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
                             sqlLiteDbHelper.UpdateAllPaymentIDs(selCustomer.getSyncid(),customer.getId());
                             sqlLiteDbHelper.UpdateAllExpenseIDs(selCustomer.getSyncid(),customer.getId());

@@ -65,12 +65,12 @@ public class RentList extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return Search_Fragment.categoryListModel.getLstCustomer().size();
+            return rentRecords.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return Search_Fragment.categoryListModel.getLstCustomer().get(position);
+            return rentRecords.get(position);
         }
 
         @Override
@@ -100,7 +100,7 @@ public class RentList extends AppCompatActivity {
             }
 
             v.txtid.setText("ID: " + rentRecords.get(position).getId());
-            v.txtpayamt.setText("Amt: " + rentRecords.get(position).getAmount());
+            v.txtpayamt.setText("Amt: " + rentRecords.get(position).getPayment_amount());
             v.txtPayStatus.setText("Ststus: " + rentRecords.get(position).getPayment_status());
             v.txtrentstart.setText("Rent Start: " + rentRecords.get(position).getRent_start_date());
             v.rentENd.setText("Rent End: " + rentRecords.get(position).getRent_end_date());

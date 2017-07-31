@@ -28,6 +28,7 @@ import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.RentRecord;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONException;
@@ -151,6 +152,7 @@ public class AddCust_Fragment extends Fragment {
                         jsonObject.put("address", cust_add.getText().toString());
                         jsonObject.put("city", cust_city.getText().toString());
                         jsonObject.put("amount", amt.getText().toString());
+                        jsonObject.put("amount2", amt.getText().toString());
                         jsonObject.put("phone", phone.getText().toString());
                         jsonObject.put("rent_amount", rent_amt.getText().toString());
                         jsonObject.put("stb_account_no_1", stb_acc_no.getText().toString());
@@ -209,7 +211,63 @@ public class AddCust_Fragment extends Fragment {
                     if (sqlLiteDbHelper.checkCustomer(customer)) {
                         Utils.ShowMessageDialog(getContext(), "Customer Exist. Customer number is exist");
                     } else {
+                        Log.e(TAG, "onClick:amount 2 " + customer.getAmount2());
                         sqlLiteDbHelper.UpdateCustomer(customer);
+                        sqlLiteDbHelper.InsertCity(cust_city.getText().toString());
+                    /*    int amount = Integer.parseInt(customer.getAmount2());
+                        int rentamount = Integer.parseInt(customer.getRent_amount());
+                        sqlLiteDbHelper.InsertCity(cust_city.getText().toString());
+                        if (!TextUtils.isEmpty(customer.getNo_of_month())) {
+
+                            for (int i = 0; i < Integer.parseInt(customer.getNo_of_month()); i++) {
+                                Calendar calendar = Calendar.getInstance();
+
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                try {
+                                    Date myDate = simpleDateFormat.parse(customer.getRent_start_date());
+                                    if (myDate != null) {
+                                        calendar.setTime(myDate);
+                                        calendar.add(Calendar.MONTH, 1);
+                                        Date date = calendar.getTime();
+                                        customer.setRent_end_date(simpleDateFormat.format(date));
+
+                                        RentRecord rentRecord = new RentRecord();
+                                        rentRecord.setSync("0");
+                                        rentRecord.setCustomer_no(customer.getCustomer_no());
+                                        rentRecord.setId(customer.getId());
+
+                                        rentRecord.setRent_start_date(customer.getRent_start_date());
+                                        rentRecord.setRent_end_date(customer.getRent_end_date());
+                                        rentRecord.setPayment_amount(customer.getRent_amount());
+                                        rentRecord.setCreated_by(Application.preferences.getUSerid());
+                                        rentRecord.setCreated_at(created_at);
+                                        rentRecord.setUpdated_at(updatedat);
+                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+
+                                        if (rentamount <= amount) {
+                                            rentRecord.setPayment_status("PAID");
+                                            amount = amount - rentamount;
+
+                                        } else {
+                                            rentRecord.setPayment_status("DUE");
+                                        }
+                                        Log.e("i = " + i, gson.toJson(rentRecord).toString());
+                                        Log.e("rent amt| amt",customer.getAmount() +" " + amount +" " + rentamount);
+                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                                        sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                        customer.setRent_start_date(customer.getRent_end_date());
+                                        sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount(), amount + "");
+
+                                    }
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                        }
+*/
                         Utils.ShowMessageDialog(getContext(), "Saved Successfully");
                         cleardata();
                     }
@@ -222,7 +280,7 @@ public class AddCust_Fragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 int selectedId = rdogroup.getCheckedRadioButtonId();
-                 if (selectedId == R.id.rdo_continus) {
+                if (selectedId == R.id.rdo_continus) {
                     edt_month.setEnabled(false);
                     lyt_rentplanchange.setVisibility(View.VISIBLE);
                 } else if (selectedId == R.id.rdo_plan) {
@@ -385,8 +443,6 @@ public class AddCust_Fragment extends Fragment {
         stb_nuid2.setText("");
         cafno2.setText("");
         rdo_continus.setChecked(true);
-
-
     }
 
     public void UploadCustomer() {

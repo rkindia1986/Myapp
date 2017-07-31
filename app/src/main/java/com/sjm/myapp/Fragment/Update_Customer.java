@@ -60,8 +60,6 @@ public class Update_Customer extends Fragment {
     EditText cust_no;
     @BindView(R.id.btn_loaddata)
     Button btn_loaddata;
-
-
     @BindView(R.id.cust_name)
     EditText cust_name;
     @BindView(R.id.cust_add)
@@ -211,6 +209,7 @@ public class Update_Customer extends Fragment {
                         jsonObject.put("address", cust_add.getText().toString());
                         jsonObject.put("city", cust_city.getText().toString());
                         jsonObject.put("amount", amt.getText().toString());
+                        jsonObject.put("amount2", amt.getText().toString());
                         jsonObject.put("phone", phone.getText().toString());
                         jsonObject.put("rent_amount", rent_amt.getText().toString());
                         jsonObject.put("stb_account_no_1", stb_acc_no.getText().toString());
