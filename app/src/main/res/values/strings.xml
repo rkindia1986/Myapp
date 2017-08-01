@@ -9,6 +9,7 @@
     <string name="add_cust">Add Customer</string>
     <string name="up_cust">Update Customer</string>
     <string name="get_report">get Reports</string>
+    <string name="loaddata">Get Data</string>
     <string name="send_alert">Send Alert</string>
     <string name="exp_cust">Expiring Customer</string>
     <string name="backup">Backup</string>

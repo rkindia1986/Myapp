@@ -196,7 +196,7 @@ public class GetReport extends Fragment {
         } else if (selectedId == R.id.rdo_on) {
             con_status = "on";
         }
-        String city="";
+        String city="%";
         if(spinner.getSelectedItemPosition() >0)
         {
             city= spinner.getSelectedItem().toString().toString();

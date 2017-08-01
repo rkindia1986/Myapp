@@ -107,7 +107,7 @@ public class AddCust_Fragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
         sqlLiteDbHelper.openDataBase();
-
+        edt_month.setEnabled(false);
         btn_addcust.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,7 +226,7 @@ public class AddCust_Fragment extends Fragment {
                     if (sqlLiteDbHelper.checkCustomer(customer)) {
                         Utils.ShowMessageDialog(getContext(), "Customer Exist. Customer number is exist");
                     } else {
-                        Log.e(TAG, "onClick:amount 2 " + customer.getAmount2());
+
                         sqlLiteDbHelper.UpdateCustomer(customer);
                         sqlLiteDbHelper.InsertCity(cust_city.getText().toString());
 

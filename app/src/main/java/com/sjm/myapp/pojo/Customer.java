@@ -15,7 +15,6 @@ public class Customer {
     String address = "";
     String city = "";
     String amount = "";
-    String amount2 = "";
     String phone = "";
     String rent_amount = "";
     String stb_account_no_1 = "";
@@ -33,6 +32,7 @@ public class Customer {
     String created_by = "";
     String updated_at = "";
     String updated_by = "";
+    String amount2 = "";
 
     public String getAmount2() {
         return amount2;

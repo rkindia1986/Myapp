@@ -327,7 +327,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:inputType="number"
+                    android:inputType="numberSigned"
                     android:singleLine="true"
                     android:text="" />
 

@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sjm.myapp.Fragment.Search_Fragment;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -25,7 +23,7 @@ import butterknife.Unbinder;
  * Created by Helly-PC on 06/01/2017.
  */
 
-public class SearchList extends AppCompatActivity {
+public class ExpiringList extends AppCompatActivity {
     private static final String TAG = "Backup";
     ProgressDialog pd;
     private Unbinder unbinder;
@@ -45,7 +43,7 @@ public class SearchList extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        setTitle("SEARCH LIST");
+        setTitle("EXPIRING CUSTOMERS");
 
         searchListAdapter = new SearchListAdapter();
         searchListAdapter.notifyDataSetChanged();
@@ -54,7 +52,7 @@ public class SearchList extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(SearchList.this, ViewDtails.class);
+                Intent intent = new Intent(ExpiringList.this, ViewDtails.class);
                 intent.putExtra("selected", i);
                 startActivity(intent);
             }

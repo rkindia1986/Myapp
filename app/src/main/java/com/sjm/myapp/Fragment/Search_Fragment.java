@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.Constant;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -76,7 +77,7 @@ public class Search_Fragment extends Fragment {
     Button btnsearch;
     ArrayList<String> s = new ArrayList<String>();
     String connectionStatus = "All";
-    public static SearchCustomer categoryListModel = new SearchCustomer();
+
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
     private SqlLiteDbHelper sqlLiteDbHelper;
@@ -137,7 +138,7 @@ public class Search_Fragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else {*/
-                    categoryListModel = new SearchCustomer();
+                    Constant.categoryListModel = new SearchCustomer();
                     String city="";
                     if(spinner.getSelectedItemPosition() >0)
                     {
@@ -152,7 +153,7 @@ public class Search_Fragment extends Fragment {
                             + "%' and customer_connection_status like '%" + connectionStatus + "%'";
                     ArrayList<Customer> customers = sqlLiteDbHelper.Get_AllCustomers2(que);
                     if (customers != null && customers.size() > 0) {
-                        categoryListModel.setLstCustomer(customers);
+                        Constant.categoryListModel.setLstCustomer(customers);
                         Intent intent = new Intent(getActivity(), SearchList.class);
                         startActivity(intent);
                     } else {
@@ -176,9 +177,9 @@ public class Search_Fragment extends Fragment {
                     Utils.ShowMessageDialog(getContext(), j.getString("message"));
                 } else {
                     Gson gson = new GsonBuilder().create();
-                    categoryListModel = gson.fromJson(body, SearchCustomer.class);
-                    if (categoryListModel.getStatus() == 1) {
-                        Utils.ShowMessageDialog(getContext(), categoryListModel.getMessage());
+                    Constant.categoryListModel = gson.fromJson(body, SearchCustomer.class);
+                    if (Constant.categoryListModel.getStatus() == 1) {
+                        Utils.ShowMessageDialog(getContext(), Constant.categoryListModel.getMessage());
                     } else {
                         Intent intent = new Intent(getActivity(), SearchList.class);
                         startActivity(intent);
@@ -482,7 +483,7 @@ public class Search_Fragment extends Fragment {
                             Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
                             customer.setSync("1");
                             customer.setSyncid(selCustomer.getSyncid());
-                            customer.setAmount2(selCustomer.getAmount2());
+                           // customer.setAmount2(selCustomer.getAmount2());
                             sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
                             sqlLiteDbHelper.UpdateAllPaymentIDs(selCustomer.getSyncid(),customer.getId());
                             sqlLiteDbHelper.UpdateAllExpenseIDs(selCustomer.getSyncid(),customer.getId());

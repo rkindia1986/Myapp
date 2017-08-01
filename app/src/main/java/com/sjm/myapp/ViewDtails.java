@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.PaymentRecordsList;
@@ -53,7 +51,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.sjm.myapp.Fragment.Search_Fragment.categoryListModel;
 
 /**
  * Created by Helly-PC on 06/01/2017.
@@ -132,6 +129,7 @@ public class ViewDtails extends AppCompatActivity {
     DatePicker datePicker;
     SqlLiteDbHelper sqlLiteDbHelper;
     Date PlanENddate;
+    int DueAMT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,17 +240,20 @@ public class ViewDtails extends AppCompatActivity {
                     String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
                     paymentRecord.setSync("0");
                     int s1 = Integer.parseInt(customer.getAmount()) + Integer.parseInt(edt_addpayment.getText().toString());
-                    int s2 = Integer.parseInt(customer.getAmount2()) + Integer.parseInt(edt_addpayment.getText().toString());
                     paymentRecord.setPayment_amount(edt_addpayment.getText().toString());
                     paymentRecord.setCreated_by(Application.preferences.getUSerid());
                     paymentRecord.setCustomer_id(customer.getId());
                     paymentRecord.setCreated_at(sdate);
                     paymentRecord.setId(customer.getId());
                     sqlLiteDbHelper.InsertPayment(paymentRecord);
-                    sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), s1 + "", s2 + "");
+                    sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), s1 + "", "");
                     Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
                     edt_addpayment.setText("");
                     AUtoUpdateRent();
+                    customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+                    setdata();
+
+
                    /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
                         try {
                             showProgressDialog();
@@ -310,9 +311,9 @@ public class ViewDtails extends AppCompatActivity {
                 GetRentRecord();
             }
         });
-        customer = categoryListModel.getLstCustomer().get(selectedId);
+        customer = Constant.categoryListModel.getLstCustomer().get(selectedId);
         customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
-        setdata();
+
         btn_deleteclient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -346,6 +347,8 @@ public class ViewDtails extends AppCompatActivity {
             }
         });
         AUtoUpdateRent();
+        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+        setdata();
     }
 
     @Override
@@ -616,9 +619,9 @@ public class ViewDtails extends AppCompatActivity {
 
                         Status = true;
                         message = j.optString("message");
-                        Log.e(".getLstCustomer()", Search_Fragment.categoryListModel.getLstCustomer().size() + "");
-                        Search_Fragment.categoryListModel.getLstCustomer().remove(selectedId);
-                        Log.e("AFTER.getLstCustomer()", Search_Fragment.categoryListModel.getLstCustomer().size() + "");
+                        Log.e(".getLstCustomer()", Constant.categoryListModel.getLstCustomer().size() + "");
+                        Constant.categoryListModel.getLstCustomer().remove(selectedId);
+                        Log.e("AFTER.getLstCustomer()", Constant.categoryListModel.getLstCustomer().size() + "");
 
                     } else {
                         Status = false;
@@ -893,7 +896,7 @@ public class ViewDtails extends AppCompatActivity {
             txt_name.setText(customer.getName());
             txt_nuid.setText(customer.getNu_id_no_1());
             txt_phone.setText(customer.getPhone());
-            txt_amount.setText(customer.getAmount());
+            txt_amount.setText((Integer.parseInt(customer.getAmount()) - DueAMT) + "");
             txt_rent.setText(customer.getRent_amount());
             txt_startdate.setText(customer.getRent_start_date());
             txt_stbac.setText(customer.getStb_account_no_1());
@@ -929,7 +932,7 @@ public class ViewDtails extends AppCompatActivity {
     public void DeletCustomer() {
         sqlLiteDbHelper.InsertDeleted(customer.getId());
         sqlLiteDbHelper.DeleteCustomer(customer.getCustomer_no());
-        Search_Fragment.categoryListModel.getLstCustomer().remove(selectedId);
+        Constant.categoryListModel.getLstCustomer().remove(selectedId);
         Toast.makeText(ViewDtails.this, "Customer Deleted Successfully", Toast.LENGTH_LONG).show();
         finish();
 
@@ -1054,6 +1057,7 @@ public class ViewDtails extends AppCompatActivity {
             customer.setAmount2(customer.getAmount());
 
         }*/
+        DueAMT = 0;
         ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getPaidRentRecordbydate(customer.getCustomer_no(), customer.getRent_start_date());
         String StartRentDate = "";
         String EndRentDate = "";
@@ -1091,7 +1095,7 @@ public class ViewDtails extends AppCompatActivity {
                         String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
                         String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
 
-                        int amount = Integer.parseInt(customer.getAmount2());
+                        int amount = Integer.parseInt(customer.getAmount());
                         int rentamount = Integer.parseInt(customer.getRent_amount());
                         RentRecord rentRecord = new RentRecord();
                         rentRecord.setSync("0");
@@ -1112,14 +1116,14 @@ public class ViewDtails extends AppCompatActivity {
                         Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
                         rentRecord.setRent_start_date(StartRentDate);
 
-                        if (Integer.parseInt(customer.getAmount2()) >= Integer.parseInt(customer.getRent_amount())) {
+                        if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
                             ///Insert Status Paid
                             rentRecord.setRent_start_date(StartRentDate);
                             rentRecord.setRent_end_date(EndRentDate);
                             rentRecord.setPayment_status("PAID");
                             amount = amount - rentamount;
                             sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount(), amount + "");
+                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
                             AUtoUpdateRent();
                         } else {
                             ///Insert Status DUE
@@ -1131,6 +1135,7 @@ public class ViewDtails extends AppCompatActivity {
                                 try {
                                     myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
                                     if (myDate != null) {
+
                                         calendar.setTime(myDate);
                                         calendar.add(Calendar.MONTH, 1);
                                         enddate = calendar.getTime();
@@ -1147,6 +1152,7 @@ public class ViewDtails extends AppCompatActivity {
 
                                         if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
                                             sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                            DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
                                             rentRecord.setRent_start_date(rentRecord.getRent_end_date());
                                         } else {
                                             break;
@@ -1197,7 +1203,7 @@ public class ViewDtails extends AppCompatActivity {
                         String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
                         String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
 
-                        int amount = Integer.parseInt(customer.getAmount2());
+                        int amount = Integer.parseInt(customer.getAmount());
                         int rentamount = Integer.parseInt(customer.getRent_amount());
 
                         RentRecord rentRecord = new RentRecord();
@@ -1218,12 +1224,12 @@ public class ViewDtails extends AppCompatActivity {
                         Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
 
                         rentRecord.setUpdated_by(Application.preferences.getUSerid());
-                        if (Integer.parseInt(customer.getAmount2()) >= Integer.parseInt(customer.getRent_amount())) {
+                        if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
                             ///Insert Status Paid
                             rentRecord.setPayment_status("PAID");
                             amount = amount - rentamount;
                             sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount(), amount + "");
+                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
                             AUtoUpdateRent();
                         } else {
                             ///Insert Status DUE
@@ -1243,6 +1249,7 @@ public class ViewDtails extends AppCompatActivity {
                                         rentRecord.setUpdated_by(Application.preferences.getUSerid());
                                         if (enddate.equals(cdate) || enddate.before(cdate)) {
                                             sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                            DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
                                             rentRecord.setRent_start_date(rentRecord.getRent_end_date());
                                         } else {
                                             break;

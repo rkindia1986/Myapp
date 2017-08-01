@@ -125,7 +125,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 customer.setCity(cursor.getString(cursor.getColumnIndex("city")));
                 customer.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
                 customer.setAmount2(cursor.getString(cursor.getColumnIndex("amount2")));
-                Log.e("cursor.getString(cursor", cursor.getString(cursor.getColumnIndex("amount2")));
+               // Log.e("cursor.getString(cursor", cursor.getString(cursor.getColumnIndex("amount2")));
                 customer.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
                 customer.setRent_amount(cursor.getString(cursor.getColumnIndex("rent_amount")));
                 customer.setCaf_no_1(cursor.getString(cursor.getColumnIndex("caf_no_1")));
@@ -207,7 +207,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-        values.put("amount2", customer.getAmount2());
+       values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
@@ -243,7 +243,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-        values.put("amount2", customer.getAmount2());
+       values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
@@ -417,7 +417,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-        values.put("amount2", customer.getAmount2());
+     values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
