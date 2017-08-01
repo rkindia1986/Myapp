@@ -63,6 +63,7 @@ public class NewMonth_rent extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
+
                     sqlLiteDbHelper.UpdateRent(spinner.getSelectedItem().toString(), edt_new_month_rent.getText().toString());
                     Utils.ShowMessageDialog(getContext(), "Rent Updated successfully");
                 }
@@ -115,7 +116,9 @@ public class NewMonth_rent extends Fragment {
     public void getCityList() {
 
         cityList.clear();
+
         cityList = sqlLiteDbHelper.Get_AllCity();
+        cityList.add(0,"Select City");
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
@@ -181,6 +184,11 @@ public class NewMonth_rent extends Fragment {
     public boolean checkValidation() {
         if (TextUtils.isEmpty(edt_new_month_rent.getText().toString().trim())) {
             edt_new_month_rent.setError("Please enter rent");
+            return false;
+        }
+        if(spinner.getSelectedItemPosition() ==0)
+        {
+            Utils.ShowMessageDialog(getActivity(),"Please Select City");
             return false;
         }
         return true;

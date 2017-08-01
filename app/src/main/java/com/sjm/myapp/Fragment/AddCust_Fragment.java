@@ -20,35 +20,26 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sjm.myapp.ApiService;
 import com.sjm.myapp.Application;
-import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
-import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
-import com.sjm.myapp.pojo.RentRecord;
-import com.sjm.myapp.pojo.SearchCustomer;
+import com.sjm.myapp.pojo.PaymentRecord;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Helly-PC on 05/31/2017.
@@ -121,15 +112,36 @@ public class AddCust_Fragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkValidation()) {
+                    sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+                    String enddate = "";
                     int selectedId = rdogroup.getCheckedRadioButtonId();
 
                     if (selectedId == R.id.rdo_continus) {
                         conn_type = "continuous";
                     } else if (selectedId == R.id.rdo_plan) {
                         conn_type = "plan";
+                        if (!TextUtils.isEmpty(edt_month.getText().toString())) {
+
+                            Calendar calendar = Calendar.getInstance();
+
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            try {
+                                Date myDate = simpleDateFormat.parse(sdate);
+                                if (myDate != null) {
+                                    calendar.setTime(myDate);
+                                    calendar.add(Calendar.MONTH, Integer.parseInt(edt_month.getText().toString()));
+                                    myDate = calendar.getTime();
+                                    enddate = simpleDateFormat.format(myDate);
+
+                                }
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                     }
 
-                    sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
                     Calendar c = Calendar.getInstance();
                     mday = c.get(Calendar.DAY_OF_MONTH);
                     mmonth = c.get(Calendar.MONTH);
@@ -141,6 +153,8 @@ public class AddCust_Fragment extends Fragment {
                     created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
                     updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
                     Log.e("sdate", sdate);
+
+
                     jsonObject = new JSONObject();
                     try {
                         String customid = "temp" + SystemClock.currentThreadTimeMillis();
@@ -164,6 +178,7 @@ public class AddCust_Fragment extends Fragment {
                         jsonObject.put("connection_type", conn_type);
                         jsonObject.put("customer_connection_status", conn_status);
                         jsonObject.put("rent_start_date", sdate);
+                        jsonObject.put("rent_end_date", enddate);
                         jsonObject.put("created_at", created_at);
                         jsonObject.put("created_by", Application.preferences.getUSerid());
                         jsonObject.put("updated_at", updatedat);
@@ -214,6 +229,18 @@ public class AddCust_Fragment extends Fragment {
                         Log.e(TAG, "onClick:amount 2 " + customer.getAmount2());
                         sqlLiteDbHelper.UpdateCustomer(customer);
                         sqlLiteDbHelper.InsertCity(cust_city.getText().toString());
+
+
+                        PaymentRecord paymentRecord = new PaymentRecord();
+                        paymentRecord.setSync("0");
+                        paymentRecord.setPayment_amount(amt.getText().toString());
+                        paymentRecord.setCreated_by(Application.preferences.getUSerid());
+                        paymentRecord.setCustomer_id(customer.getId());
+                        paymentRecord.setCreated_at(sdate);
+                        paymentRecord.setId(customer.getId());
+                        sqlLiteDbHelper.InsertPayment(paymentRecord);
+
+
                     /*    int amount = Integer.parseInt(customer.getAmount2());
                         int rentamount = Integer.parseInt(customer.getRent_amount());
                         sqlLiteDbHelper.InsertCity(cust_city.getText().toString());
@@ -351,46 +378,43 @@ public class AddCust_Fragment extends Fragment {
     public boolean checkValidation() {
         if (TextUtils.isEmpty(cust_no.getText().toString().trim())) {
             cust_no.setError("Please fill data");
+            cust_no.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(cust_name.getText().toString().trim())) {
             cust_name.setError("Please fill data");
+            cust_name.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(cust_add.getText().toString().trim())) {
             cust_add.setError("Please fill data");
+            cust_add.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(cust_city.getText().toString().trim())) {
             cust_city.setError("Please fill data");
+            cust_city.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(amt.getText().toString().trim())) {
             amt.setError("Please fill data");
+            amt.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(rent_amt.getText().toString().trim())) {
             rent_amt.setError("Please fill data");
+            rent_amt.requestFocus();
             return false;
         }
-        if (TextUtils.isEmpty(stb_acc_no.getText().toString().trim())) {
-            stb_acc_no.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(stb_nuid.getText().toString().trim())) {
-            stb_nuid.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(cafno.getText().toString().trim())) {
-            cafno.setError("Please fill data");
-            return false;
-        }
+
         if (TextUtils.isEmpty(phone.getText().toString().trim())) {
             phone.setError("Please fill data");
+            phone.requestFocus();
             return false;
         }
         if (phone.getText().toString().trim().length() < 8) {
             phone.setError("Invalid phone number");
+            phone.requestFocus();
             return false;
         }
 
@@ -398,6 +422,7 @@ public class AddCust_Fragment extends Fragment {
         if (selectedId == R.id.rdo_plan) {
             if (TextUtils.isEmpty(edt_month.getText().toString().trim())) {
                 edt_month.setError("Please fill data");
+                edt_month.requestFocus();
                 return false;
             }
         }
@@ -443,6 +468,7 @@ public class AddCust_Fragment extends Fragment {
         stb_nuid2.setText("");
         cafno2.setText("");
         rdo_continus.setChecked(true);
+        edt_month.setText("");
     }
 
     public void UploadCustomer() {

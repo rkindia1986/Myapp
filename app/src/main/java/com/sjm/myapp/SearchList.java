@@ -116,7 +116,7 @@ public class SearchList extends AppCompatActivity {
             if (Search_Fragment.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status().equalsIgnoreCase("off")) {
                 v.lytparnt.setBackgroundColor(getResources().getColor(R.color.red));
             } else {
-                v.lytparnt.setBackgroundColor(getResources().getColor(R.color.green));
+                v.lytparnt.setBackgroundColor(getResources().getColor(R.color.white));
             }
             return convertView;
         }

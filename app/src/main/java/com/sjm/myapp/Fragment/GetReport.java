@@ -117,6 +117,7 @@ public class GetReport extends Fragment {
 
         cityList.clear();
         cityList = sqlLiteDbHelper.Get_AllCity();
+        cityList.add(0,"Select City");
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
@@ -195,9 +196,13 @@ public class GetReport extends Fragment {
         } else if (selectedId == R.id.rdo_on) {
             con_status = "on";
         }
-
+        String city="";
+        if(spinner.getSelectedItemPosition() >0)
+        {
+            city= spinner.getSelectedItem().toString().toString();
+        }
         rentRecordList = new RentRecordList();
-        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getRentRecordbycity(spinner.getSelectedItem().toString(), txt_startdate.getText().toString(), txt_enddate.getText().toString(), con_status, type);
+        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getRentRecordbycity(city, txt_startdate.getText().toString(), txt_enddate.getText().toString(), con_status, type);
         if (rentRecords != null && rentRecords.size() > 0) {
             int total = 0;
             for (int i = 0; i < rentRecords.size(); i++) {

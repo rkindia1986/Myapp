@@ -1,6 +1,5 @@
 package com.sjm.myapp.Fragment;
 
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,14 +18,10 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sjm.myapp.AddLicence;
 import com.sjm.myapp.ApiService;
-import com.sjm.myapp.GetReportList;
-import com.sjm.myapp.MainActivity;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -36,7 +31,6 @@ import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.Installation;
 import com.sjm.myapp.pojo.Installation_History;
-import com.sjm.myapp.pojo.RentRecordList;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
@@ -100,7 +94,7 @@ public class Search_Fragment extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
-        showProgressDialog();
+              showProgressDialog();
 
         UploadCustomer();
         btnsearch.setOnClickListener(new View.OnClickListener() {
@@ -144,12 +138,17 @@ public class Search_Fragment extends Fragment {
                         }
                     } else {*/
                     categoryListModel = new SearchCustomer();
+                    String city="";
+                    if(spinner.getSelectedItemPosition() >0)
+                    {
+                        city= spinner.getSelectedItem().toString().toString();
+                    }
                     String que = "select * from Customer_Master where customer_no like '%" + edt_search_sutno.getText().toString().trim() +
                             "%' and name like '%" + edt_search_custname.getText().toString().trim() +
                             "%' and (stb_account_no_1 like '%" + edt_search_stbac.getText().toString().trim()
                             + "%' or stb_account_no_2 like '%" + edt_search_stbac.getText().toString().trim()
                             + "%') and address like '%" + edt_search_add.getText().toString().trim()
-                            + "%' and city like '%" + spinner.getSelectedItem().toString().toString()
+                            + "%' and city like '%" + city
                             + "%' and customer_connection_status like '%" + connectionStatus + "%'";
                     ArrayList<Customer> customers = sqlLiteDbHelper.Get_AllCustomers2(que);
                     if (customers != null && customers.size() > 0) {
@@ -250,6 +249,7 @@ public class Search_Fragment extends Fragment {
             hideProgressDialog();
             cityList.clear();
             cityList = sqlLiteDbHelper.Get_AllCity();
+            cityList.add(0,"Select City");
             adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
             adapter.notifyDataSetChanged();
             spinner.setAdapter(adapter);
@@ -260,6 +260,7 @@ public class Search_Fragment extends Fragment {
 
     private void parseCityResponse(String body) {
         cityList.clear();
+
         try {
 
             JSONObject j = new JSONObject(body);
@@ -273,7 +274,9 @@ public class Search_Fragment extends Fragment {
                         }
                         if (cityList != null && cityList.size() > 0) {
                             sqlLiteDbHelper.UpdateCity(cityList);
+
                         }
+                        cityList.add(0,"Select City");
                         adapter.notifyDataSetChanged();
                     } else {
                         Utils.ShowMessageDialog(getContext(), j.getString("message"));

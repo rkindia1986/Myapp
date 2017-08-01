@@ -20,11 +20,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sjm.myapp.ApiService;
 import com.sjm.myapp.Application;
-import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
-import com.sjm.myapp.RetroClient;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
@@ -42,9 +39,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.sjm.myapp.R.id.edt_search_add;
 
@@ -178,6 +172,8 @@ public class Update_Customer extends Fragment {
             public void onClick(View view) {
 
                 if (checkValidation2()) {
+                    String sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
+                    String enddate = "";
                     int selectedId = rdogroup.getCheckedRadioButtonId();
                     String conn_type = "";
                     String conn_status = "on";
@@ -185,9 +181,28 @@ public class Update_Customer extends Fragment {
                         conn_type = "continuous";
                     } else if (selectedId == R.id.rdo_plan) {
                         conn_type = "plan";
+                        if (!TextUtils.isEmpty(edt_month.getText().toString())) {
+
+                            Calendar calendar = Calendar.getInstance();
+
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            try {
+                                Date myDate = simpleDateFormat.parse(sdate);
+                                if (myDate != null) {
+                                    calendar.setTime(myDate);
+                                    calendar.add(Calendar.MONTH, Integer.parseInt(edt_month.getText().toString()));
+                                    myDate = calendar.getTime();
+                                    enddate = simpleDateFormat.format(myDate);
+
+                                }
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                     }
-                    String sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
-                    Log.e("sdate", sdate);
+                      Log.e("sdate", sdate);
                     Calendar c = Calendar.getInstance();
                     mday = c.get(Calendar.DAY_OF_MONTH);
                     mmonth = c.get(Calendar.MONTH);
@@ -221,6 +236,7 @@ public class Update_Customer extends Fragment {
                         jsonObject.put("connection_type", conn_type);
                         jsonObject.put("customer_connection_status", conn_status);
                         jsonObject.put("rent_start_date", sdate);
+                        jsonObject.put("rent_end_date", enddate);
                         jsonObject.put("created_at", customer.getCreated_at());
                         jsonObject.put("created_by", customer.getCreated_by());
                         jsonObject.put("updated_at", updatedat);
@@ -428,7 +444,6 @@ public class Update_Customer extends Fragment {
         rdo_continus.setChecked(true);
         edt_month.setText("");
 
-
         cust_name.setEnabled(false);
         cust_add.setEnabled(false);
         cust_city.setEnabled(false);
@@ -521,18 +536,7 @@ public class Update_Customer extends Fragment {
             rent_amt.setError("Please fill data");
             return false;
         }
-        if (TextUtils.isEmpty(stb_acc_no.getText().toString().trim())) {
-            stb_acc_no.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(stb_nuid.getText().toString().trim())) {
-            stb_nuid.setError("Please fill data");
-            return false;
-        }
-        if (TextUtils.isEmpty(cafno.getText().toString().trim())) {
-            cafno.setError("Please fill data");
-            return false;
-        }
+
         if (TextUtils.isEmpty(phone.getText().toString().trim())) {
             phone.setError("Please fill data");
             return false;
