@@ -1096,6 +1096,17 @@ public class ViewDtails extends AppCompatActivity {
         }
     }
 
+    public void AUtoUpdateDUERent() {
+        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getDUERentRecordbydate(customer.getCustomer_no());
+        if (rentRecords != null && rentRecords.size() > 0) {
+            for (int i = 0; i < rentRecords.size(); i++) {
+
+            }
+        }
+
+    }
+
     public void AUtoUpdateRent() {
         customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
         /*if (TextUtils.isEmpty(customer.getAmount2()) || customer.getAmount2().equalsIgnoreCase("")) {

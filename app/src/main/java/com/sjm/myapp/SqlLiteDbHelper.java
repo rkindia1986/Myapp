@@ -664,7 +664,34 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
         return rentRecords;
     }
+    public ArrayList<RentRecord> getDUERentRecordbydate(String custno) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from rent_record where customer_id='" + custno + "' and " +
+                "payment_status='DUE' order by rent_start_date", null);
+        ArrayList<RentRecord> rentRecords = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                RentRecord rentRecord = new RentRecord();
+                rentRecord.setSync(cursor.getString(cursor.getColumnIndex("sync")));
+                rentRecord.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_id")));
+                rentRecord.setId(cursor.getString(cursor.getColumnIndex("id")));
+                rentRecord.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
+                rentRecord.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
+                rentRecord.setPayment_amount(cursor.getString(cursor.getColumnIndex("payment_amount")));
+                rentRecord.setPayment_status(cursor.getString(cursor.getColumnIndex("payment_status")));
+                rentRecord.setUpdated_by(cursor.getString(cursor.getColumnIndex("updated_by")));
+                rentRecord.setUpdated_at(cursor.getString(cursor.getColumnIndex("updated_at")));
+                rentRecord.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                rentRecord.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+                rentRecords.add(rentRecord);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
 
+
+        return rentRecords;
+    }
     public ArrayList<RentRecord> getRentRecordbycity(String city, String rentstart, String rentend, String status, String type) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
