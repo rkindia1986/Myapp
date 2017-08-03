@@ -88,8 +88,7 @@ public class Search_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.act_search, container, false);
         unbinder = ButterKnife.bind(this, view);
-        if (com.sjm.myapp.Application.preferences.getLICENCEKEY().trim().equalsIgnoreCase(""))
-            getInstallation();
+
         sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
         sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);

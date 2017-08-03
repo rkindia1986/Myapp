@@ -104,4 +104,9 @@
         <item>Due Alert</item>
         <item>Plan Alert</item>
     </array>
+
+    <string name="appinstall_imagedescription">Screenshot</string>
+    <string name="advertisement">Advertisement</string>
+    <string formatted="false" name="custom_click_toast">A custom click event has occurred for the %s asset in the %s template.</string>
+
 </resources>

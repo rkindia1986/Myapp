@@ -1,13 +1,11 @@
 package com.sjm.myapp;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.Settings.Secure;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +19,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +42,7 @@ import java.nio.channels.FileChannel;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = "Mainact" ;
+    private static final String TAG = "Mainact";
     NavigationView navigationView;
     Preferences preferences;
     SqlLiteDbHelper sqlLiteDbHelper;
@@ -94,13 +91,11 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         NavigationMenuView navMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         navigationView.setItemIconTintList(null);
         navMenuView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
-
         int MyVersion = Build.VERSION.SDK_INT;
         if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (!checkIfAlreadyhavePermission()) {
@@ -130,12 +125,6 @@ public class MainActivity extends AppCompatActivity
 
         sqlLiteDbHelper = new SqlLiteDbHelper(MainActivity.this);
         sqlLiteDbHelper.openDataBase();
-        String android_id = Secure.getString(getContentResolver(),
-                Secure.ANDROID_ID);
-        Log.e("android_id", android_id + "");
-        TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        Application.preferences.setDeviceId(android_id + "1234");
-        Application.preferences.setimei_number(mngr.getDeviceId() + "1234");
 
 
 
@@ -146,9 +135,9 @@ public class MainActivity extends AppCompatActivity
                 String backupDBPath = "cable.sqlite";
                 File currentDB = new File(currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
-                Log.e(TAG,"currentDB 111 "+backupDB);
+                Log.e(TAG, "currentDB 111 " + backupDB);
                 if (currentDB.exists()) {
-                    Log.e(TAG,"currentDB "+backupDB);
+                    Log.e(TAG, "currentDB " + backupDB);
                     FileChannel src = new FileInputStream(currentDB).getChannel();
                     FileChannel dst = new FileOutputStream(backupDB).getChannel();
                     dst.transferFrom(src, 0, src.size());
@@ -172,7 +161,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-          finish();
+            finish();
         }
     }
 
@@ -218,9 +207,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (Application.preferences.getLICENCEKEY().equalsIgnoreCase("")){
+        if (Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
             Utils.ShowMessageDialog(MainActivity.this, "Required Licence? Please contact us");
-        }else {
+        } else {
             if (id == R.id.search) {
                 // Handle the camera action
                 setTitle(getString(R.string.search).toUpperCase());

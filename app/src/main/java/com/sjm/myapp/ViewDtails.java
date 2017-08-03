@@ -235,23 +235,24 @@ public class ViewDtails extends AppCompatActivity {
         btn_addpayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkValidation()) {
-                    PaymentRecord paymentRecord = new PaymentRecord();
-                    String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
-                    paymentRecord.setSync("0");
-                    int s1 = Integer.parseInt(customer.getAmount()) + Integer.parseInt(edt_addpayment.getText().toString());
-                    paymentRecord.setPayment_amount(edt_addpayment.getText().toString());
-                    paymentRecord.setCreated_by(Application.preferences.getUSerid());
-                    paymentRecord.setCustomer_id(customer.getId());
-                    paymentRecord.setCreated_at(sdate);
-                    paymentRecord.setId(customer.getId());
-                    sqlLiteDbHelper.InsertPayment(paymentRecord);
-                    sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), s1 + "", "");
-                    Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
-                    edt_addpayment.setText("");
-                    AUtoUpdateRent();
-                    customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
-                    setdata();
+                if (customer.getCustomer_connection_status().equalsIgnoreCase("on")) {
+                    if (checkValidation()) {
+                        PaymentRecord paymentRecord = new PaymentRecord();
+                        String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+                        paymentRecord.setSync("0");
+                        int s1 = Integer.parseInt(customer.getAmount()) + Integer.parseInt(edt_addpayment.getText().toString());
+                        paymentRecord.setPayment_amount(edt_addpayment.getText().toString());
+                        paymentRecord.setCreated_by(Application.preferences.getUSerid());
+                        paymentRecord.setCustomer_id(customer.getId());
+                        paymentRecord.setCreated_at(sdate);
+                        paymentRecord.setId(customer.getId());
+                        sqlLiteDbHelper.InsertPayment(paymentRecord);
+                        sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), s1 + "", "");
+                        Toast.makeText(ViewDtails.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
+                        edt_addpayment.setText("");
+                        AUtoUpdateRent();
+                        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+                        setdata();
 
 
                    /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
@@ -283,6 +284,9 @@ public class ViewDtails extends AppCompatActivity {
                     } else {
                         Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
                     }*/
+                    }
+                } else {
+                    Utils.ShowMessageDialog(ViewDtails.this, "This connection is not active. Please change connection status first");
                 }
             }
         });
@@ -424,13 +428,43 @@ public class ViewDtails extends AppCompatActivity {
     public void UpdateConnection() {
         if (customer.getCustomer_connection_status().equalsIgnoreCase("on")) {
             UpdatedStatus = "off";
+            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), txt_amount.getText().toString() + "", txt_amount.getText().toString() + "");
         } else {
             UpdatedStatus = "on";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Calendar c = Calendar.getInstance();
+
+            Date myDate = c.getTime();
+            String sdate = "";
+            if (myDate != null) {
+
+                sdate = simpleDateFormat.format(myDate);
+
+            }
+            Log.e(TAG, "UpdateConnection: sdate = " + sdate);
+            String enddate = "";
+
+
+            if (!customer.getNo_of_month().equalsIgnoreCase("") && Integer.parseInt(customer.getNo_of_month()) > 0) {
+                c.add(Calendar.MONTH, Integer.parseInt(customer.getNo_of_month()));
+                myDate = c.getTime();
+                if (myDate != null) {
+
+                    enddate = simpleDateFormat.format(myDate);
+                    Log.e(TAG, "UpdateConnection: enddate = " + enddate);
+                }
+            }
+            sqlLiteDbHelper.UpdateRentstartEndDate(customer.getCustomer_no(), sdate, enddate);
         }
         customer.setCustomer_connection_status(UpdatedStatus);
         sqlLiteDbHelper.UpdateCustomerConnection(customer.getCustomer_no(), UpdatedStatus);
         txt_connstatus.setText(UpdatedStatus);
+
+        customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+        setdata();
+
         Toast.makeText(ViewDtails.this, "Connection Updated Successfully", Toast.LENGTH_SHORT).show();
+
 
        /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
             try {
@@ -896,7 +930,18 @@ public class ViewDtails extends AppCompatActivity {
             txt_name.setText(customer.getName());
             txt_nuid.setText(customer.getNu_id_no_1());
             txt_phone.setText(customer.getPhone());
-            txt_amount.setText((Integer.parseInt(customer.getAmount()) - DueAMT) + "");
+
+
+            if (customer.getCustomer_connection_status().equalsIgnoreCase("on")) {
+                txt_amount.setText((Integer.parseInt(customer.getAmount()) - DueAMT) + "");
+                sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), customer.getAmount() + "", txt_amount.getText().toString() + "");
+
+            } else {
+                txt_amount.setText(customer.getAmount() + "");
+
+            }
+
+
             txt_rent.setText(customer.getRent_amount());
             txt_startdate.setText(customer.getRent_start_date());
             txt_stbac.setText(customer.getStb_account_no_1());
@@ -1057,222 +1102,242 @@ public class ViewDtails extends AppCompatActivity {
             customer.setAmount2(customer.getAmount());
 
         }*/
-        DueAMT = 0;
-        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getPaidRentRecordbydate(customer.getCustomer_no(), customer.getRent_start_date());
-        String StartRentDate = "";
-        String EndRentDate = "";
-        Calendar ccc = Calendar.getInstance();
-        Date cdate = ccc.getTime();
-        if (rentRecords != null && rentRecords.size() > 0) {
-            StartRentDate = rentRecords.get(0).getRent_start_date();
-            Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            try {
-                Date myDate = simpleDateFormat.parse(StartRentDate);
-                if (myDate != null) {
-                    calendar.setTime(myDate);
-                    calendar.add(Calendar.MONTH, 1);
-                    Date startdate = calendar.getTime();
-                    StartRentDate = simpleDateFormat.format(startdate);
-                    calendar.add(Calendar.MONTH, 1);
-                    Date enddate = calendar.getTime();
-                    EndRentDate = simpleDateFormat.format(enddate);
-                    boolean PlanEnded = false;
-                    if (PlanENddate != null) {
-                        if (startdate.after(PlanENddate)) {
-                            PlanEnded = true;
+        Date rentstartdate = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            rentstartdate = simpleDateFormat.parse(customer.getRent_start_date());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (customer.getCustomer_connection_status().equalsIgnoreCase("on")) {
+            DueAMT = 0;
+            ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getPaidRentRecordbydate(customer.getCustomer_no(), customer.getRent_start_date());
+            String StartRentDate = "";
+            String EndRentDate = "";
+            Calendar ccc = Calendar.getInstance();
+            Date cdate = ccc.getTime();
+            if (rentRecords != null && rentRecords.size() > 0) {
+                StartRentDate = rentRecords.get(0).getRent_start_date();
+                Calendar calendar = Calendar.getInstance();
+
+
+                try {
+                    Date myDate = simpleDateFormat.parse(StartRentDate);
+                    if (myDate != null) {
+
+
+                        calendar.setTime(myDate);
+                        calendar.add(Calendar.MONTH, 1);
+                        Date startdate = calendar.getTime();
+
+                        if (rentstartdate != null && (startdate.equals(rentstartdate) || startdate.before(rentstartdate))) {
+                            startdate = rentstartdate;
+                            calendar.setTime(startdate);
                         }
-                    }
-                    if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
-                        Calendar c = Calendar.getInstance();
-                        int mday = c.get(Calendar.DAY_OF_MONTH);
-                        int mmonth = c.get(Calendar.MONTH);
-                        int myear = c.get(Calendar.YEAR);
-                        int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
-                        int mmin = c.get(Calendar.MINUTE);
-                        int msec = c.get(Calendar.SECOND);
-                        String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
-                        String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
 
-                        int amount = Integer.parseInt(customer.getAmount());
-                        int rentamount = Integer.parseInt(customer.getRent_amount());
-                        RentRecord rentRecord = new RentRecord();
-                        rentRecord.setSync("0");
-                        rentRecord.setCustomer_no(customer.getCustomer_no());
-                        rentRecord.setId(customer.getId());
+                        StartRentDate = simpleDateFormat.format(startdate);
+                        calendar.add(Calendar.MONTH, 1);
+                        Date enddate = calendar.getTime();
+                        EndRentDate = simpleDateFormat.format(enddate);
+                        boolean PlanEnded = false;
+                        if (PlanENddate != null) {
+                            if (startdate.after(PlanENddate)) {
+                                PlanEnded = true;
+                            }
+                        }
+                        if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                            Calendar c = Calendar.getInstance();
+                            int mday = c.get(Calendar.DAY_OF_MONTH);
+                            int mmonth = c.get(Calendar.MONTH);
+                            int myear = c.get(Calendar.YEAR);
+                            int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                            int mmin = c.get(Calendar.MINUTE);
+                            int msec = c.get(Calendar.SECOND);
+                            String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                            String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+
+                            int amount = Integer.parseInt(customer.getAmount());
+                            int rentamount = Integer.parseInt(customer.getRent_amount());
+                            RentRecord rentRecord = new RentRecord();
+                            rentRecord.setSync("0");
+                            rentRecord.setCustomer_no(customer.getCustomer_no());
+                            rentRecord.setId(customer.getId());
 
 
-                        rentRecord.setPayment_amount(customer.getRent_amount());
-                        rentRecord.setCreated_by(Application.preferences.getUSerid());
-                        rentRecord.setCreated_at(created_at);
-                        rentRecord.setUpdated_at(updatedat);
-                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                            rentRecord.setPayment_amount(customer.getRent_amount());
+                            rentRecord.setCreated_by(Application.preferences.getUSerid());
+                            rentRecord.setCreated_at(created_at);
+                            rentRecord.setUpdated_at(updatedat);
+                            rentRecord.setUpdated_by(Application.preferences.getUSerid());
 
 
-                        Gson gson = new GsonBuilder().create();
+                            Gson gson = new GsonBuilder().create();
 
-                        Log.e("i = ", gson.toJson(rentRecord).toString());
-                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
-                        rentRecord.setRent_start_date(StartRentDate);
-
-                        if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
-                            ///Insert Status Paid
+                            Log.e("i = ", gson.toJson(rentRecord).toString());
+                            Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
                             rentRecord.setRent_start_date(StartRentDate);
-                            rentRecord.setRent_end_date(EndRentDate);
-                            rentRecord.setPayment_status("PAID");
-                            amount = amount - rentamount;
-                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
-                            AUtoUpdateRent();
-                        } else {
-                            ///Insert Status DUE
-                            rentRecord.setPayment_status("DUE");
 
-                            for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
+                            if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
+                                ///Insert Status Paid
+                                rentRecord.setRent_start_date(StartRentDate);
+                                rentRecord.setRent_end_date(EndRentDate);
+                                rentRecord.setPayment_status("PAID");
+                                amount = amount - rentamount;
+                                sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
+                                AUtoUpdateRent();
+                            } else {
+                                ///Insert Status DUE
+                                rentRecord.setPayment_status("DUE");
 
-                                calendar = Calendar.getInstance();
-                                try {
-                                    myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
-                                    if (myDate != null) {
+                                for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
 
-                                        calendar.setTime(myDate);
-                                        calendar.add(Calendar.MONTH, 1);
-                                        enddate = calendar.getTime();
-                                        rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
-                                        Log.e("i = " + i, gson.toJson(rentRecord).toString());
-                                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
-                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
-                                        PlanEnded = false;
-                                        if (PlanENddate != null) {
-                                            if (myDate.after(PlanENddate)) {
-                                                PlanEnded = true;
+                                    calendar = Calendar.getInstance();
+                                    try {
+                                        myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
+                                        if (myDate != null) {
+
+                                            calendar.setTime(myDate);
+                                            calendar.add(Calendar.MONTH, 1);
+                                            enddate = calendar.getTime();
+                                            rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
+                                            Log.e("i = " + i, gson.toJson(rentRecord).toString());
+                                            Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+                                            rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                                            PlanEnded = false;
+                                            if (PlanENddate != null) {
+                                                if (myDate.after(PlanENddate)) {
+                                                    PlanEnded = true;
+                                                }
+                                            }
+
+                                            if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                                                sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                                DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
+                                                rentRecord.setRent_start_date(rentRecord.getRent_end_date());
+                                            } else {
+                                                break;
                                             }
                                         }
 
-                                        if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
-                                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                                            DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
-                                            rentRecord.setRent_start_date(rentRecord.getRent_end_date());
-                                        } else {
-                                            break;
-                                        }
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
                                     }
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
                                 }
                             }
-                        }
-                    } else {
-                        Log.e(TAG, "AUtoUpdateRent: " + "Date is bigger than current date");
-                    }
-
-                }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else {
-            StartRentDate = customer.getRent_start_date();
-            Calendar calendar = Calendar.getInstance();
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            try {
-                Date myDate = simpleDateFormat.parse(StartRentDate);
-                if (myDate != null) {
-
-                    calendar.setTime(myDate);
-                    calendar.add(Calendar.MONTH, 1);
-                    Date enddate = calendar.getTime();
-                    EndRentDate = simpleDateFormat.format(enddate);
-                    boolean PlanEnded = false;
-                    if (PlanENddate != null) {
-                        if (myDate.after(PlanENddate)) {
-                            PlanEnded = true;
-                        }
-                    }
-                    if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
-                        Calendar c = Calendar.getInstance();
-                        int mday = c.get(Calendar.DAY_OF_MONTH);
-                        int mmonth = c.get(Calendar.MONTH);
-                        int myear = c.get(Calendar.YEAR);
-                        int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
-                        int mmin = c.get(Calendar.MINUTE);
-                        int msec = c.get(Calendar.SECOND);
-                        String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
-                        String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
-
-                        int amount = Integer.parseInt(customer.getAmount());
-                        int rentamount = Integer.parseInt(customer.getRent_amount());
-
-                        RentRecord rentRecord = new RentRecord();
-                        rentRecord.setSync("0");
-                        rentRecord.setCustomer_no(customer.getCustomer_no());
-                        rentRecord.setId(customer.getId());
-
-                        rentRecord.setRent_start_date(StartRentDate);
-                        rentRecord.setRent_end_date(EndRentDate);
-                        rentRecord.setPayment_amount(customer.getRent_amount());
-                        rentRecord.setCreated_by(Application.preferences.getUSerid());
-                        rentRecord.setCreated_at(created_at);
-                        rentRecord.setUpdated_at(updatedat);
-                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
-                        Gson gson = new GsonBuilder().create();
-
-                        Log.e("i = ", gson.toJson(rentRecord).toString());
-                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
-
-                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
-                        if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
-                            ///Insert Status Paid
-                            rentRecord.setPayment_status("PAID");
-                            amount = amount - rentamount;
-                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                            sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
-                            AUtoUpdateRent();
                         } else {
-                            ///Insert Status DUE
-                            rentRecord.setPayment_status("DUE");
-                            for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
-
-                                calendar = Calendar.getInstance();
-                                try {
-                                    myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
-                                    if (myDate != null) {
-                                        calendar.setTime(myDate);
-                                        calendar.add(Calendar.MONTH, 1);
-                                        enddate = calendar.getTime();
-                                        rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
-                                        Log.e("i = " + i, gson.toJson(rentRecord).toString());
-                                        Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
-                                        rentRecord.setUpdated_by(Application.preferences.getUSerid());
-                                        if (enddate.equals(cdate) || enddate.before(cdate)) {
-                                            sqlLiteDbHelper.InsertRentRecord(rentRecord);
-                                            DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
-                                            rentRecord.setRent_start_date(rentRecord.getRent_end_date());
-                                        } else {
-                                            break;
-                                        }
-                                    }
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                            Log.e(TAG, "AUtoUpdateRent: " + "Date is bigger than current date");
                         }
-
-
-                    } else {
 
                     }
 
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+            } else {
+                StartRentDate = customer.getRent_start_date();
+                Calendar calendar = Calendar.getInstance();
 
 
-            } catch (ParseException e) {
-                e.printStackTrace();
+                try {
+                    Date myDate = simpleDateFormat.parse(StartRentDate);
+                    if (myDate != null) {
+
+                        calendar.setTime(myDate);
+                        calendar.add(Calendar.MONTH, 1);
+                        Date enddate = calendar.getTime();
+                        EndRentDate = simpleDateFormat.format(enddate);
+                        boolean PlanEnded = false;
+                        if (PlanENddate != null) {
+                            if (myDate.after(PlanENddate)) {
+                                PlanEnded = true;
+                            }
+                        }
+                        if (!PlanEnded && (enddate.equals(cdate) || enddate.before(cdate))) {
+                            Calendar c = Calendar.getInstance();
+                            int mday = c.get(Calendar.DAY_OF_MONTH);
+                            int mmonth = c.get(Calendar.MONTH);
+                            int myear = c.get(Calendar.YEAR);
+                            int mhour = c.get(Calendar.HOUR_OF_DAY) + 1;
+                            int mmin = c.get(Calendar.MINUTE);
+                            int msec = c.get(Calendar.SECOND);
+                            String created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+                            String updatedat = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+
+                            int amount = Integer.parseInt(customer.getAmount());
+                            int rentamount = Integer.parseInt(customer.getRent_amount());
+
+                            RentRecord rentRecord = new RentRecord();
+                            rentRecord.setSync("0");
+                            rentRecord.setCustomer_no(customer.getCustomer_no());
+                            rentRecord.setId(customer.getId());
+
+                            rentRecord.setRent_start_date(StartRentDate);
+                            rentRecord.setRent_end_date(EndRentDate);
+                            rentRecord.setPayment_amount(customer.getRent_amount());
+                            rentRecord.setCreated_by(Application.preferences.getUSerid());
+                            rentRecord.setCreated_at(created_at);
+                            rentRecord.setUpdated_at(updatedat);
+                            rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                            Gson gson = new GsonBuilder().create();
+
+                            Log.e("i = ", gson.toJson(rentRecord).toString());
+                            Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+
+                            rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                            if (Integer.parseInt(customer.getAmount()) >= Integer.parseInt(customer.getRent_amount())) {
+                                ///Insert Status Paid
+                                rentRecord.setPayment_status("PAID");
+                                amount = amount - rentamount;
+                                sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                sqlLiteDbHelper.UpdateAmount(customer.getCustomer_no(), amount + "", amount + "");
+                                AUtoUpdateRent();
+                            } else {
+                                ///Insert Status DUE
+                                rentRecord.setPayment_status("DUE");
+                                for (int i = rentRecords.size(); i < Integer.parseInt(customer.getNo_of_month()); i++) {
+
+                                    calendar = Calendar.getInstance();
+                                    try {
+                                        myDate = simpleDateFormat.parse(rentRecord.getRent_start_date());
+                                        if (myDate != null) {
+                                            calendar.setTime(myDate);
+                                            calendar.add(Calendar.MONTH, 1);
+                                            enddate = calendar.getTime();
+                                            rentRecord.setRent_end_date(simpleDateFormat.format(enddate));
+                                            Log.e("i = " + i, gson.toJson(rentRecord).toString());
+                                            Log.e("rent amt| amt", customer.getAmount() + " " + amount + " " + rentamount);
+                                            rentRecord.setUpdated_by(Application.preferences.getUSerid());
+                                            if (enddate.equals(cdate) || enddate.before(cdate)) {
+                                                sqlLiteDbHelper.InsertRentRecord(rentRecord);
+                                                DueAMT = DueAMT + Integer.parseInt(rentRecord.getPayment_amount());
+                                                rentRecord.setRent_start_date(rentRecord.getRent_end_date());
+                                            } else {
+                                                break;
+                                            }
+                                        }
+
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+
+                        } else {
+
+                        }
+
+                    }
+
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
+
+
         }
 
     }

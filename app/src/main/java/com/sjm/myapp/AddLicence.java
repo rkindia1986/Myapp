@@ -12,12 +12,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.pojo.Installation_History;
-import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONObject;
 
@@ -192,7 +190,7 @@ public class AddLicence extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        Intent intent = new Intent(AddLicence.this, MainActivity.class);
+                        Intent intent = new Intent(AddLicence.this, Splash.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
