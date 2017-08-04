@@ -1,7 +1,6 @@
 package com.sjm.myapp.Fragment;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,17 +16,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
 import com.sjm.myapp.Application;
 import com.sjm.myapp.NetworkConnection;
-import com.sjm.myapp.PaymentList;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
+import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
-import com.sjm.myapp.ViewDtails;
-import com.sjm.myapp.pojo.PaymentRecordsList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -65,12 +60,14 @@ public class send_Alert extends Fragment {
     Button btn_sendalert;
     ArrayList<String> cityList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
-
+    SqlLiteDbHelper sqlLiteDbHelper;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.send_alert, container, false);
         unbinder = ButterKnife.bind(this, view);
+        sqlLiteDbHelper = new SqlLiteDbHelper(getActivity());
+        sqlLiteDbHelper.openDataBase();
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
@@ -167,34 +164,14 @@ public class send_Alert extends Fragment {
 
     public void getCityList() {
 
-        if (NetworkConnection.isNetworkAvailable(getContext())) {
-            try {
-                showProgressDialog();
-                ApiService api = RetroClient.getApiService();
-                Call<String> call = api.get_city_list("get_city_list");
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Log.e(TAG, "call getDetailsByQr: " + call.toString());
 
-                        Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                        hideProgressDialog();
-                        parseCityResponse(response.body());
-                    }
+        cityList.clear();
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        hideProgressDialog();
-                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                        Utils.ShowMessageDialog(getContext(), "Error Occurred");
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Utils.ShowMessageDialog(getContext(), "No Connection Available");
-        }
+        cityList = sqlLiteDbHelper.Get_AllCity();
+        cityList.add(0,"Select City");
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
+        adapter.notifyDataSetChanged();
+        spinner.setAdapter(adapter);
 
     }
 

@@ -155,7 +155,11 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         }
         return customer;
     }
-
+    public void UpdateRentInfo(String custno, String rentstart, String rentend,String noofmonth,String rent,String Plantype) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update Customer_Master set rent_start_date='" + rentstart + "',rent_end_date='" + rentend + "',sync='0',rent_amount='" + rent+"',no_of_month='"+ noofmonth +"',connection_type='"+ Plantype +"' where customer_no='" + custno + "'");
+        database.close();
+    }
     public boolean checkCustomer(Customer customer) {
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor c = database.rawQuery("select * from Customer_Master where customer_no='" + customer.getCustomer_no() + "'", null);
@@ -189,6 +193,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.execSQL("Update Customer_Master set rent_start_date='" + rentstart + "',rent_end_date='" + rentend + "',sync='0' where customer_no='" + custno + "'");
         database.close();
     }
+
     public void DeleteCustomer(String custno) {
         SQLiteDatabase database = this.getWritableDatabase();
 

@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.Installation_History;
 import com.sjm.myapp.pojo.PaymentRecord;
 import com.sjm.myapp.pojo.PaymentRecordsList;
 import com.sjm.myapp.pojo.PlanAlert;
@@ -124,7 +127,12 @@ public class ViewDtails extends AppCompatActivity {
     String UpdatedStatus = "";
     public static PaymentRecordsList paymentRecordsList;
     public static RentRecordsList rentRecordsList;
-
+    @BindView(R.id.rdogroup)
+    RadioGroup rdogroup;
+    @BindView(R.id.rdo_continus)
+    RadioButton rdo_continus;
+    @BindView(R.id.rdo_plan)
+    RadioButton rdo_plan;
     @BindView(R.id.datePicker)
     DatePicker datePicker;
     SqlLiteDbHelper sqlLiteDbHelper;
@@ -178,10 +186,67 @@ public class ViewDtails extends AppCompatActivity {
                 }
             }
         });
+
+        rdogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                int selectedId = rdogroup.getCheckedRadioButtonId();
+                if (selectedId == R.id.rdo_continus) {
+                    edt_month.setEnabled(false);
+
+                } else if (selectedId == R.id.rdo_plan) {
+                    edt_month.setEnabled(true);
+                }
+            }
+        });
+
         btn_updaterent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkValidation2()) {
+                    String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+                    String enddate = "";
+                    int selectedId = rdogroup.getCheckedRadioButtonId();
+                    String conn_type = "";
+                    if (selectedId == R.id.rdo_continus) {
+                        conn_type = "continuous";
+                        edt_month.setText("");
+                    } else if (selectedId == R.id.rdo_plan) {
+                        conn_type = "plan";
+                        if (!TextUtils.isEmpty(edt_month.getText().toString())) {
+
+                            Calendar calendar = Calendar.getInstance();
+
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            try {
+                                Date myDate = simpleDateFormat.parse(sdate);
+                                if (myDate != null) {
+                                    calendar.setTime(myDate);
+                                    calendar.add(Calendar.MONTH, Integer.parseInt(edt_month.getText().toString()));
+                                    myDate = calendar.getTime();
+                                    enddate = simpleDateFormat.format(myDate);
+
+                                }
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+
+
+                    //   created_at = Utils.getDatetime(myear, mmonth, mday, mhour, mmin, msec);
+
+
+                    sqlLiteDbHelper.UpdateRentInfo(customer.getCustomer_no(), sdate, enddate, edt_month.getText().toString(), edt_newrent.getText().toString(), conn_type);
+                    Utils.ShowMessageDialog(ViewDtails.this, "Plan Updated Successfully");
+                    AUtoUpdateRent();
+                    customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
+                    setdata();
+
+
+                    /*
                     if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
                         try {
 
@@ -224,10 +289,11 @@ public class ViewDtails extends AppCompatActivity {
                             });
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
+                        }*/
+                    /*
                     } else {
                         Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-                    }
+                    }*/
 
                 }
             }
@@ -297,7 +363,7 @@ public class ViewDtails extends AppCompatActivity {
                     String number = customer.getPhone();  // The number on which you want to send SMS
                     // The number on which you want to send SMS
                     Intent sendIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
-                    sendIntent.putExtra("sms_body", "Enter SMS Text ");
+                    sendIntent.putExtra("sms_body", edtsms.getText().toString());
                     startActivity(sendIntent);
 
                 }
@@ -907,13 +973,16 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public boolean checkValidation2() {
-        if (TextUtils.isEmpty(edt_month.getText().toString().trim())) {
-            edt_month.setError("Please enter month");
-            return false;
-        }
         if (TextUtils.isEmpty(edt_newrent.getText().toString().trim())) {
             edt_newrent.setError("Please enter rent");
             return false;
+        }
+        int selectedId = rdogroup.getCheckedRadioButtonId();
+        if (selectedId == R.id.rdo_plan) {
+            if (TextUtils.isEmpty(edt_month.getText().toString().trim())) {
+                edt_month.setError("Please fill data");
+                return false;
+            }
         }
         return true;
     }
@@ -945,9 +1014,15 @@ public class ViewDtails extends AppCompatActivity {
             txt_rent.setText(customer.getRent_amount());
             txt_startdate.setText(customer.getRent_start_date());
             txt_stbac.setText(customer.getStb_account_no_1());
+            if (customer.getConnection_type().equalsIgnoreCase("plan")) {
+                rdo_plan.setChecked(true);
+            } else if (customer.getConnection_type().equalsIgnoreCase("continuous")) {
+                rdo_continus.setChecked(true);
+            }
+
 
             if (!TextUtils.isEmpty(customer.getNo_of_month())) {
-
+                edt_month.setText(customer.getNo_of_month());
                 Calendar calendar = Calendar.getInstance();
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -964,6 +1039,20 @@ public class ViewDtails extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+
+                try {
+                    Log.e(".getRent_start_date()", customer.getRent_start_date());
+                    String[] sint = customer.getRent_start_date().split("-");
+                    Date myDate = simpleDateFormat.parse(customer.getRent_start_date());
+                    if (myDate != null) {
+                        Log.e(TAG, "setData: " + sint[0] + " " + sint[1] + " " + sint[2]);
+                        datePicker.updateDate(Integer.parseInt(sint[0]), Integer.parseInt(sint[1]) - 1, Integer.parseInt(sint[2]));
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
 
             }
 
@@ -1086,16 +1175,34 @@ public class ViewDtails extends AppCompatActivity {
     }
 
     public void SetMessage(int kk) {
-        if (planAlert != null && planAlert.getCustomer() != null && planAlert.getInstallation_history() != null) {
+        Calendar calendar = Calendar.getInstance();
+        Date stDate = calendar.getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String todayDate = simpleDateFormat.format(stDate);
+        Gson gson = new GsonBuilder().create();
+        Installation_History installation_history = gson.fromJson(Application.preferences.getDetails(), Installation_History.class);
+        String strkk = installation_history.getCable_network_name() + ":" + customer.getCustomer_no() + ":" + customer.getName() + " : ";
+        String s = "";
+        if (kk == 0) {
+            ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * from customer_payment where id='" + customer.getId() + "' order by tempid desc");
+            //ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * from customer_payment where id='" + customer.getId() + "'");
 
-            if (kk == 0) {
-                edtsms.setText("Selected ==0" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
-            } else if (kk == 1) {
-                edtsms.setText("Selected ==1" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
-            } else if (kk == 2) {
-                edtsms.setText("Selected ==2" + planAlert.getInstallation_history().getCable_network_name() + ":" + planAlert.getCustomer().getCustomer_no() + ":" + planAlert.getCustomer().getName());
+            if (paymentRecords != null && paymentRecords.size() > 0) {
+                {
+
+                    s = strkk + " Your Payment of Rs. " + paymentRecords.get(0).getPayment_amount() + " recieved on " + paymentRecords.get(0).getCreated_at() + " Thank you. Your Advance Payment as on Date is Rs. " + txt_amount.getText().toString() + ". Thank you!";
+                }
             }
+        } else if (kk == 1) {
+
+            s = strkk + " Your Advance Payment as on " + todayDate + " is Rs. " + txt_amount.getText().toString() + ". Thank you.";
+
+        } else if (kk == 2) {
+            s = strkk + " Your plan will expire on " + txt_enddate.getText().toString() + ". Please Re-activate it. OP.:Sureshbhai patel:9825191316";
+
         }
+        edtsms.setText(s);
+
     }
 
     public void AUtoUpdateDUERent() {
