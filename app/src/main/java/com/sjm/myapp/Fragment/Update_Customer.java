@@ -172,7 +172,8 @@ public class Update_Customer extends Fragment {
             public void onClick(View view) {
 
                 if (checkValidation2()) {
-                    String sdate = datePicker.getYear() + "-" + (datePicker.getMonth() + 1) + "-" + datePicker.getDayOfMonth();
+                    String sdate = Utils.getDate(datePicker.getDayOfMonth(), (datePicker.getMonth() + 1), datePicker.getYear());
+
                     String enddate = "";
                     int selectedId = rdogroup.getCheckedRadioButtonId();
                     String conn_type = "";

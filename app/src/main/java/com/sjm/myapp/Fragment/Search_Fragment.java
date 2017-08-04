@@ -154,6 +154,7 @@ public class Search_Fragment extends Fragment {
                     if (customers != null && customers.size() > 0) {
                         Constant.categoryListModel.setLstCustomer(customers);
                         Intent intent = new Intent(getActivity(), SearchList.class);
+                        intent.putExtra("query",que);
                         startActivity(intent);
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Customer Available");

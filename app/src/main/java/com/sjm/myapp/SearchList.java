@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sjm.myapp.Fragment.Search_Fragment;
+import com.sjm.myapp.pojo.Customer;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +36,8 @@ public class SearchList extends AppCompatActivity {
     @BindView(R.id.listview)
     ListView listview;
     SearchListAdapter searchListAdapter;
-
+    String query="";
+    SqlLiteDbHelper sqlLiteDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +45,13 @@ public class SearchList extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.searchlist);
         unbinder = ButterKnife.bind(this);
-
+        sqlLiteDbHelper = new SqlLiteDbHelper(SearchList.this);
+        sqlLiteDbHelper.openDataBase();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setTitle("SEARCH LIST");
-
+        query  = getIntent().getExtras().getString("query");
         searchListAdapter = new SearchListAdapter();
         searchListAdapter.notifyDataSetChanged();
         listview.setAdapter(searchListAdapter);
@@ -62,10 +67,22 @@ public class SearchList extends AppCompatActivity {
     }
 
     @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        searchListAdapter.notifyDataSetChanged();
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume: " );
+        ArrayList<Customer> customers = sqlLiteDbHelper.Get_AllCustomers2(query);
+        if (customers != null && customers.size() > 0) {
+            Constant.categoryListModel.setLstCustomer(customers);
+            searchListAdapter = new SearchListAdapter();
+            searchListAdapter.notifyDataSetChanged();
+            listview.setAdapter(searchListAdapter);
+        } else {
+            finish();
+        }
+
     }
+
+
 
     class SearchListAdapter extends BaseAdapter {
 

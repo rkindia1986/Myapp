@@ -979,6 +979,8 @@ public class ViewDtails extends AppCompatActivity {
         sqlLiteDbHelper.DeleteCustomer(customer.getCustomer_no());
         Constant.categoryListModel.getLstCustomer().remove(selectedId);
         Toast.makeText(ViewDtails.this, "Customer Deleted Successfully", Toast.LENGTH_LONG).show();
+        //Constant.categoryListModel.getLstCustomer().get(selectedId);
+
         finish();
 
      /*   if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
@@ -1098,13 +1100,15 @@ public class ViewDtails extends AppCompatActivity {
 
     public void AUtoUpdateDUERent() {
         customer = sqlLiteDbHelper.Get_Customers("select * from Customer_Master where customer_no like '" + customer.getCustomer_no() + "'");
-        ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getDUERentRecordbydate(customer.getCustomer_no());
-        if (rentRecords != null && rentRecords.size() > 0) {
-            for (int i = 0; i < rentRecords.size(); i++) {
-
+        if (Integer.parseInt(customer.getAmount()) >= 0) {
+            ArrayList<RentRecord> rentRecords = sqlLiteDbHelper.getDUERentRecordbydate(customer.getCustomer_no(), customer.getRent_start_date());
+            if (rentRecords != null && rentRecords.size() > 0) {
+                for (int i = 0; i < rentRecords.size(); i++) {
+                    rentRecords.get(i).setPayment_status("PAID");
+                    sqlLiteDbHelper.UpdateRentRecord(rentRecords.get(i));
+                }
             }
         }
-
     }
 
     public void AUtoUpdateRent() {
@@ -1143,6 +1147,7 @@ public class ViewDtails extends AppCompatActivity {
                         Date startdate = calendar.getTime();
 
                         if (rentstartdate != null && (startdate.equals(rentstartdate) || startdate.before(rentstartdate))) {
+                            AUtoUpdateDUERent();
                             startdate = rentstartdate;
                             calendar.setTime(startdate);
                         }

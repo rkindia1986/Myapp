@@ -96,11 +96,12 @@ public class Exp_Customer extends Fragment {
 
         String s = "select * from Customer_Master where city like '" + city + "' and rent_end_date >= '" + Startdate + "' and rent_end_date<='" + EndDate + "'";
         Log.e(TAG, "EXpiring Customer: " + s);
-        customers = sqlLiteDbHelper.Get_AllCustomers2("select * from Customer_Master where city like '" + city + "' and rent_end_date >= '" + Startdate + "' and rent_end_date<='" + EndDate + "'");
+        customers = sqlLiteDbHelper.Get_AllCustomers2(s);
         if (customers != null && customers.size() > 0) {
             Constant.categoryListModel = new SearchCustomer();
             Constant.categoryListModel.setLstCustomer(customers);
             Intent intent = new Intent(getContext(), ExpiringList.class);
+            intent.putExtra("query",s);
             startActivity(intent);
         } else {
             Utils.ShowMessageDialog(getContext(), "No Record Available");

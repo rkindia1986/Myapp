@@ -14,8 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText android:singleLine="true" android:inputType="number"
-                android:focusableInTouchMode="true"
+            <EditText android:singleLine="true"                android:focusableInTouchMode="true"
                 android:id="@+id/edt_search_sutno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

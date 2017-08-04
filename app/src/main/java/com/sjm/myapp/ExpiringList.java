@@ -15,6 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sjm.myapp.pojo.Customer;
+
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -27,10 +31,11 @@ public class ExpiringList extends AppCompatActivity {
     private static final String TAG = "Backup";
     ProgressDialog pd;
     private Unbinder unbinder;
-
+    String query = "";
     @BindView(R.id.listview)
     ListView listview;
     SearchListAdapter searchListAdapter;
+    SqlLiteDbHelper sqlLiteDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +49,12 @@ public class ExpiringList extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setTitle("EXPIRING CUSTOMERS");
-
+        sqlLiteDbHelper = new SqlLiteDbHelper(ExpiringList.this);
+        sqlLiteDbHelper.openDataBase();
         searchListAdapter = new SearchListAdapter();
         searchListAdapter.notifyDataSetChanged();
         listview.setAdapter(searchListAdapter);
-
+        query = getIntent().getExtras().getString("query");
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -60,9 +66,17 @@ public class ExpiringList extends AppCompatActivity {
     }
 
     @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
+    protected void onResume() {
+        super.onResume();
         searchListAdapter.notifyDataSetChanged();
+        ArrayList<Customer> customers = sqlLiteDbHelper.Get_AllCustomers2(query);
+        if (customers != null && customers.size() > 0) {
+            Constant.categoryListModel.setLstCustomer(customers);
+            searchListAdapter = new SearchListAdapter();
+            listview.setAdapter(searchListAdapter);
+        } else {
+            finish();
+        }
     }
 
     class SearchListAdapter extends BaseAdapter {
@@ -109,8 +123,8 @@ public class ExpiringList extends AppCompatActivity {
             v.txtAddress.setText("Address: " + Constant.categoryListModel.getLstCustomer().get(position).getAddress() + ", " + Constant.categoryListModel.getLstCustomer().get(position).getCity());
             v.txtAmount.setText("Amount: " + Constant.categoryListModel.getLstCustomer().get(position).getAmount());
             v.txtCNo.setText("C No: " + Constant.categoryListModel.getLstCustomer().get(position).getCustomer_no());
-            v.txtConn.setText("Conn: " +  Constant.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status());
-            v.txtdate.setText("Start: " + Constant.categoryListModel.getLstCustomer().get(position).getRent_start_date() );
+            v.txtConn.setText("Conn: " + Constant.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status());
+            v.txtdate.setText("Start: " + Constant.categoryListModel.getLstCustomer().get(position).getRent_start_date());
             if (Constant.categoryListModel.getLstCustomer().get(position).getCustomer_connection_status().equalsIgnoreCase("off")) {
                 v.lytparnt.setBackgroundColor(getResources().getColor(R.color.red));
             } else {
