@@ -123,7 +123,7 @@ public class ViewDtails extends AppCompatActivity {
     Spinner spinner;
     @BindView(R.id.lyt_rentplanchange)
     LinearLayout lyt_rentplanchange;
-    Customer customer;
+   static Customer customer;
     String UpdatedStatus = "";
     public static PaymentRecordsList paymentRecordsList;
     public static RentRecordsList rentRecordsList;

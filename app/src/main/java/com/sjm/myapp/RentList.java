@@ -2,7 +2,6 @@ package com.sjm.myapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.RentRecord;
 
 import java.util.ArrayList;
@@ -99,7 +97,7 @@ public class RentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtid.setText("ID: " + rentRecords.get(position).getId());
+            v.txtid.setText("CNO: " + ViewDtails.customer.getCustomer_no());
             v.txtpayamt.setText("Amt: " + rentRecords.get(position).getPayment_amount());
             v.txtPayStatus.setText("Ststus: " + rentRecords.get(position).getPayment_status());
             v.txtrentstart.setText("Rent Start: " + rentRecords.get(position).getRent_start_date());

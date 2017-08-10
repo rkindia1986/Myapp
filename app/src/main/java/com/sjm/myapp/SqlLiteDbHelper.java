@@ -347,13 +347,11 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
     public void InsertPayment(PaymentRecord paymentRecord) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-
         values.put("id", paymentRecord.getId());
         values.put("amount", paymentRecord.getPayment_amount());
         values.put("created_at", paymentRecord.getCreated_at());
         values.put("created_by", paymentRecord.getCreated_by());
         values.put("sync", paymentRecord.getSync());
-
         database.insert("customer_payment", null, values);
         database.close();
     }

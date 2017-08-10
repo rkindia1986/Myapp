@@ -71,41 +71,6 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText android:singleLine="true"
-                android:id="@+id/edt_web_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/web_link" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText android:singleLine="true"
-                android:id="@+id/edt_web_loginid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/web_loginid" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText android:singleLine="true"
-                android:id="@+id/edt_web_loginpass"  android:password="true" android:inputType="textPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/web_loginpass" />
-
-        </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"

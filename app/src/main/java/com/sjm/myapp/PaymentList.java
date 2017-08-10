@@ -2,7 +2,6 @@ package com.sjm.myapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sjm.myapp.Fragment.Search_Fragment;
 import com.sjm.myapp.pojo.PaymentRecord;
 
 import java.util.ArrayList;
@@ -31,6 +29,7 @@ public class PaymentList extends AppCompatActivity {
     private static final String TAG = "PaymentList";
     ProgressDialog pd;
     private Unbinder unbinder;
+    String custno="";
 
     @BindView(R.id.listview)
     ListView listview;
@@ -42,13 +41,14 @@ public class PaymentList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.searchlist);
+        setContentView(R.layout.paymentlist);
         unbinder = ButterKnife.bind(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setTitle("PAYMENT RECORDS");
+
         paymentRecords = ViewDtails.paymentRecordsList.getLstPaymentrecords();
         searchListAdapter = new PaymentListAdapter();
         listview.setAdapter(searchListAdapter);
@@ -97,7 +97,7 @@ public class PaymentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtid.setText("ID : " + paymentRecords.get(position).getId());
+            v.txtid.setText("CNO : " + ViewDtails.customer.getCustomer_no());
             v.txtdate.setText("Date: "+ paymentRecords.get(position).getCreated_at());
             v.txtamt.setText("Amt: "+ paymentRecords.get(position).getPayment_amount());
 
