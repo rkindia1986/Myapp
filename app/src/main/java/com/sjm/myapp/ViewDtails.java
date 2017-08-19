@@ -321,35 +321,7 @@ public class ViewDtails extends AppCompatActivity {
                         setdata();
 
 
-                   /* if (NetworkConnection.isNetworkAvailable(ViewDtails.this)) {
-                        try {
-                            showProgressDialog();
-                            ApiService api = RetroClient.getApiService();
 
-                            Call<String> call = api.add_customer_payment_amount("add_customer_payment_amount", customer.getId(), "4", edt_addpayment.getText().toString());
-                            call.enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    Log.e(TAG, "call getDetailsByQr: " + call.toString());
-
-                                    Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
-                                    hideProgressDialog();
-                                    parseADDPAYMENTResponse(response.body());
-                                }
-
-                                @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                    hideProgressDialog();
-                                    Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
-                                    Utils.ShowMessageDialog(ViewDtails.this, "Error Occurred");
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Utils.ShowMessageDialog(ViewDtails.this, "No Connection Available");
-                    }*/
                     }
                 } else {
                     Utils.ShowMessageDialog(ViewDtails.this, "This connection is not active. Please change connection status first");

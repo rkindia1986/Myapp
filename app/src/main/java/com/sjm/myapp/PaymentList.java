@@ -29,7 +29,7 @@ public class PaymentList extends AppCompatActivity {
     private static final String TAG = "PaymentList";
     ProgressDialog pd;
     private Unbinder unbinder;
-    String custno="";
+    String custno = "";
 
     @BindView(R.id.listview)
     ListView listview;
@@ -97,9 +97,9 @@ public class PaymentList extends AppCompatActivity {
                 v = (ViewHolder) convertView.getTag();
             }
 
-            v.txtid.setText("CNO : " + ViewDtails.customer.getCustomer_no());
-            v.txtdate.setText("Date: "+ paymentRecords.get(position).getCreated_at());
-            v.txtamt.setText("Amt: "+ paymentRecords.get(position).getPayment_amount());
+            v.txtid.setText(ViewDtails.customer.getCustomer_no());
+            v.txtdate.setText(paymentRecords.get(position).getCreated_at());
+            v.txtamt.setText(paymentRecords.get(position).getPayment_amount());
 
             return convertView;
         }

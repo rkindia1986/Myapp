@@ -23,6 +23,9 @@ public class Preferences {
     public static final String USerid = "user_id";
     public static final String verify_licence_key = "verify_licence_key";
     public static final String Details = "Details";
+    public boolean Sync =false;
+    public static final String SYNCDATA ="Syncdata";
+
     public void setDetails(String Details1) {
         editor.putString(Details, Details1);
         editor.commit();
@@ -102,6 +105,11 @@ public class Preferences {
         return pref.getString(LICENCEKEY, "");
     }
 
-
-
+    public boolean getSync() {
+        return pref.getBoolean(SYNCDATA, false);
+    }
+    public void setSync(boolean syn) {
+        editor.putBoolean(SYNCDATA, syn);
+        editor.commit();
+    }
 }

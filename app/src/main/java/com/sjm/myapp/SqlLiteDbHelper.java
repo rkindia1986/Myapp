@@ -125,7 +125,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 customer.setCity(cursor.getString(cursor.getColumnIndex("city")));
                 customer.setAmount(cursor.getString(cursor.getColumnIndex("amount")));
                 customer.setAmount2(cursor.getString(cursor.getColumnIndex("amount2")));
-               // Log.e("cursor.getString(cursor", cursor.getString(cursor.getColumnIndex("amount2")));
+                // Log.e("cursor.getString(cursor", cursor.getString(cursor.getColumnIndex("amount2")));
                 customer.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
                 customer.setRent_amount(cursor.getString(cursor.getColumnIndex("rent_amount")));
                 customer.setCaf_no_1(cursor.getString(cursor.getColumnIndex("caf_no_1")));
@@ -155,11 +155,13 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         }
         return customer;
     }
-    public void UpdateRentInfo(String custno, String rentstart, String rentend,String noofmonth,String rent,String Plantype) {
+
+    public void UpdateRentInfo(String custno, String rentstart, String rentend, String noofmonth, String rent, String Plantype) {
         SQLiteDatabase database = this.getWritableDatabase();
-        database.execSQL("Update Customer_Master set rent_start_date='" + rentstart + "',rent_end_date='" + rentend + "',sync='0',rent_amount='" + rent+"',no_of_month='"+ noofmonth +"',connection_type='"+ Plantype +"' where customer_no='" + custno + "'");
+        database.execSQL("Update Customer_Master set rent_start_date='" + rentstart + "',rent_end_date='" + rentend + "',sync='0',rent_amount='" + rent + "',no_of_month='" + noofmonth + "',connection_type='" + Plantype + "' where customer_no='" + custno + "'");
         database.close();
     }
+
     public boolean checkCustomer(Customer customer) {
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor c = database.rawQuery("select * from Customer_Master where customer_no='" + customer.getCustomer_no() + "'", null);
@@ -177,9 +179,10 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.execSQL("Update Customer_Master set customer_connection_status='" + ConnStatus + "',sync='0' where customer_no='" + custno + "'");
         database.close();
     }
+
     public void UpdateRent(String cityname, String rentamt) {
         SQLiteDatabase database = this.getWritableDatabase();
-        database.execSQL("Update Customer_Master set rent_amount='" + rentamt + "' where city='" + cityname + "'");
+        database.execSQL("Update Customer_Master set rent_amount='" + rentamt + "',sync='0' where city='" + cityname + "'");
         database.close();
     }
 
@@ -188,6 +191,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.execSQL("Update Customer_Master set amount='" + Amount1 + "',amount2='" + Amount2 + "',sync='0' where customer_no='" + custno + "'");
         database.close();
     }
+
     public void UpdateRentstartEndDate(String custno, String rentstart, String rentend) {
         SQLiteDatabase database = this.getWritableDatabase();
         database.execSQL("Update Customer_Master set rent_start_date='" + rentstart + "',rent_end_date='" + rentend + "',sync='0' where customer_no='" + custno + "'");
@@ -216,7 +220,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-       values.put("amount2", customer.getAmount2());
+        values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
@@ -252,7 +256,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-       values.put("amount2", customer.getAmount2());
+        values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
@@ -344,6 +348,12 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    public void UpdateAllRentIDs(String oldid, String newid) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update rent_record set id='" + newid + "' where id='" + oldid + "'");
+        database.close();
+    }
+
     public void InsertPayment(PaymentRecord paymentRecord) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -353,6 +363,21 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("created_by", paymentRecord.getCreated_by());
         values.put("sync", paymentRecord.getSync());
         database.insert("customer_payment", null, values);
+        database.close();
+    }
+
+    public void InsertPayments(ArrayList<PaymentRecord> paymentRecords) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        for (int i = 0; i < paymentRecords.size(); i++) {
+            PaymentRecord paymentRecord = paymentRecords.get(i);
+            ContentValues values = new ContentValues();
+            values.put("id", paymentRecord.getCustomer_id());
+            values.put("amount", paymentRecord.getPayment_amount());
+            values.put("created_at", paymentRecord.getCreated_at());
+            values.put("created_by", paymentRecord.getCreated_by());
+            values.put("sync", "1");
+            database.insert("customer_payment", null, values);
+        }
         database.close();
     }
 
@@ -424,7 +449,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         values.put("address", customer.getAddress());
         values.put("city", customer.getCity());
         values.put("amount", customer.getAmount());
-     values.put("amount2", customer.getAmount2());
+        values.put("amount2", customer.getAmount2());
         values.put("phone", customer.getPhone());
         values.put("rent_amount", customer.getRent_amount());
         values.put("stb_account_no_1", customer.getStb_account_no_1());
@@ -582,6 +607,30 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    public void InsertRentRecords(ArrayList<RentRecord> rentRecords) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        for (int i = 0; i < rentRecords.size(); i++) {
+            RentRecord customer = rentRecords.get(i);
+            database.execSQL("delete from rent_record where customer_id='" + customer.getCustomer_no() + "' and rent_start_date='" + customer.getRent_start_date() + "'");
+            ContentValues values = new ContentValues();
+            values.put("sync", customer.getSync());
+            values.put("id", customer.getId());
+            values.put("customer_id", customer.getCustomer_no());
+            values.put("payment_status", customer.getPayment_status());
+            values.put("payment_amount", customer.getPayment_amount());
+            values.put("rent_start_date", customer.getRent_start_date());
+            values.put("rent_end_date", customer.getRent_end_date());
+            values.put("created_at", customer.getCreated_at());
+            values.put("created_by", customer.getCreated_by());
+            values.put("updated_at", customer.getUpdated_at());
+            values.put("updated_by", customer.getUpdated_by());
+
+            database.insert("rent_record", null, values);
+        }
+        database.close();
+    }
+
     public void UpdateRentRecord(RentRecord customer) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -601,12 +650,48 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    public void UpdateRentRecordStatus(RentRecord paymentRecord) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("Update rent_record set sync='1' where tempid=" + paymentRecord.getTempid() + "");
+        database.close();
+    }
+
     public void isUniqueEmail_registration() {
 
     }
 
     public void isUniqueCustomer_no_registration() {
 
+    }
+
+    public ArrayList<RentRecord> getRentRecord2(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<RentRecord> rentRecords = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                RentRecord rentRecord = new RentRecord();
+                rentRecord.setSync(cursor.getString(cursor.getColumnIndex("sync")));
+                rentRecord.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_id")));
+                rentRecord.setId(cursor.getString(cursor.getColumnIndex("id")));
+                rentRecord.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
+
+                rentRecord.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
+                rentRecord.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
+                rentRecord.setPayment_amount(cursor.getString(cursor.getColumnIndex("payment_amount")));
+                rentRecord.setPayment_status(cursor.getString(cursor.getColumnIndex("payment_status")));
+                rentRecord.setUpdated_by(cursor.getString(cursor.getColumnIndex("updated_by")));
+                rentRecord.setUpdated_at(cursor.getString(cursor.getColumnIndex("updated_at")));
+                rentRecord.setCreated_at(cursor.getString(cursor.getColumnIndex("created_at")));
+                rentRecord.setCreated_by(cursor.getString(cursor.getColumnIndex("created_by")));
+                rentRecords.add(rentRecord);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+
+        return rentRecords;
     }
 
     public ArrayList<RentRecord> getRentRecord(String custno) {
@@ -619,7 +704,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 rentRecord.setSync(cursor.getString(cursor.getColumnIndex("sync")));
                 rentRecord.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_id")));
                 rentRecord.setId(cursor.getString(cursor.getColumnIndex("id")));
-
+                rentRecord.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
                 rentRecord.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
                 rentRecord.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
                 rentRecord.setPayment_amount(cursor.getString(cursor.getColumnIndex("payment_amount")));
@@ -649,7 +734,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
                 rentRecord.setSync(cursor.getString(cursor.getColumnIndex("sync")));
                 rentRecord.setCustomer_no(cursor.getString(cursor.getColumnIndex("customer_id")));
                 rentRecord.setId(cursor.getString(cursor.getColumnIndex("id")));
-
+                rentRecord.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
                 rentRecord.setRent_start_date(cursor.getString(cursor.getColumnIndex("rent_start_date")));
                 rentRecord.setRent_end_date(cursor.getString(cursor.getColumnIndex("rent_end_date")));
                 rentRecord.setPayment_amount(cursor.getString(cursor.getColumnIndex("payment_amount")));
@@ -667,10 +752,11 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
         return rentRecords;
     }
-    public ArrayList<RentRecord> getDUERentRecordbydate(String custno,String rentdate) {
+
+    public ArrayList<RentRecord> getDUERentRecordbydate(String custno, String rentdate) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from rent_record where customer_id='" + custno + "' and " +
-                "payment_status='DUE' and rent_start_date <'"+ rentdate +"'order by rent_start_date", null);
+                "payment_status='DUE' and rent_start_date <'" + rentdate + "'order by rent_start_date", null);
         ArrayList<RentRecord> rentRecords = new ArrayList<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -696,13 +782,14 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
         return rentRecords;
     }
+
     public ArrayList<RentRecord> getRentRecordbycity(String city, String rentstart, String rentend, String status, String type) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         if (status.equalsIgnoreCase("ALL")) {
             //cursor = db.rawQuery("select r.*,c.* from rent_record AS r,Customer_Master AS c where c.city like '" + city + "' and r.customer_id=c.customer_no and r.payment_status=' " + status + "' and r.rent_start_date>=" + rentstart + " and r.rent_end_date<=" + rentend + "", null);
             //String str = "select r.*,c.* from rent_record AS r,Customer_Master AS c where c.city like '" + city + "' and r.customer_id=c.customer_no and r.payment_status=' " + type + "' and r.rent_start_date >= '" + rentstart +"'";// " and r.rent_end_date<=" + rentend + "";
-            String str = "select r.*,c.* from rent_record AS r,Customer_Master AS c where c.city like '" + city + "' and r.customer_id=c.customer_no and r.payment_status='" + type + "' and r.rent_start_date >= '" + rentstart +"' and r.rent_end_date<='" + rentend + "'";
+            String str = "select r.*,c.* from rent_record AS r,Customer_Master AS c where c.city like '" + city + "' and r.customer_id=c.customer_no and r.payment_status='" + type + "' and r.rent_start_date >= '" + rentstart + "' and r.rent_end_date<='" + rentend + "'";
             Log.e("get report", "getRentRecordbycity: " + str);
             cursor = db.rawQuery(str, null);
         } else {
@@ -718,7 +805,7 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
                 rentRecord.setId(cursor.getString(1));
                 rentRecord.setCustomer_no(cursor.getString(2));
-
+                rentRecord.setTempid(cursor.getInt(cursor.getColumnIndex("tempid")));
                 rentRecord.setPayment_status(cursor.getString(3));
                 rentRecord.setPayment_amount(cursor.getString(4));
                 rentRecord.setRent_start_date(cursor.getString(5));

@@ -22,7 +22,9 @@ import android.widget.Spinner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sjm.myapp.ApiService;
+import com.sjm.myapp.Application;
 import com.sjm.myapp.Constant;
+import com.sjm.myapp.ExpenseReportList;
 import com.sjm.myapp.NetworkConnection;
 import com.sjm.myapp.R;
 import com.sjm.myapp.RetroClient;
@@ -30,8 +32,11 @@ import com.sjm.myapp.SearchList;
 import com.sjm.myapp.SqlLiteDbHelper;
 import com.sjm.myapp.Utils;
 import com.sjm.myapp.pojo.Customer;
+import com.sjm.myapp.pojo.Expense;
 import com.sjm.myapp.pojo.Installation;
 import com.sjm.myapp.pojo.Installation_History;
+import com.sjm.myapp.pojo.PaymentRecord;
+import com.sjm.myapp.pojo.RentRecord;
 import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONArray;
@@ -94,13 +99,13 @@ public class Search_Fragment extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
         adapter.notifyDataSetChanged();
         spinner.setAdapter(adapter);
-              showProgressDialog();
+        showProgressDialog();
 
         UploadCustomer();
         btnsearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (com.sjm.myapp.Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
+                if (Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
                     Utils.ShowMessageDialog(getContext(), "Required Licence? Please contact us");
                 } else {
                     int selectedId = radiogroup.getCheckedRadioButtonId();
@@ -138,10 +143,9 @@ public class Search_Fragment extends Fragment {
                         }
                     } else {*/
                     Constant.categoryListModel = new SearchCustomer();
-                    String city="";
-                    if(spinner.getSelectedItemPosition() >0)
-                    {
-                        city= spinner.getSelectedItem().toString().toString();
+                    String city = "";
+                    if (spinner.getSelectedItemPosition() > 0) {
+                        city = spinner.getSelectedItem().toString().toString();
                     }
                     String que = "select * from Customer_Master where customer_no like '%" + edt_search_sutno.getText().toString().trim() +
                             "%' and name like '%" + edt_search_custname.getText().toString().trim() +
@@ -154,7 +158,7 @@ public class Search_Fragment extends Fragment {
                     if (customers != null && customers.size() > 0) {
                         Constant.categoryListModel.setLstCustomer(customers);
                         Intent intent = new Intent(getActivity(), SearchList.class);
-                        intent.putExtra("query",que);
+                        intent.putExtra("query", que);
                         startActivity(intent);
                     } else {
                         Utils.ShowMessageDialog(getContext(), "No Customer Available");
@@ -250,7 +254,7 @@ public class Search_Fragment extends Fragment {
             hideProgressDialog();
             cityList.clear();
             cityList = sqlLiteDbHelper.Get_AllCity();
-            cityList.add(0,"Select City");
+            cityList.add(0, "Select City");
             adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, cityList);
             adapter.notifyDataSetChanged();
             spinner.setAdapter(adapter);
@@ -277,7 +281,7 @@ public class Search_Fragment extends Fragment {
                             sqlLiteDbHelper.UpdateCity(cityList);
 
                         }
-                        cityList.add(0,"Select City");
+                        cityList.add(0, "Select City");
                         adapter.notifyDataSetChanged();
                     } else {
                         Utils.ShowMessageDialog(getContext(), j.getString("message"));
@@ -298,13 +302,13 @@ public class Search_Fragment extends Fragment {
     }
 
     public void getInstallation() {
-        if (com.sjm.myapp.Application.preferences.getUSerid().equalsIgnoreCase("") &&
-                com.sjm.myapp.Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
+        if (Application.preferences.getUSerid().equalsIgnoreCase("") &&
+                Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
             if (NetworkConnection.isNetworkAvailable(getContext())) {
                 try {
 
                     ApiService api = RetroClient.getApiService();
-                    Call<String> call = api.welcome("welcome", com.sjm.myapp.Application.preferences.getDeviceId(), com.sjm.myapp.Application.preferences.getimei_number());
+                    Call<String> call = api.welcome("welcome", Application.preferences.getDeviceId(), Application.preferences.getimei_number());
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -351,11 +355,11 @@ public class Search_Fragment extends Fragment {
 
                                 Installation_History installation_history = gson.fromJson(j.optJSONObject("result").toString(), Installation_History.class);
                                 if (installation_history != null && installation_history.getLicence_key() != null && installation_history.getLicence_key().length() > 5 && installation_history.getVerify_licence_key().equalsIgnoreCase("1")) {
-                                    com.sjm.myapp.Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
-                                    com.sjm.myapp.Application.preferences.setUSerid(installation_history.getUser_id());
-                                    com.sjm.myapp.Application.preferences.setMASTERPASS(installation_history.getMaster_password());
-                                    com.sjm.myapp.Application.preferences.setverify_licence_key(installation_history.getLicence_key());
-                                    com.sjm.myapp.Application.preferences.setDetails(j.getJSONObject("result").toString());
+                                    Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
+                                    Application.preferences.setUSerid(installation_history.getUser_id());
+                                    Application.preferences.setMASTERPASS(installation_history.getMaster_password());
+                                    Application.preferences.setverify_licence_key(installation_history.getLicence_key());
+                                    Application.preferences.setDetails(j.getJSONObject("result").toString());
                                 }
                             } catch (Exception e) {
 
@@ -426,9 +430,9 @@ public class Search_Fragment extends Fragment {
                     ApiService api = RetroClient.getApiService();
                     Call<String> call = null;
                     if (selCustomer.getId().equalsIgnoreCase(selCustomer.getSyncid())) {
-                        call = api.add_customer("add_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                        call = api.add_customer("add_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), Application.preferences.getUSerid());
                     } else {
-                        call = api.Edit_customer("edit_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), com.sjm.myapp.Application.preferences.getUSerid());
+                        call = api.Edit_customer("edit_customer", selCustomer.getName(), selCustomer.getCustomer_no(), selCustomer.getAddress(), selCustomer.getCity(), selCustomer.getAmount(), selCustomer.getPhone(), selCustomer.getRent_amount(), selCustomer.getStb_account_no_1(), selCustomer.getNu_id_no_1(), selCustomer.getCaf_no_1(), selCustomer.getStb_account_no_2(), selCustomer.getNu_id_no_2(), selCustomer.getCaf_no_2(), selCustomer.getConnection_type(), selCustomer.getCustomer_connection_status(), selCustomer.getRent_start_date(), selCustomer.getNo_of_month(), Application.preferences.getUSerid());
                     }
                     Log.e(TAG, "call add_customer: " + call.request().url().toString());
                     call.enqueue(new Callback<String>() {
@@ -444,7 +448,7 @@ public class Search_Fragment extends Fragment {
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
 
-                            getCityList();
+                            UploadCustomer();
                         }
                     });
                 } catch (Exception e) {
@@ -454,7 +458,7 @@ public class Search_Fragment extends Fragment {
                 getCityList();
             }
         } else {
-            getCityList();
+            uploadExpense();
         }
 
     }
@@ -464,8 +468,9 @@ public class Search_Fragment extends Fragment {
 
         String message = "";
         boolean Status = false;
+        JSONObject j = null;
         try {
-            JSONObject j = new JSONObject(body);
+            j = new JSONObject(body);
             if (j != null) {
                 if (body.contains("status")) {
 
@@ -477,16 +482,6 @@ public class Search_Fragment extends Fragment {
                         if (j.getString("message").equalsIgnoreCase("success")) {
                             Status = true;
                             message = j.optString("message");
-                            Gson gson = new GsonBuilder().create();
-
-                            JSONObject jsonObject = j.optJSONObject("result");
-                            Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
-                            customer.setSync("1");
-                            customer.setSyncid(selCustomer.getSyncid());
-                           // customer.setAmount2(selCustomer.getAmount2());
-                            sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
-                            sqlLiteDbHelper.UpdateAllPaymentIDs(selCustomer.getSyncid(),customer.getId());
-                            sqlLiteDbHelper.UpdateAllExpenseIDs(selCustomer.getSyncid(),customer.getId());
 
                         } else {
                             Status = false;
@@ -508,12 +503,281 @@ public class Search_Fragment extends Fragment {
 
 
         }
-        if (Status) {
+        if (Status && j!=null) {
+            Gson gson = new GsonBuilder().create();
+            JSONObject jsonObject = j.optJSONObject("result");
+            Customer customer = gson.fromJson(jsonObject.toString(), Customer.class);
+            customer.setSync("1");
+            customer.setSyncid(selCustomer.getSyncid());
+            customer.setAmount2(selCustomer.getAmount2());
+            sqlLiteDbHelper.UpdateCustomer(customer, selCustomer.getSyncid());
+            sqlLiteDbHelper.UpdateAllPaymentIDs(selCustomer.getSyncid(), customer.getId());
+            sqlLiteDbHelper.UpdateAllExpenseIDs(selCustomer.getSyncid(), customer.getId());
+            sqlLiteDbHelper.UpdateAllRentIDs(selCustomer.getSyncid(), customer.getId());
             UploadCustomer();
         } else {
-            getCityList();
+            UploadCustomer();
         }
 
     }
 
+    Expense expense = null;
+
+    public void uploadExpense() {
+
+        if (NetworkConnection.isNetworkAvailable(getContext())) {
+
+            try {
+                ArrayList<Expense> arrexp = sqlLiteDbHelper.getExpenserecords("select * from manage_expense where sync='0'");
+
+                if (arrexp != null && arrexp.size() > 0) {
+                    expense = null;
+                    for (int i = 0; i < arrexp.size(); i++) {
+                        if (!arrexp.get(i).getId().contains("temp")) {
+                            expense = arrexp.get(i);
+                            break;
+                        }
+                    }
+                    if (expense != null) {
+                        ApiService api = RetroClient.getApiService();
+                        Call<String> call = api.add_expense_income("add_expense_income", expense.getExpense_type(), expense.getDescription(), expense.getAmount(), expense.getExpense_date(), expense.getId());
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                Log.e(TAG, "call getDetailsByQr: " + call.toString());
+                                Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                parseManageExpenseResponse(response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                                uploadExpense();
+                                Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+
+                            }
+                        });
+                    }
+                }else
+                {
+                    UploadPayment();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            getCityList();
+        }
+    }
+
+    private void parseManageExpenseResponse(String body) {
+
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getInt("status") == 0) {
+                        Status = true;
+
+                    } else {
+                        Status = false;
+
+                    }
+                }
+            } else {
+                Status = false;
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+
+
+        }
+        if (Status) {
+            expense.setSync("1");
+            sqlLiteDbHelper.UpdateExpense(expense);
+            uploadExpense();
+        } else {
+            uploadExpense();
+        }
+    }
+
+    RentRecord rentRecord;
+
+    public void UploadRent() {
+
+        if (NetworkConnection.isNetworkAvailable(getContext())) {
+
+            try {
+                ArrayList<RentRecord> rentrecords = sqlLiteDbHelper.getRentRecord2("select * from rent_record where sync='0'");
+
+                if (rentrecords != null && rentrecords.size() > 0) {
+                    rentRecord = null;
+                    for (int i = 0; i < rentrecords.size(); i++) {
+                        if (!rentrecords.get(i).getId().contains("temp")) {
+                            rentRecord = rentrecords.get(i);
+                            break;
+                        }
+                    }
+                    if (rentRecord != null) {
+                        ApiService api = RetroClient.getApiService();
+                        Call<String> call = api.insertRentRecord("rent_record_by_customer", rentRecord.getRent_start_date(), rentRecord.getRent_end_date(), rentRecord.getId(), Application.preferences.getUSerid(), rentRecord.getPayment_amount(), rentRecord.getPayment_status());
+                        Log.e(TAG, "UploadRent: " + call.request().url().toString());
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                Log.e(TAG, "call getDetailsByQr: " + call.toString());
+                                Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                parseRentResponse(response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                                UploadRent();
+                                Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                // Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                            }
+                        });
+                    }else
+                    {
+                        getCityList();
+                    }
+                }else
+                {
+                    getCityList();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }else {
+            getCityList();
+        }
+    }
+
+    private void parseRentResponse(String body) {
+
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getInt("status") == 0) {
+                        Status = true;
+
+                    } else {
+                        Status = false;
+                    }
+                }
+            } else {
+                Status = false;
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+
+
+        }
+        if (Status) {
+            rentRecord.setSync("1");
+            sqlLiteDbHelper.UpdateRentRecordStatus(rentRecord);
+            UploadRent();
+        } else {
+            UploadRent();
+        }
+    }
+
+    PaymentRecord paymentRecord = null;
+
+    public void UploadPayment() {
+        if (NetworkConnection.isNetworkAvailable(getActivity())) {
+
+            try {
+                ArrayList<PaymentRecord> paymentRecords = sqlLiteDbHelper.getPaymentrecords("select * from customer_payment where sync='0'");
+
+                if (paymentRecords != null && paymentRecords.size() > 0) {
+                    paymentRecord = null;
+                    for (int i = 0; i < paymentRecords.size(); i++) {
+                        if (!paymentRecords.get(i).getId().contains("temp")) {
+                            paymentRecord = paymentRecords.get(i);
+                            break;
+                        }
+                    }
+                    if (paymentRecord != null) {
+                        ApiService api = RetroClient.getApiService();
+                        Call<String> call = api.add_customer_payment_amount("add_customer_payment_amount", paymentRecord.getId(), Application.preferences.getUSerid(), paymentRecord.getPayment_amount());
+                        Log.e(TAG, "UploadPayment: " + call.request().url().toString());
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                Log.e(TAG, "call getDetailsByQr: " + call.toString());
+                                Log.e(TAG, "onResponse getDetailsByQr: " + response.body());
+                                parsePaymentResponse(response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                                UploadPayment();
+                                Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                                // Utils.ShowMessageDialog(getContext(), "Error Occurred");
+                            }
+                        });
+                    }else
+                    {
+                        UploadRent();
+                    }
+                }else
+                {
+                    UploadRent();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            getCityList();
+        }
+    }
+
+    private void parsePaymentResponse(String body) {
+
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getInt("status") == 0) {
+                        Status = true;
+
+                    } else {
+                        Status = false;
+                    }
+                }
+            } else {
+                Status = false;
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+
+
+        }
+        if (Status) {
+            paymentRecord.setSync("1");
+            sqlLiteDbHelper.UpdatePayment(paymentRecord);
+            UploadPayment();
+        } else {
+            UploadPayment();
+        }
+    }
 }

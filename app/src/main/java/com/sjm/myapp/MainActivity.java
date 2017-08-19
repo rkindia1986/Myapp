@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
                 Exp_Customer addCust_fragment = new Exp_Customer();
                 replaceFragment(addCust_fragment, Exp_Customer.class.getSimpleName());
 
-            } else if (id == R.id.backup) {
+            } /*else if (id == R.id.backup) {
                 setTitle(getString(R.string.backup).toUpperCase());
                 Backup addCust_fragment = new Backup();
                 replaceFragment(addCust_fragment, Backup.class.getSimpleName());
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity
                 BackupRestore addCust_fragment = new BackupRestore();
                 replaceFragment(addCust_fragment, BackupRestore.class.getSimpleName());
 
-            } else if (id == R.id.man_exp) {
+            } */else if (id == R.id.man_exp) {
                 setTitle(getString(R.string.man_exp).toUpperCase());
                 manageExp manage = new manageExp();
                 replaceFragment(manage, manageExp.class.getSimpleName());

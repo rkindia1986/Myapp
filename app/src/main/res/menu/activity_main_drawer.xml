@@ -39,18 +39,7 @@
             android:icon="@drawable/expiringcustomers"
             android:title="@string/exp_cust" />
     </group>
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/backup"
-            android:icon="@drawable/backup"
-            android:title="@string/backup" />
-    </group>
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/rest_back"
-            android:icon="@drawable/restor_backup"
-            android:title="@string/rest_back" />
-    </group>
+
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/new_mon_rent"

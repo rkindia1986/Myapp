@@ -1,6 +1,7 @@
 package com.sjm.myapp;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,7 +22,11 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sjm.myapp.pojo.Customer;
 import com.sjm.myapp.pojo.Installation_History;
+import com.sjm.myapp.pojo.PaymentRecordsList;
+import com.sjm.myapp.pojo.RentRecordsList;
+import com.sjm.myapp.pojo.SearchCustomer;
 
 import org.json.JSONObject;
 
@@ -35,6 +40,32 @@ import retrofit2.Response;
 
 public class Splash extends AppCompatActivity {
     private static final String TAG = "Splash";
+    SqlLiteDbHelper sqlLiteDbHelper;
+    ProgressDialog pd;
+
+    public void showProgressDialog() {
+        pd = new ProgressDialog(Splash.this);
+        pd.setMessage("Please wait");
+        pd.setIndeterminate(false);
+        pd.setCancelable(false);
+        pd.setCanceledOnTouchOutside(false);
+        pd.show();
+    }
+
+    public void hideProgressDialog() {
+        try {
+            if (pd != null && pd.isShowing()) {
+                pd.dismiss();
+            }
+        } catch (IllegalArgumentException e) {
+            // Handle or log or ignore
+            e.printStackTrace();
+        } catch (Exception e) {
+            // Handle or log or ignore
+        } finally {
+            pd = null;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -91,11 +122,7 @@ public class Splash extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (com.sjm.myapp.Application.preferences.getLICENCEKEY().trim().equalsIgnoreCase("")) {
-        } else {
-            startActivity(new Intent(Splash.this, MainActivity.class));
-            finish();
-        }
+
 
     }
 
@@ -112,36 +139,41 @@ public class Splash extends AppCompatActivity {
     public void init() {
 
 
-        SqlLiteDbHelper sqlLiteDbHelper = new SqlLiteDbHelper(Splash.this);
+        sqlLiteDbHelper = new SqlLiteDbHelper(Splash.this);
         sqlLiteDbHelper.openDataBase();
         String android_id = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         Log.e("android_id", android_id + "");
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        Application.preferences.setDeviceId(android_id + "22");
-        Application.preferences.setimei_number(mngr.getDeviceId() + "22");
+        Application.preferences.setDeviceId(android_id + "11");
+        Application.preferences.setimei_number(mngr.getDeviceId() + "11");
 
 
         setTitle("Welcome");
 
-        if (com.sjm.myapp.Application.preferences.getLICENCEKEY().trim().equalsIgnoreCase(""))
+        if (Application.preferences.getLICENCEKEY().trim().equalsIgnoreCase(""))
             getInstallation();
         else {
-            startActivity(new Intent(Splash.this, MainActivity.class));
-            finish();
+            if (Application.preferences.getSync()) {
+                startActivity(new Intent(Splash.this, MainActivity.class));
+                finish();
+            } else {
+                getCustomer();
+            }
         }
 
 
     }
 
     public void getInstallation() {
-        if (com.sjm.myapp.Application.preferences.getUSerid().equalsIgnoreCase("") &&
-                com.sjm.myapp.Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
+        if (Application.preferences.getUSerid().equalsIgnoreCase("") &&
+                Application.preferences.getLICENCEKEY().equalsIgnoreCase("")) {
             if (NetworkConnection.isNetworkAvailable(Splash.this)) {
                 try {
-
+                    showProgressDialog();
                     ApiService api = RetroClient.getApiService();
-                    Call<String> call = api.welcome("welcome", com.sjm.myapp.Application.preferences.getDeviceId(), com.sjm.myapp.Application.preferences.getimei_number());
+                    Call<String> call = api.welcome("welcome", Application.preferences.getDeviceId(), Application.preferences.getimei_number());
+
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -154,7 +186,7 @@ public class Splash extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            hideProgressDialog();
                             Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
                             Utils.ShowMessageDialog(Splash.this, "Error Occurred");
                         }
@@ -169,6 +201,7 @@ public class Splash extends AppCompatActivity {
     }
 
     private void parseWelcomeResponse(String body) {
+        hideProgressDialog();
         String message = "";
         boolean Status = false;
         try {
@@ -188,11 +221,11 @@ public class Splash extends AppCompatActivity {
 
                                 Installation_History installation_history = gson.fromJson(j.optJSONObject("result").toString(), Installation_History.class);
                                 if (installation_history != null && installation_history.getLicence_key() != null && installation_history.getLicence_key().length() > 5 && installation_history.getVerify_licence_key().equalsIgnoreCase("1")) {
-                                    com.sjm.myapp.Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
-                                    com.sjm.myapp.Application.preferences.setUSerid(installation_history.getUser_id());
-                                    com.sjm.myapp.Application.preferences.setMASTERPASS(installation_history.getMaster_password());
-                                    com.sjm.myapp.Application.preferences.setverify_licence_key(installation_history.getLicence_key());
-                                    com.sjm.myapp.Application.preferences.setDetails(j.getJSONObject("result").toString());
+                                    Application.preferences.setLICENCEKEY(installation_history.getLicence_key());
+                                    Application.preferences.setUSerid(installation_history.getUser_id());
+                                    Application.preferences.setMASTERPASS(installation_history.getMaster_password());
+                                    Application.preferences.setverify_licence_key(installation_history.getLicence_key());
+                                    Application.preferences.setDetails(j.getJSONObject("result").toString());
                                 }
                             } catch (Exception e) {
 
@@ -282,8 +315,232 @@ public class Splash extends AppCompatActivity {
             startActivity(new Intent(Splash.this, ContactUs.class));
 
         }
-
-
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void getCustomer() {
+        if (NetworkConnection.isNetworkAvailable(Splash.this)) {
+            showProgressDialog();
+            try {
+                ApiService api = RetroClient.getApiService();
+                Call<String> call = api.SearchCustomer("get_customer_search", "", "", "", "", "", "", Application.preferences.getUSerid());
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        Log.e(TAG, "onResponse getCustomer: " + response.body());
+                        parseCustomerResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+                        Log.e(TAG, "onFailure getDetailsByQr: " + t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            hideProgressDialog();
+            Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+        }
+    }
+
+    private void parseCustomerResponse(String body) {
+        try {
+
+            JSONObject j = new JSONObject(body);
+
+            if (j != null) {
+                if (j.optString("totalRecord").equalsIgnoreCase("0")) {
+                    hideProgressDialog();
+                    Application.preferences.setSync(true);
+
+                    if (Build.VERSION.SDK_INT >= 11) {
+                        Splash.this.recreate();
+                    } else {
+                        Intent intent = Splash.this.getIntent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        Splash.this.finish();
+                        Splash.this.overridePendingTransition(0, 0);
+
+                        startActivity(intent);
+                        Splash.this.overridePendingTransition(0, 0);
+                    }
+                } else {
+                    Gson gson = new GsonBuilder().create();
+                    Constant.categoryListModel = gson.fromJson(body, SearchCustomer.class);
+                    if (Constant.categoryListModel.getStatus() != 1) {
+                        //Add Customer
+                        if (Constant.categoryListModel.getLstCustomer() != null && Constant.categoryListModel.getLstCustomer().size() > 0) {
+                            for (int i = 0; i < Constant.categoryListModel.getLstCustomer().size(); i++) {
+                                Customer customer = Constant.categoryListModel.getLstCustomer().get(i);
+                                customer.setSync("1");
+                                customer.setAmount2(customer.getAmount());
+                                customer.setSyncid("temp" + customer.getId());
+                                sqlLiteDbHelper.UpdateCustomer(customer);
+                                sqlLiteDbHelper.InsertCity(customer.getCity());
+                            }
+                        }
+                        GetPaymentRecords();
+                    }
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+
+    }
+
+    public void GetPaymentRecords() {
+        if (NetworkConnection.isNetworkAvailable(Splash.this)) {
+            try {
+
+                ApiService api = RetroClient.getApiService();
+
+                Call<String> call = api.payment_record("payment_record", Application.preferences.getUSerid()); //customer.getId());
+                Log.e(TAG, "GetPaymentRecords: " + call.request().url().toString());
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        Log.e(TAG, "onResponse GetPaymentRecords: " + response.body());
+                        parsePaymentResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+                        Log.e(TAG, "onFailure GetPaymentRecord: " + t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            hideProgressDialog();
+            Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+        }
+    }
+
+    private void parsePaymentResponse(String body) {
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("0")) {
+
+                        Gson gson = new GsonBuilder().create();
+                        PaymentRecordsList paymentRecordsList = gson.fromJson(body, PaymentRecordsList.class);
+                        if (paymentRecordsList != null && paymentRecordsList.getLstPaymentrecords().size() > 0) {
+                            sqlLiteDbHelper.InsertPayments(paymentRecordsList.getLstPaymentrecords());
+                        }
+                        GetRentRecord();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+
+        }
+
+
+    }
+
+    public void GetRentRecord() {
+        if (NetworkConnection.isNetworkAvailable(Splash.this)) {
+            try {
+
+                ApiService api = RetroClient.getApiService();
+
+                Call<String> call = api.rent_record_by_customer_id("rent_record_by_customer_id", Application.preferences.getUSerid()); //customer.getId());
+                Log.e(TAG, "GetRentRecord: " + call.request().url().toString());
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        Log.e(TAG, "onResponse GetRentRecord: " + response.body());
+
+                        parseRentResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        hideProgressDialog();
+                        Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+                        Log.e(TAG, "onFailure GetRentRecord: " + t.getMessage());
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            hideProgressDialog();
+            Utils.ShowMessageDialog(Splash.this, "Sync Is not Completed, Please connect to working internet");
+        }
+    }
+
+    private void parseRentResponse(String body) {
+
+        String message = "";
+        boolean Status = false;
+        try {
+            JSONObject j = new JSONObject(body);
+            if (j != null) {
+                if (body.contains("status")) {
+
+                    if (j.getString("status").equalsIgnoreCase("1")) {
+                        Status = false;
+                    } else if (j.getString("status").equalsIgnoreCase("0")) {
+                        Status = true;
+                        Gson gson = new GsonBuilder().create();
+                        RentRecordsList rentRecordsList = gson.fromJson(body, RentRecordsList.class);
+                        if (rentRecordsList != null && rentRecordsList.getLstrentrecord().size() > 0) {
+                            sqlLiteDbHelper.InsertRentRecords(rentRecordsList.getLstrentrecord());
+                        }
+                        hideProgressDialog();
+                        Application.preferences.setSync(true);
+
+                        if (Build.VERSION.SDK_INT >= 11) {
+                            Splash.this.recreate();
+                        } else {
+                            Intent intent = Splash.this.getIntent();
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            Splash.this.finish();
+                            Splash.this.overridePendingTransition(0, 0);
+
+                            startActivity(intent);
+                            Splash.this.overridePendingTransition(0, 0);
+                        }
+                    } else {
+                        Status = false;
+
+                    }
+                }
+            } else {
+                Status = false;
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Status = false;
+            message = "Error Occurred";
+
+        }
+
+
+    }
+
 }

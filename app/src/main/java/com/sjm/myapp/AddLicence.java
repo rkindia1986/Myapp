@@ -111,6 +111,12 @@ public class AddLicence extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
     public void ClearData() {
         edt_cab_name.setText("");
         edt_licencekey.setText("");
