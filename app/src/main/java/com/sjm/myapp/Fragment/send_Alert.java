@@ -214,10 +214,10 @@ public class send_Alert extends Fragment {
         try {
             JSONObject j = new JSONObject(body);
             if (j != null) {
-                if (body.contains("message")) {
+                if (body.contains("status")) {
 
 
-                    if (j.getString("message").equalsIgnoreCase("success")) {
+                    if (j.getString("status").equalsIgnoreCase("0")) {
                         message = j.optString("message");
                     }
 
